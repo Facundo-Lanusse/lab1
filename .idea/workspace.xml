@@ -18,6 +18,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "mateoserebrinsky"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Facundo-Lanusse/lab1.git",
+    "accountId": "b1e3b1b8-4200-4a89-b8b8-72865d7357c3"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -30,9 +42,9 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "facundo-lanusse",
+    "git-widget-placeholder": "mateo-serebrinsky",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/faculanusse/Faculty/tercero/lab1",
+    "last_opened_file_path": "C:/Users/sereb/programming/faculty/Laboratorio-1/lab1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -44,7 +56,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-WS-243.21565.180" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
       </set>
     </attachedChunks>
   </component>
@@ -60,6 +73,7 @@
       <workItem from="1743018823810" duration="166000" />
       <workItem from="1743018998699" duration="598000" />
       <workItem from="1743019600454" duration="765000" />
+      <workItem from="1743021529503" duration="321000" />
     </task>
     <servers />
   </component>
