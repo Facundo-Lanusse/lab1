@@ -18,18 +18,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "mateoserebrinsky"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;mateoserebrinsky&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Facundo-Lanusse/lab1.git",
-    "accountId": "b1e3b1b8-4200-4a89-b8b8-72865d7357c3"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Facundo-Lanusse/lab1.git&quot;,
+    &quot;accountId&quot;: &quot;b1e3b1b8-4200-4a89-b8b8-72865d7357c3&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -42,7 +42,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "mateo-serebrinsky",
+    "git-widget-placeholder": "facundo-lanusse",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/sereb/programming/faculty/Laboratorio-1/lab1",
     "node.js.detected.package.eslint": "true",
