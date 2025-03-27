@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6fbc95e7-1d66-42af-88e5-7431aeaa1791" name="Changes" comment="" />
+    <list default="true" id="6fbc95e7-1d66-42af-88e5-7431aeaa1791" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,6 +40,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -51,6 +54,21 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "mateo-serebrinsky",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/sereb/programming/faculty/informatic-electronic/electronica-digital",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+>>>>>>> 7d0a6f9a433f786e2e259651fa30fbd15419fd1a
   }
 }</component>
   <component name="SharedIndexes">
@@ -72,8 +90,15 @@
       <workItem from="1743018823810" duration="166000" />
       <workItem from="1743018998699" duration="598000" />
       <workItem from="1743019600454" duration="765000" />
+<<<<<<< HEAD
       <workItem from="1743021529503" duration="321000" />
       <workItem from="1743078828199" duration="95000" />
+=======
+      <workItem from="1743021529503" duration="1240000" />
+      <workItem from="1743078458996" duration="8000" />
+      <workItem from="1743085510495" duration="128000" />
+      <workItem from="1743086366337" duration="64000" />
+>>>>>>> 7d0a6f9a433f786e2e259651fa30fbd15419fd1a
     </task>
     <servers />
   </component>
