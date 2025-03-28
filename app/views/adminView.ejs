@@ -5,24 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Usuarios</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
         table {
-            width: 50%;
+            width: 60%;
+            margin: 20px auto;
             border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 18px;
-            text-align: left;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
+
         th, td {
-            padding: 8px;
-            border: 1px solid black;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: #007BFF;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        a:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
+
 <h2>Lista de Usuarios</h2>
+
 <table>
     <tr>
         <th>Username</th>
@@ -35,7 +78,8 @@
         </tr>
     <% }); %>
 </table>
-<br>
-<a href="/">Volver</a>
+
+<a href="/">⬅ Volver</a>
+
 </body>
 </html>

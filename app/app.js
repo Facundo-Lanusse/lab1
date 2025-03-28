@@ -8,7 +8,7 @@ app.set('views', path.join(__dirname, 'views'));//digo donde buscar las views
 //todo: Falta manejar como se borran usarios desde admin
 
 app.listen(3000, () => {
-    console.log('Servidor corriendo en http://localhost:3000/admin');
+    console.log('Servidor corriendo en http://localhost:3000');
 });
 
 const db = require('./database');
@@ -18,18 +18,7 @@ const {response} = require("express");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-    res.send(`
-        <h1>Registro de Usuario</h1>
-        <form action="/register" method="POST">
-            <label>Nombre:</label>
-            <input type="text" name="username" required />
-            <label>Contraseña:</label>
-            <input type="password" name="password" required />
-            <label>Email:</label>
-            <input type="text" name="email" required />
-            <button type="submit">Register</button>
-        </form>
-    `);//todo: esto deberia cambiarse por una view, usar res render como use en /admin
+    res.render('registerView');//todo: esto deberia cambiarse por una view, usar res render como use en /admin
 });
 
 app.post('/register', async (req, res) => {
