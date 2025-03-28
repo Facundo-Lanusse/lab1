@@ -1,9 +1,14 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const path = require('path');//seteo para que se use path
+app.set('view engine', 'ejs');//seteo el motor de views
+app.set('views', path.join(__dirname, 'views'));//digo donde buscar las views
+
+//todo: Falta manejar como se borran usarios desde admin
 
 app.listen(3000, () => {
-    console.log('Servidor corriendo en http://localhost:3000');
+    console.log('Servidor corriendo en http://localhost:3000/admin');
 });
 
 const db = require('./database');
@@ -24,7 +29,7 @@ app.get('/', (req, res) => {
             <input type="text" name="email" required />
             <button type="submit">Register</button>
         </form>
-    `);
+    `);//todo: esto deberia cambiarse por una view, usar res render como use en /admin
 });
 
 app.post('/register', async (req, res) => {
@@ -42,7 +47,7 @@ app.post('/register', async (req, res) => {
         <a href="/">Volver</a>
         <h3>${JSON.stringify(result.rows)}</h3>
         <form action="/register" method="POST">
-    `);
+    `);//todo: esto deberia cambiarse por una view, usar res render como use en /admin
         } catch (error) {
             console.error('Error al registrar usuario:', error);
             res.status(500).send('Error en el servidor');// 500 = error de servidor
@@ -50,7 +55,17 @@ app.post('/register', async (req, res) => {
 
 });
 
-app.post('/admin', async (res, req)=>{
+app.get('/admin', async (req, res)=>{
+    try{
+        const query = 'select username, email from users'
+        const result = await db.query(query)
+        res.render('adminView', { users: result.rows });
+        //hago una query sencilla y la mando a la adminView para que imprima con listas los users
+    }
+    catch (error){
+        console.error('Error al cargar usuarios:', error);
+        res.status(400).send('Fallo la consulta')
+    }
 
 
-    } );
+} );
