@@ -31,16 +31,11 @@ app.post('/register', async (req, res) => {
         try {
             const query = 'INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *';
             const result = await db.query(query, [username, password, email]);
-            res.send(`
-        <h3>Usuario registrado con éxito.</h3> 
-        <a href="/">Volver</a>
-        <h3>${JSON.stringify(result.rows)}</h3>
-        <form action="/register" method="POST">
-    `);//todo: esto deberia cambiarse por una view, usar res render como use en /admin
+            res.render('alreadyRegisteredView', {username, password, email} );
         } catch (error) {
             console.error('Error al registrar usuario:', error);
             res.status(500).send('Error en el servidor');// 500 = error de servidor
-        }
+        }//esto procesa el register
 
 });
 //prueba para poder listar usuarios
@@ -50,7 +45,7 @@ app.get('/admin', async (req, res)=>{
         const query = 'select username, email from users'
         const result = await db.query(query)
         res.render('adminView', { users: result.rows });
-        //hago una query sencilla y la mando app la adminView para que imprima con listas los users
+        //hago una query sencilla y la mando a la adminView para que imprima listas de los users
     }
     catch (error){
         console.error('Error al cargar usuarios:', error);
