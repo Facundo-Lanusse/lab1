@@ -46,6 +46,12 @@
     "webpack": "^5.98.0",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.1"
+<<<<<<< HEAD
 >>>>>>> f7dcd41628dfb5dfbbd2d9329defc58313d35f41
+=======
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+>>>>>>> 6cba4450a0d0cc4005c4eb38873a47316f31f73a
   }
 }
