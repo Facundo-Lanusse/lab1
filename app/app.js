@@ -18,7 +18,7 @@ const {response} = require("express");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-    res.render('registerView');//todo: esto deberia cambiarse por una view, usar res render como use en /admin
+    res.render('registerView');
 });
 
 app.post('/register', async (req, res) => {
@@ -55,6 +55,5 @@ app.get('/admin', async (req, res)=>{
         console.error('Error al cargar usuarios:', error);
         res.status(400).send('Fallo la consulta')
     }
-
 
 } );
