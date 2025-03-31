@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const db = require('./node_modules/database');
+const db = require('./database');
 
 const app = express();
 app.use(cors()); // Permite que el frontend acceda al backend
