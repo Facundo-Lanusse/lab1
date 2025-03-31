@@ -43,13 +43,14 @@ app.post('/register', async (req, res) => {
         }
 
 });
-
+//prueba para poder listar usuarios
+//todo: faltaría poder borrarlos
 app.get('/admin', async (req, res)=>{
     try{
         const query = 'select username, email from users'
         const result = await db.query(query)
         res.render('adminView', { users: result.rows });
-        //hago una query sencilla y la mando a la adminView para que imprima con listas los users
+        //hago una query sencilla y la mando app la adminView para que imprima con listas los users
     }
     catch (error){
         console.error('Error al cargar usuarios:', error);
