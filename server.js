@@ -7,7 +7,9 @@ const app = express();
 app.use(cors()); // Permite que el frontend acceda al backend
 app.use(bodyParser.json());
 
+
 app.listen(3000, () => {
+
     console.log('Servidor corriendo en http://localhost:3000/api/register');
 });
 
