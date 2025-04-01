@@ -20,11 +20,8 @@ const LogIn = () => {
             const data = await response.json();
             if (response.ok) {
                 alert('Login successful!');
-<<<<<<< HEAD
                 // Redirección o manejo de sesión
-=======
                 navigate('/home')
->>>>>>> df737b5927cddc1443d173e1f6d8524708f4f9c7
             } else {
                 setError(data.error || 'Login failed');
             }
