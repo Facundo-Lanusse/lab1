@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import {useNavigate} from "react-router-dom";
 import styles from './css/LogIn.module.css';
 
 const LogIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         setError('');
@@ -18,7 +20,7 @@ const LogIn = () => {
             const data = await response.json();
             if (response.ok) {
                 alert('Login successful!');
-                // Aquí puedes redirigir o guardar la sesión
+                navigate('/home')
             } else {
                 setError(data.error || 'Login failed');
             }
