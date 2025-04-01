@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.4",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.4.1",
@@ -21,7 +22,7 @@
     "eject": "react-scripts eject",
     "server": "cd ../ && node server.js",
     "client": "react-scripts start",
-    "start": "concurrently \"npm run ../backend/server\" \"npm run client\""
+    "start": "concurrently \"npm run start --prefix ../backend\" \"npm run client\""
   },
   "eslintConfig": {
     "extends": [

@@ -56,4 +56,7 @@ app.delete('/api/users/:id', async (req, res) => {
         console.error('Error al eliminar usuario:', error);
         res.status(500).json({ error: 'Error en el servidor' });
     }
+
+
 });
+
