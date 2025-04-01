@@ -11,16 +11,13 @@
   "description": "",
   "dependencies": {
     "body-parser": "^2.2.0",
-<<<<<<< HEAD
     "dotenv": "^16.4.7",
     "express": "^5.1.0"
   },
   "devDependencies": {
-=======
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
->>>>>>> 009fc9a6d2071ea94913ba98d71ff7ee9121d2f6
     "pg": "^8.14.1"
   }
 }
