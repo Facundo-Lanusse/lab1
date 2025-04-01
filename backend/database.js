@@ -1,8 +1,12 @@
-// database.js (adaptado)
 require('dotenv').config();
-const { Pool } = require('pg');
 
-const pool = new Pool({
+console.log('User:', process.env.DB_USER);
+console.log('Database:', process.env.DB_NAME);
+console.log('Password:', process.env.DB_PASSWORD);
+
+const { Client } = require('pg');
+
+const database = new Client({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
@@ -10,10 +14,8 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 });
 
-pool.connect()
+database.connect()
     .then(() => console.log('Conectado a la base de datos'))
-    .catch(err => console.error('Error de conexión:', err));
+    .catch(err => console.error('Error de conexión, no se pudo conectar', err));
 
-module.exports = {
-    query: (text, params) => pool.query(text, params),
-};
+module.exports = database;
