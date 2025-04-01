@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const db = require('./database');
+const {response} = require("express");
 
 const app = express();
 app.use(cors()); // Permite que el frontend acceda al backend
@@ -56,7 +57,24 @@ app.delete('/api/users/:id', async (req, res) => {
         console.error('Error al eliminar usuario:', error);
         res.status(500).json({ error: 'Error en el servidor' });
     }
-
-
 });
+
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const query = 'SELECT * FROM USERS WHERE email = $1 AND password = $2';
+        const result = await db.query(query, [email, password]);
+
+        if (result.rows.length > 0) {
+            return res.json({ message: 'Logueado correctamente' });
+        } else {
+            return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+    } catch (err) {
+        console.error('Error al loguear:', err);
+        res.status(500).json({ error: 'Error al procesar la solicitud' });
+    }
+});
+
 
