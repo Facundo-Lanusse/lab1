@@ -1,30 +1,60 @@
-import { useCallback } from 'react';
+import { useState } from 'react';
 import styles from './css/LogIn.module.css';
 
-
 const LogIn = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const onRectangleClick = useCallback(() => {
-        // Add your code here
-    }, []);
+    const handleLogin = async () => {
+        setError('');
+        try {
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Login successful!');
+                // Aquí puedes redirigir o guardar la sesión
+            } else {
+                setError(data.error || 'Login failed');
+            }
+        } catch (error) {
+            setError('Error connecting to the server');
+            console.error('Fetch error:', error);
+        }
+    };
 
     return (
         <div className={styles.logIn}>
             <img className={styles.loginImageIcon} alt="" src="login_image.svg" />
             <b className={styles.loginPage}>Login Page</b>
             <div className={styles.rectangleParent}>
-                <div className={styles.frameChild} />
-                <div className={styles.enterEmail}>Enter email...</div>
+                <input
+                    type="email"
+                    className={styles.inputField}
+                    placeholder="Enter email..."
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
             </div>
             <div className={styles.rectangleGroup}>
-                <div className={styles.frameItem} />
-                <div className={styles.enterPassword}>Enter password...</div>
+                <input
+                    type="password"
+                    className={styles.inputField}
+                    placeholder="Enter password..."
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
             </div>
-            <div className={styles.forgotPassword}>Forgot password ?</div>
-            <div className={styles.logInChild} onClick={onRectangleClick} />
-            <b className={styles.logIn1}>{`Log in `}</b>
-            <img className={styles.arrowLeftSolid1Icon} alt="" src="arrow-left-solid.svg" onClick={onRectangleClick} />
-        </div>);
+            {error && <div className={styles.errorMessage}>{error}</div>}
+            <div className={styles.forgotPassword}>Forgot password?</div>
+            <button className={styles.logInButton} onClick={handleLogin}>Log in</button>
+        </div>
+    );
 };
 
 export default LogIn;
