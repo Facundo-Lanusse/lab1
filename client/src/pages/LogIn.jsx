@@ -3,10 +3,10 @@ import {useNavigate} from "react-router-dom";
 import styles from './css/LogIn.module.css';
 
 const LogIn = () => {
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(''); //useState se usa para guardar estados de las variables
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate();//para navegar entre links
 
     const handleLogin = async () => {
         setError('');
@@ -16,10 +16,12 @@ const LogIn = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
+            //Llamo el method post de mi backend
 
-            const data = await response.json();
-            if (response.ok) {
-                alert('Login successful!');
+            const data = await response.json();//Await es para llamada a base de datos asincrónica
+
+            if (response.ok) {//Si no explotó response que haga lo siguiente, sino que tire error
+                localStorage.setItem('user', JSON.stringify(data.user));//Guardo en el storage la session del usuario, es nativo de node
                 navigate('/home')
             } else {
                 setError(data.error || 'Login failed');
@@ -37,7 +39,7 @@ const LogIn = () => {
             <div className={styles.rectangleParent}>
                 <input
                     type="email"
-                    className={styles.inputField}
+                    className={styles.enterEmail}
                     placeholder="Enter email..."
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -46,7 +48,7 @@ const LogIn = () => {
             <div className={styles.rectangleGroup}>
                 <input
                     type="password"
-                    className={styles.inputField}
+                    className={styles.enterPassword}
                     placeholder="Enter password..."
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -54,7 +56,7 @@ const LogIn = () => {
             </div>
             {error && <div className={styles.errorMessage}>{error}</div>}
             <div className={styles.forgotPassword}>Forgot password?</div>
-            <button className={styles.logInButton} onClick={handleLogin}>Log in</button>
+            <button className={styles.logInChild} onClick={handleLogin}>Log in</button>
         </div>
     );
 };
