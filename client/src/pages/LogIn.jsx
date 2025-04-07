@@ -33,10 +33,16 @@ const LogIn = () => {
 
     return (
         <div className={styles.logIn}>
+            <img
+                className={styles.arrowLeftSolid1Icon}
+                alt="Go back"
+                src="arrow-left-solid.svg"
+                onClick={() => window.history.back()}
+            />
             <img className={styles.loginImageIcon} alt="Login visual" src="login_image.svg" />
             <b className={styles.loginPage}>Login Page</b>
 
-            <div className={styles.rectangleParent}>
+            <div className={styles.rectangleGroup}>
                 <input
                     type="email"
                     className={styles.inputField}
@@ -60,16 +66,8 @@ const LogIn = () => {
 
             <div className={styles.forgotPassword}>Forgot password?</div>
 
-            <button className={styles.logInButton} onClick={handleLogin}>
-                Log in
-            </button>
+            <button className={styles.logInButton} onClick={handleLogin}>Log in</button>
 
-            <img
-                className={styles.arrowLeftSolid1Icon}
-                alt="Go back"
-                src="arrow-left-solid.svg"
-                onClick={() => window.history.back()}
-            />
         </div>
     );
 };

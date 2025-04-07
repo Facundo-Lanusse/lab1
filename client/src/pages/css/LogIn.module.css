@@ -1,43 +1,55 @@
-.loginImageIcon {
+
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.logIn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    min-height: 100vh;
+    padding: 5vh 5vw;
+    font-family: Inter, sans-serif;
+    color: #000;
+    text-align: center;
+    font-size: 15px;
+    position: relative;
+}
+
+.arrowLeftSolid1Icon {
     position: absolute;
-    top: 88px;
-    left: 84px;
-    width: 226px;
-    height: 177px;
-    overflow: hidden;
+    top: 16px;
+    left: 16px;
+    width: 28px;
+    height: auto;
+    cursor: pointer;
+}
+
+.loginImageIcon {
+    width: 50vw;
+    max-width: 226px;
+    height: auto;
+    margin-top: 64px;
 }
 
 .loginPage {
-    position: absolute;
-    top: 292px;
-    left: calc(50% - 112.5px);
     font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 226px;
-    height: 51px;
-}
-
-.rectangleParent {
-    position: absolute;
-    top: 371px;
-    left: 35px;
-    width: 324px;
-    height: 52px;
+    margin-top: 32px;
 }
 
 .rectangleGroup {
-    position: absolute;
-    top: 461px;
-    left: 26px;
-    width: 333px;
-    height: 52px;
+    width: 100%;
+    max-width: 333px;
+    margin-top: 24px;
 }
 
 .inputField {
     width: 100%;
-    height: 100%;
+    max-width: 333px;
+    height: 52px;
     padding: 0 12px;
     font-size: 16px;
     border-radius: 10px;
@@ -45,72 +57,44 @@
     outline: none;
     background-color: rgba(245, 245, 245, 0.76);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    font-family: Inter;
 }
 
 .forgotPassword {
-    position: absolute;
-    top: 530px;
-    left: 216px;
+    margin-top: 16px;
     font-weight: 300;
     color: #16b3b9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 151px;
-    height: 19px;
     cursor: pointer;
-}
-
-.logInButton {
-    position: absolute;
-    top: 671px;
-    left: 35px;
-    width: 324px;
-    height: 62px;
-    border-radius: 15px;
-    background-color: #16b3b9;
-    color: white;
-    font-size: 24px;
-    font-family: Inter;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.logInButton:hover {
-    background-color: #139ba0;
-}
-
-.arrowLeftSolid1Icon {
-    position: absolute;
-    top: 51px;
-    left: 26px;
-    width: 49px;
-    height: 57px;
-    overflow: hidden;
-    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    max-width: 333px;
+    text-align: right;
 }
 
 .errorMessage {
-    position: absolute;
-    top: 590px;
-    left: 35px;
-    width: 324px;
+    margin-top: 12px;
+    width: 100%;
+    max-width: 333px;
     color: red;
     font-size: 14px;
     font-weight: 500;
     text-align: center;
 }
 
-.logIn {
+.logInButton {
+    margin-top: 32px;
     width: 100%;
-    position: relative;
-    background-color: #fff;
-    height: 852px;
-    overflow: hidden;
-    text-align: center;
-    font-size: 15px;
-    color: #000;
-    font-family: Inter;
+    max-width: 333px;
+    height: 62px;
+    border-radius: 15px;
+    background-color: #16b3b9;
+    color: white;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+.logInButton:hover {
+    background-color: #139ba0;
 }
