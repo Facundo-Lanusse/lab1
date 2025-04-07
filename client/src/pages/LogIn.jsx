@@ -3,10 +3,10 @@ import {useNavigate} from "react-router-dom";
 import styles from './css/LogIn.module.css';
 
 const LogIn = () => {
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(''); //useState se usa para guardar estados de las variables
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate();//para navegar entre links
 
     const handleLogin = async () => {
         setError('');
@@ -16,11 +16,12 @@ const LogIn = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
+            //Llamo el method post de mi backend
 
-            const data = await response.json();
-            if (response.ok) {
-                alert('Login successful!');
-                // Redirección o manejo de sesión
+            const data = await response.json();//Await es para llamada a base de datos asincrónica
+
+            if (response.ok) {//Si no explotó response que haga lo siguiente, sino que tire error
+                localStorage.setItem('user', JSON.stringify(data.user));//Guardo en el storage la session del usuario, es nativo de node
                 navigate('/home')
             } else {
                 setError(data.error || 'Login failed');

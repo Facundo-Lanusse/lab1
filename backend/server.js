@@ -3,11 +3,16 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const db = require('./database');
 const {response} = require("express");
+const session = require("express-session");
+
 
 const app = express();
 app.use(cors()); // Permite que el frontend acceda al backend
 app.use(bodyParser.json());
-
+//manejo de sesiones
+app.use(session({
+    secret: 'preguntados123'
+}))
 
 app.listen(3000, () => {
 
@@ -58,23 +63,31 @@ app.delete('/api/users/:id', async (req, res) => {
         res.status(500).json({ error: 'Error en el servidor' });
     }
 });
+//manejo sesiones
+    app.post('/api/login', async (req, res) => {
+        const { email, password } = req.body; //declaro las variables que le voy a pedir al body (La pagina)
+        try {
+            const query = 'SELECT * FROM USERS WHERE email = $1 AND password = $2'; //Digo como es la consulta con los inputs
+            const userQuery = await db.query(query, [email, password]); //Ejecuto la consulta en la query
 
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
+            if (userQuery.rows.length > 0) { //chequeo si existe algún usuario con esos parámetros
+                const user = userQuery.rows[0];
 
-    try {
-        const query = 'SELECT * FROM USERS WHERE email = $1 AND password = $2';
-        const result = await db.query(query, [email, password]);
+                req.session.login = true; //habilito la sesión
+                req.session.userId = user.id;
+                req.session.userEmail = user.email;
+                req.session.userName = user.username; //Cargo en la sesión los datos del usuario (Esto es para express-session, creo que no hace falta)
 
-        if (result.rows.length > 0) {
-            return res.json({ message: 'Logueado correctamente' });
-        } else {
-            return res.status(401).json({ error: 'Credenciales incorrectas' });
+                return res.json({
+                    message: 'Logueado correctamente',
+                    user: { id: user.id, email: user.email, username: user.username}}); //Envio al front el mensaje de login correcto y todos los datos necesarios
+            } else {
+                return res.status(401).json({ error: 'Credenciales incorrectas' }); //Si falla la consulta solo mando el mensaje con el error
+            }
+        } catch (err) {
+            console.error('Error al loguear:', err); //Error para que veamos en consola
+            res.status(500).json({ error: 'Error al procesar la solicitud' });//De nuevo cambio el error
         }
-    } catch (err) {
-        console.error('Error al loguear:', err);
-        res.status(500).json({ error: 'Error al procesar la solicitud' });
-    }
-});
+    });
 
 
