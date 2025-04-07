@@ -1,9 +1,16 @@
-import { useCallback } from 'react';
+import {useCallback, useEffect} from 'react';
 import styles from './css/Welcome.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const Welcome = () => {
     const navigate = useNavigate();
+
+    useEffect(() => { //Igual a las líneas de home
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            navigate('/home');
+        }
+    }, [navigate]);
 
     const onLoginClick = useCallback(() => {
         navigate('/login'); // Redirige al formulario de login
