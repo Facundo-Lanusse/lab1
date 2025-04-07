@@ -1,8 +1,18 @@
-import { useState, useCallback } from "react";
+import {useState, useCallback, useEffect} from "react";
 import axios from "axios";
 import styles from "./css/SignUp.module.css";
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => { //Igual a las líneas de home
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            navigate('/home');
+        }
+    }, [navigate]);
+
     const [form, setForm] = useState({ username: "", password: "", email: "" });
     const [message, setMessage] = useState("");
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import styles from './css/LogIn.module.css';
 
@@ -7,6 +7,15 @@ const LogIn = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();//para navegar entre links
+
+
+    useEffect(() => { //Igual a las líneas de home
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            navigate('/home');
+        }
+    }, [navigate]);
+
 
     const handleLogin = async () => {
         setError('');
