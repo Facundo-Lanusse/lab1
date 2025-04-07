@@ -34,29 +34,41 @@ const LogIn = () => {
 
     return (
         <div className={styles.logIn}>
-            <img className={styles.loginImageIcon} alt="" src="login_image.svg" />
+            <img
+                className={styles.arrowLeftSolid1Icon}
+                alt="Go back"
+                src="arrow-left-solid.svg"
+                onClick={() => window.history.back()}
+            />
+            <img className={styles.loginImageIcon} alt="Login visual" src="login_image.svg" />
             <b className={styles.loginPage}>Login Page</b>
-            <div className={styles.rectangleParent}>
+
+            <div className={styles.rectangleGroup}>
                 <input
                     type="email"
-                    className={styles.enterEmail}
+                    className={styles.inputField}
                     placeholder="Enter email..."
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
+
             <div className={styles.rectangleGroup}>
                 <input
                     type="password"
-                    className={styles.enterPassword}
+                    className={styles.inputField}
                     placeholder="Enter password..."
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
+
             {error && <div className={styles.errorMessage}>{error}</div>}
+
             <div className={styles.forgotPassword}>Forgot password?</div>
-            <button className={styles.logInChild} onClick={handleLogin}>Log in</button>
+
+            <button className={styles.logInButton} onClick={handleLogin}>Log in</button>
+
         </div>
     );
 };
