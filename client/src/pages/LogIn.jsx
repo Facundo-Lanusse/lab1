@@ -47,7 +47,7 @@ const LogIn = () => {
                 className={styles.arrowLeftSolid1Icon}
                 alt="Go back"
                 src="arrow-left-solid.svg"
-                onClick={() => window.history.back()}
+                onClick={() => navigate('/')}
             />
             <img className={styles.loginImageIcon} alt="Login visual" src="login_image.svg" />
             <b className={styles.loginPage}>Login Page</b>

@@ -20,15 +20,18 @@ const Welcome = () => {
 
     return (
         <div className={styles.welcome}>
-            <div className={styles.welcomeChild} />
+            <div className={styles.logoParent}>
+                <img className={styles.logoIcon} alt="Logo" src="logo.png" />
+                <b className={styles.brainBattle}>BRAIN BATTLE</b>
+            </div>
+
             <div className={styles.logInWrapper} onClick={onLoginClick}>
                 <b className={styles.logIn}>Log in</b>
             </div>
-            <div className={styles.dontHaveAn}>Don’t have an account?</div>
-            <b className={styles.signUp} onClick={() => navigate('/signup')}>Sign up</b>
-            <div className={styles.logoParent}>
-                <img className={styles.logoIcon} alt="" src="logo.png" />
-                <b className={styles.brainBattle}>BRAIN BATTLE</b>
+
+            <div className={styles.authLinks}>
+                <span className={styles.dontHaveAn}>Don’t have an account?</span>
+                <span className={styles.signUp} onClick={() => navigate('/signup')}>Sign up</span>
             </div>
         </div>
     );
