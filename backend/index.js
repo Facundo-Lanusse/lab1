@@ -14,7 +14,7 @@ const app = express();
     app.use(cors()); // Permite que el frontend acceda al backend
     app.use(cookieParser());
     app.use(bodyParser.json());
-    app.use(validateUser);
+    //app.use(validateUser);
 
 app.listen(3000, () => {
 
