@@ -6,7 +6,7 @@ const Home = () => {
 
     useEffect(() => { //cuando entre a esta pagina pregunte lo siguiente
         const user = JSON.parse(localStorage.getItem('user')); //Si está logueado el user todo bien
-        if (!user) {//Si no lo está lo mando a su casa
+        if (!user) { //Si no lo está lo mando a su casa
             navigate('/login');
         }
     }, [navigate]);
