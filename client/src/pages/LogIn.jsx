@@ -31,6 +31,7 @@ const LogIn = () => {
 
             if (response.ok) {//Si no explotó response que haga lo siguiente, sino que tire error
                 localStorage.setItem('user', JSON.stringify(data.user));//Guardo en el storage la session del usuario, es nativo de node
+                localStorage.setItem('token', data.token);
                 navigate('/home')
             } else {
                 setError(data.error || 'Login failed');
