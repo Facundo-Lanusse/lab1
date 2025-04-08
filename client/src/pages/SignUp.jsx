@@ -31,9 +31,15 @@ const SignUp = () => {
 
     return (
         <div className={styles.signUp}>
+            <img
+                className={styles.undrawAccessAccountAydp1Icon}
+                alt="Illustration"
+                src="undraw_access-account_aydp.svg"
+            />
+
             <b className={styles.signUpPage}>Sign up page</b>
 
-            <div className={styles.rectangleParent}>
+            <div className={styles.rectangleGroup}>
                 <input
                     className={styles.frameChild}
                     type="text"
@@ -57,7 +63,7 @@ const SignUp = () => {
                 />
             </div>
 
-            <div className={styles.rectangleContainer}>
+            <div className={styles.rectangleGroup}>
                 <input
                     className={styles.frameChild}
                     type="password"
@@ -69,8 +75,6 @@ const SignUp = () => {
                 />
             </div>
 
-            <div className={styles.signUpChild} onClick={handleSubmit} />
-            <b className={styles.signUp1}>Sign up</b>
 
             <img
                 className={styles.arrowLeftSolid1Icon}
@@ -79,13 +83,10 @@ const SignUp = () => {
                 onClick={() => window.history.back()}
             />
 
-            <img
-                className={styles.undrawAccessAccountAydp1Icon}
-                alt="Illustration"
-                src="undraw_access-account_aydp.svg"
-            />
 
             {message && <p className={styles.message}>{message}</p>}
+
+            <button className={styles.signUpButton} onClick={handleSubmit}>Sign Up</button>
         </div>
     );
 };

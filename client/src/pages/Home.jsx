@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {BurgerMenu} from "./BurgerMenu";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -11,17 +12,12 @@ const Home = () => {
         }
     }, [navigate]);
 
-    const handleLogOut = () => { //Botón de logOut
-        localStorage.removeItem('user')
-        navigate('/login')
-    }
-
     return(
         <div>
+            <BurgerMenu/>
             <h1>
-                hola entraste a la pagina home
+                Brain Battle
             </h1>
-            <button onClick={handleLogOut}>LogOut</button>
         </div>
     )
 
