@@ -40,8 +40,9 @@ app.post('/api/register',async (req, res) => {
 });
 
 // Obtener lista de usuarios
-app.get('/api/users', async (req, res) => {
+app.get('/api/users', validateUser, async (req, res) => {
     try {
+        console.log(req.users)
         const query = 'SELECT id, username, email FROM users';
         const result = await db.query(query);
         res.json(result.rows);
@@ -80,15 +81,9 @@ app.post('/api/login', async (req, res) => {
             })
 
             return res
-                .cookie('access_token', token, {
-                    httpOnly: true, //la cookie solo pued eacceder con el servidor
-                    secure: process.env.NODE_ENV !== 'production', //hace que la cookie solo se pueda acceder en https
-                    sameSite: 'strict', //la cookie solo pued acceder desde el mismo dominio
-                    maxAge: 60 * 60 * 1000 // la cookie dura 1 hora
-                })
                 .json({
                     message: 'Logueado correctamente',
-                    user: { id: user.id, email: user.email, username: user.username},
+                    user: { id: user.id, email: user.email, username: user.username, is_admin: user.is_admin},
                     token: token //le paso el token generado
                 });//Envio al front el mensaje de login correcto y todos los datos necesarios
         } else {
