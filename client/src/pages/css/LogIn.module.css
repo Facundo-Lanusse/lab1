@@ -98,3 +98,18 @@ body, html {
 .logInButton:hover {
     background-color: #139ba0;
 }
+
+.buttonForDesplegableMenu {
+    margin-top: 3px;
+    width: 100%;
+    max-width: 150px;
+    height: 25px;
+    border-radius: 15px;
+    background-color: #03a8f5;
+    color: white;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
