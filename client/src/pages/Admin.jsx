@@ -1,16 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 function Admin() {
+    const navigate = useNavigate();
+
+    useEffect(() => { //Igual a las líneas de home
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && !user.is_admin) {
+            navigate('/home');
+        }
+        else {
+            fetchUsers();
+        }
+    }, [navigate]);
+
     const [users, setUsers] = useState([]);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
+
 
     const fetchUsers = async () => {
         try {
-            const res = await axios.get("http://localhost:3000/api/users");
+            const res = await axios.get("http://localhost:3000/api/users",
+                {
+                    headers: {
+                        authorization: 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
             setUsers(res.data);
         } catch (error) {
             console.error("Error al cargar usuarios", error);

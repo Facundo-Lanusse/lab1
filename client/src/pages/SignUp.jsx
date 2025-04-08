@@ -24,6 +24,7 @@ const SignUp = () => {
         try {
             const res = await axios.post("http://localhost:3000/api/register", form);
             setMessage(`Usuario ${res.data.username} registrado con éxito.`);
+            navigate('/login')
         } catch (error) {
             setMessage(error.response?.data?.error || "Error en el registro");
         }
