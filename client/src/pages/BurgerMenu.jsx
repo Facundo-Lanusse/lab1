@@ -3,7 +3,9 @@ import Hamburger from 'hamburger-react'
 import { useNavigate } from 'react-router-dom';
 import styles from './css/LogIn.module.css';
 
+
 export const BurgerMenu = () => {
+
 
     const navigate = useNavigate();
     const [isOpen, setOpen] = useState(false);
@@ -14,6 +16,13 @@ export const BurgerMenu = () => {
     }
     const handleClickOnEditProfile = () => {
         navigate('profile')
+    }
+    const user = JSON.parse(localStorage.getItem('user'))
+
+    const userIsAdmin = user.is_admin;
+
+    function handleClickOnAdminButton(){//solo si es admin aparece el boton
+        navigate('/uploadQuestion')
     }
 
     return (
@@ -26,7 +35,9 @@ export const BurgerMenu = () => {
             {isOpen && <div>
                 <div><button className={styles.buttonForDesplegableMenu} onClick={handleClickOnEditProfile}>Edit profile</button></div>
                 <div><button onClick={handleLogOut} className={styles.buttonForDesplegableMenu}>Log out</button></div>
+                <div>{userIsAdmin && <button onClick={handleClickOnAdminButton} className={styles.buttonForDesplegableMenu}>Upload Question</button>}</div>
             </div>}
         </div>
+
     )
 }
