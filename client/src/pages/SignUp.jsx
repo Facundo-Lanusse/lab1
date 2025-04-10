@@ -28,7 +28,7 @@ const SignUp = () => {
         } catch (error) {
             setMessage(error.response?.data?.error || "Error en el registro");
         }
-    }, [form]);
+    }, [form, navigate]);
 
     return (
         <div className={styles.signUp}>
