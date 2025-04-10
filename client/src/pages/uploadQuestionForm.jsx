@@ -17,6 +17,7 @@ function UploadQuestionForm(){
     });//Seteo el value inicial como vacio
 
     const [message, setMessage] = useState("");
+    const [message1, setMessage1] = useState("");
 
     useEffect(() => { //Igual a las líneas de admin
         const user = JSON.parse(localStorage.getItem('user'));
@@ -30,10 +31,10 @@ function UploadQuestionForm(){
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleQuestionForm = useCallback(async () => {
+    const handleQuestionForm = useCallback(async () => {//Manejo la pregunta
         try {
-            const res = await axios.post("http://localhost:3000/api/uploadQuestion", form);
-            setMessage(`Pregunta ${res.data.questionText} registrada con éxito.`);
+            await axios.post("http://localhost:3000/api/uploadQuestion", form);
+            setMessage(`Pregunta registrada con éxito`);
         } catch (error) {
             setMessage(error.response?.data?.error || "Error en el registro de pregunta");
         }
@@ -43,10 +44,10 @@ function UploadQuestionForm(){
 
     const handleAnswersForm = useCallback(async () => {//Manejo las respuestas
         try {
-            const res = await axios.post("http://localhost:3000/api/uploadAnswers", form);
-            setMessage(`Pregunta ${res.data.answerCorrect} ${res.data.answerFalse1} ${res.data.answerFalse2} ${res.data.answerFalse3} registrada con éxito.`);
+            await axios.post("http://localhost:3000/api/uploadAnswers", form);
+            setMessage1( `Respuestas registradas con éxito. `);
         } catch (error) {
-            setMessage(error.response?.data?.error || "Error en el registro de categoria");
+            setMessage1(error.response?.data?.error || "Error en el registro de respuesta");
         }
 
     }, [form]);
@@ -138,7 +139,10 @@ function UploadQuestionForm(){
             />
 
 
-            {message && <p className={styles.message}>{message}</p>}
+            {
+                message1 && message && <p className={styles.message}> {message + ' y ' + message1} </p>
+
+            }
 
             <button className={styles.signUpButton} onClick={handleForm}>Upload</button>
         </div>
