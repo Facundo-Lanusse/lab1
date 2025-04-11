@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 //import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
@@ -6,6 +6,7 @@ import styles from "./css/GamePlay.module.css";
 const Play = () =>{
 
     const [MainQuestion, setMainQuestion] = useState([]);
+    const [questionId, setQuestionId] = useState();
     const [answers, setAnswers] = useState([]);
     const [message, setMessage] = useState('');
 
@@ -21,6 +22,7 @@ const Play = () =>{
             const res = await axios.get("http://localhost:3000/api/PlayQuestions")
             console.log()
             setMainQuestion(res.data.question.questiontext)
+            setQuestionId(res.data.question.question_id)
             const shuffledAnswers = res.data.answers.sort(() => Math.random() - 0.5);
             setAnswers(shuffledAnswers);
             setMessage('');
@@ -31,12 +33,28 @@ const Play = () =>{
 
     }
 
+    const handleQuestionCheck = useCallback(async () => {
+        const res = await axios.post("http://localhost:3000/api/CheckQuestion", {questionId: questionId})
+        console.log(res.data.message)
+        console.log(res.data.id)
+    }, [questionId]);
+
+    const handleQuestionUncheck = useCallback(async  () =>{
+        await axios.post("http://localhost:3000/api/UncheckQuestion")
+    }, [])
 
 
     const isCorrect = (answerIsCorrect) => {
-        if(answerIsCorrect.is_correct){setMessage('Es correcta')}
-        else {setMessage('Mal')}
+        if(answerIsCorrect.is_correct){
+            handleQuestionCheck()
+            setMessage('Es correcta')
+        }
+        else {
+            setMessage('Mal')
+            handleQuestionUncheck()
+        }
     }
+
 
 
     //Todo:Que sume puntos del ranking al usuario
