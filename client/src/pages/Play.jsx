@@ -1,9 +1,12 @@
 import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
-//import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
 
+
 const Play = () =>{
+
+    const navegate = useNavigate();
 
     const [MainQuestion, setMainQuestion] = useState([]);
     const [questionId, setQuestionId] = useState();
@@ -48,17 +51,19 @@ const Play = () =>{
         if(answerIsCorrect.is_correct){
             handleQuestionCheck()
             setMessage('Es correcta')
+            FetchQuestionAndAnswers();
         }
         else {
             setMessage('Mal')
             handleQuestionUncheck()
+            alert('Mal')
+            navegate('/home')
         }
     }
 
 
 
     //Todo:Que sume puntos del ranking al usuario
-    //Todo:Chequear que se eligió la respuesta correcta y pasar a la siguiente PARCIAL
     //Todo:Si pifió la respuesta que corte el juego con un mensaje PARCIAL
 
     return(
