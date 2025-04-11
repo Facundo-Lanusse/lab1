@@ -100,30 +100,4 @@ body, html {
     background-color: #139ba0;
 }
 
-.buttonForDesplegableMenu {
-    margin-top: 3px;
-    width: 100%;
-    max-width: 150px;
-    height: 25px;
-    border-radius: 15px;
-    background-color: #03a8f5;
-    color: white;
-    font-size: 15px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 
-}
-
-.titleDePractica{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #fff;
-    padding-top: 25vh;
-    font-family: Inter, sans-serif;
-    color: #000;
-    text-align: center;
-    font-size: 30px;
-    position: relative;
-}

@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {BurgerMenu} from "./BurgerMenu";
-import styles from "./css/LogIn.module.css";
+import styles from "./css/burgerMenu.module.css";
+
 
 const Home = () => {
     const navigate = useNavigate();
