@@ -5,6 +5,8 @@ import Admin from "./pages/Admin";
 import Login from "./pages/LogIn";
 import Welcome from "./pages/Welcome";
 import Home from "./pages/Home";
+import UploadQuestionForm from "./pages/UploadQuestionForm";
+import PlayGame from "./pages/Play";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
             <Route path="/signUp" element={<SignUp />} />
             <Route path="/logIn" element={<Login />} />
             <Route path="/Home" element={<Home />} />
+            <Route path="/UploadQuestion" element={<UploadQuestionForm />} />
+            <Route path="/Play" element={<PlayGame />} />
         </Routes>
       </Router>
   );

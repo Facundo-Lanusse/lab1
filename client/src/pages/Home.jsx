@@ -1,9 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {BurgerMenu} from "./BurgerMenu";
+import styles from "./css/burgerMenu.module.css";
+
 
 const Home = () => {
     const navigate = useNavigate();
+
 
     useEffect(() => { //cuando entre a esta pagina pregunte lo siguiente
         const user = JSON.parse(localStorage.getItem('user')); //Si está logueado el user todo bien
@@ -12,13 +15,18 @@ const Home = () => {
         }
     }, [navigate]);
 
+    const userName = JSON.parse(localStorage.getItem('user')).username
+
+
     return(
         <div>
-            <BurgerMenu/>
             <h1>
                 Brain Battle
             </h1>
+            <BurgerMenu/>
+            <h1  className={styles.titleDePractica} >Welcome {userName}</h1>
         </div>
+
     )
 
 };
