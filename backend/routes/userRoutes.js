@@ -14,7 +14,7 @@ router.get('/users', validateUser, async (req, res) => {
     }
 });
 
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', validateUser, async (req, res) => {
     const { id } = req.params;
     try {
         const query = 'DELETE FROM users WHERE user_id = $1 RETURNING *';
