@@ -7,14 +7,12 @@ const validateUser = require('../middleware/authenticationMiddleware');
 router.get('/PlayQuestions', async(req, res) =>{
 
     try{
-        let allQuestionAnswered = false;
 
         const randomQuestionQuery = 'SELECT * FROM question where alreadypicked = false ORDER BY RANDOM() LIMIT 1';
         const queryQuestionResult = await db.query(randomQuestionQuery)
 
-        if(queryQuestionResult.rows[0] === undefined) {
-            allQuestionAnswered =  true;
-            res.json({allQuestion: allQuestionAnswered})
+        if(!queryQuestionResult.rows[0]) {
+            res.json({allQuestionChecked: true, message: 'Pasa el if'})
         }
         else{
             const questionId = queryQuestionResult.rows[0].question_id;
@@ -25,7 +23,7 @@ router.get('/PlayQuestions', async(req, res) =>{
             res.json({
                     question: queryQuestionResult.rows[0],
                     answers: queryAnswerResult.rows,
-                    allQuestion: allQuestionAnswered
+                    allQuestionChecked: false
                 }
             );
         }
