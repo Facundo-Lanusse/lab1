@@ -1,7 +1,7 @@
 import {useState} from "react";
 import Hamburger from 'hamburger-react'
 import { useNavigate } from 'react-router-dom';
-import styles from './css/burgerMenu.module.css';
+import styles from './css/BurgerMenu.module.css';
 
 
 export const BurgerMenu = () => {

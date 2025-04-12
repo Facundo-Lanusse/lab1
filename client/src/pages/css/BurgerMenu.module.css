@@ -12,16 +12,3 @@
     transition: background-color 0.3s ease;
 
 }
-
-.titleDePractica{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #fff;
-    padding-top: 25vh;
-    font-family: Inter, sans-serif;
-    color: #000;
-    text-align: center;
-    font-size: 30px;
-    position: relative;
-}

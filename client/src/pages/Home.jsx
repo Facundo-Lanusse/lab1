@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {BurgerMenu} from "./BurgerMenu";
+
 import styles from "./css/burgerMenu.module.css";
 import styles2 from "./css/GamePlay.module.css";
+
 
 //Faltaria hacerle un style a este view
 const Home = () => {
@@ -25,6 +27,7 @@ const Home = () => {
                 Brain Battle
             </h1>
             <BurgerMenu/>
+
             <h1  className={styles.titleDePractica} >Welcome {userName}</h1>
             <button className={styles2.buttonAnswers} onClick={() => navigate('/play')}>PLAY</button>
         </div>
