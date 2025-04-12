@@ -7,23 +7,29 @@ const validateUser = require('../middleware/authenticationMiddleware');
 router.get('/PlayQuestions', async(req, res) =>{
 
     try{
+        let allQuestionAnswered = false;
+
         const randomQuestionQuery = 'SELECT * FROM question where alreadypicked = false ORDER BY RANDOM() LIMIT 1';
         const queryQuestionResult = await db.query(randomQuestionQuery)
 
-        if(queryQuestionResult.rows[0] < 1 ) {
-            return res.status(404).json({ error: 'Fallo la consulta de pregunta' });}
+        if(queryQuestionResult.rows[0] === undefined) {
+            allQuestionAnswered =  true;
+            res.json({allQuestion: allQuestionAnswered})
+        }
+        else{
+            const questionId = queryQuestionResult.rows[0].question_id;
 
-        const questionId = queryQuestionResult.rows[0].question_id;
+            const queryForAnswers = 'SELECT * FROM answer where question_id = $1'
+            const queryAnswerResult = await db.query(queryForAnswers,[questionId])
 
-        const queryForAnswers = 'SELECT * FROM answer where question_id = $1'
-        const queryAnswerResult = await db.query(queryForAnswers,[questionId])
+            res.json({
+                    question: queryQuestionResult.rows[0],
+                    answers: queryAnswerResult.rows,
+                    allQuestion: allQuestionAnswered
+                }
+            );
+        }
 
-
-
-        res.json({
-            question: queryQuestionResult.rows[0],
-            answers: queryAnswerResult.rows}
-        );
     }
     catch (error){
         console.error('Error al cargar:', error);
