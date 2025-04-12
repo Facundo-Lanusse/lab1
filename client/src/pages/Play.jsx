@@ -4,67 +4,74 @@ import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
 
 
-const Play = () =>{
+const Play = () => {
+    const navigate = useNavigate();
 
-    const navegate = useNavigate();
-
-    const [MainQuestion, setMainQuestion] = useState([]);
+    const [MainQuestion, setMainQuestion] = useState('');
     const [questionId, setQuestionId] = useState();
     const [answers, setAnswers] = useState([]);
     const [message, setMessage] = useState('');
 
 
+    const FetchQuestionAndAnswers = useCallback(async () => {
+        try {
+            const res = await axios.get("http://localhost:3000/api/PlayQuestions");
+
+           if(res.data.allQuestionChecked){//Si ya se respondieron todas, vuelve al home y las deschequea
+               handleQuestionUncheck()
+               alert('Todas las preguntas respondidas bien')
+               navigate('/home')
+           }
+
+           else{
+               setMainQuestion(res.data.question.questiontext);
+               setQuestionId(res.data.question.question_id);
+
+               const shuffledAnswers = res.data.answers.sort(() => Math.random() - 0.5);
+               setAnswers(shuffledAnswers);
+
+               setMessage('');
+           }
+
+        } catch (error) {
+            console.log('Fallo la llamada a la consulta', error);
+        }
+    }, [navigate]);
+
     useEffect(() => {
-        FetchQuestionAndAnswers()
-    },[]);
+        FetchQuestionAndAnswers();
+    }, [FetchQuestionAndAnswers]);
 
-
-    const FetchQuestionAndAnswers = async () => {
-
-        try{
-            const res = await axios.get("http://localhost:3000/api/PlayQuestions")
-            console.log()
-            setMainQuestion(res.data.question.questiontext)
-            setQuestionId(res.data.question.question_id)
-            const shuffledAnswers = res.data.answers.sort(() => Math.random() - 0.5);
-            setAnswers(shuffledAnswers);
-            setMessage('');
-            }
-            catch (error){
-            console.log('Fallo la llamada a la consulta', error)
-            }
-
-    }
-
+    //Marco como respondida las preguntas
     const handleQuestionCheck = useCallback(async () => {
-        const res = await axios.post("http://localhost:3000/api/CheckQuestion", {questionId: questionId})
-        console.log(res.data.message)
-        console.log(res.data.id)
+        const res = await axios.post("http://localhost:3000/api/CheckQuestion", {
+            questionId: questionId,
+        });
+        console.log(res.data.message);
+        console.log(res.data.id);
     }, [questionId]);
 
-    const handleQuestionUncheck = useCallback(async  () =>{
-        await axios.post("http://localhost:3000/api/UncheckQuestion")
-    }, [])
-
+    //Desmarco todas las preguntas para poder volver a jugar
+    const handleQuestionUncheck = useCallback(async () => {
+        await axios.post("http://localhost:3000/api/UncheckQuestion");
+        navigate('/home');
+    }, [navigate]);
 
     const isCorrect = (answerIsCorrect) => {
-        if(answerIsCorrect.is_correct){
-            handleQuestionCheck()
-            setMessage('Es correcta')
+        if (answerIsCorrect.is_correct) {
+            handleQuestionCheck();
+            setMessage('Es correcta');
             FetchQuestionAndAnswers();
+        } else {
+            setMessage('Mal');
+            alert('Mal');
+            handleQuestionUncheck();
         }
-        else {
-            setMessage('Mal')
-            handleQuestionUncheck()
-            alert('Mal')
-            navegate('/home')
-        }
-    }
-
+    };
 
 
     //Todo:Que sume puntos del ranking al usuario
-    //Todo:Si pifió la respuesta que corte el juego con un mensaje PARCIAL
+
 
     return(
         <div>
