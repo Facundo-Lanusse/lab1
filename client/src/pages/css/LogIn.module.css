@@ -81,6 +81,7 @@ body, html {
 }
 
 .logInButton {
+    display: block;
     margin-top: 32px;
     width: 100%;
     max-width: 333px;
