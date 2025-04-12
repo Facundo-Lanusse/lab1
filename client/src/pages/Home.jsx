@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {BurgerMenu} from "./BurgerMenu";
-import styles from "./css/burgerMenu.module.css";
+import styles from "./css/Home.module.css";
 
 
 const Home = () => {
@@ -24,7 +24,7 @@ const Home = () => {
                 Brain Battle
             </h1>
             <BurgerMenu/>
-            <h1  className={styles.titleDePractica} >Welcome {userName}</h1>
+            <h1>Welcome {userName}</h1>
         </div>
 
     )
