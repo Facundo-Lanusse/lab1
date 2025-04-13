@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
 
+//Todo:Que sume puntos del ranking al usuario
 
 const Play = () => {
     const navigate = useNavigate();
@@ -70,7 +71,6 @@ const Play = () => {
     };
 
 
-    //Todo:Que sume puntos del ranking al usuario
 
 
     return(
