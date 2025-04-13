@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {BurgerMenu} from "./BurgerMenu";
-
-import styles from "./css/burgerMenu.module.css";
 import styles2 from "./css/GamePlay.module.css";
 
 
@@ -28,7 +26,7 @@ const Home = () => {
             </h1>
             <BurgerMenu/>
 
-            <h1  className={styles.titleDePractica} >Welcome {userName}</h1>
+            <h1  className={styles2.titleDePrueba} >Welcome {userName}</h1>
             <button className={styles2.buttonAnswers} onClick={() => navigate('/play')}>PLAY</button>
         </div>
 
