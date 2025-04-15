@@ -5,7 +5,7 @@ import styles from "./css/SignUp.module.css";
 
 function UploadQuestionForm(){
 
-    const navigate = useNavigate();
+    const navegate = useNavigate();
 
     const [form, setForm] = useState({  //Lo que va a recibir el formulario para cargar los datos
         categoryName: "",
@@ -22,10 +22,10 @@ function UploadQuestionForm(){
     useEffect(() => { //Igual a las líneas de admin
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && !user.is_admin) {
-            navigate('/home');
+            navegate('/home');
         }
 
-    }, [navigate]);
+    }, [navegate]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -137,7 +137,7 @@ function UploadQuestionForm(){
                 className={styles.arrowLeftSolid1Icon}
                 alt="Back"
                 src="arrow-left-solid.svg"
-                onClick={() => window.history.back()}
+                onClick={() => navegate('/home')}
             />
 
 
