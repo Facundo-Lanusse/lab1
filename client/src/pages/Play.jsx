@@ -58,11 +58,11 @@ const Play = () => {
         navigate('/home');
     }, [navigate]);
 
-    const isCorrect = (answerIsCorrect) => {
+    const isCorrect = async (answerIsCorrect) => {
         if (answerIsCorrect.is_correct) {
             handleQuestionCheck();
             setMessage('Es correcta');
-            FetchQuestionAndAnswers();
+            await FetchQuestionAndAnswers();
         } else {
             setMessage('Mal');
             alert('Mal');
