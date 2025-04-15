@@ -68,3 +68,12 @@
     background-color: #f44336;
     color: white;
 }
+
+.arrowLeftSolid1Icon {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 28px;
+    height: auto;
+    cursor: pointer;
+}

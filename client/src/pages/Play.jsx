@@ -80,8 +80,19 @@ const Play = () => {
         }
     };
 
+
+    async function handleGoBackClick ()  {
+        await handleQuestionUncheck()
+        navigate('/home');
+    }
     return (
         <div>
+            <img
+                className={styles.arrowLeftSolid1Icon}
+                alt="Back"
+                src="arrow-left-solid.svg"
+                onClick={() => handleGoBackClick()}
+            />
             <p className={styles.score}>Score: {score}</p>
             <div>
                 <h1 className={styles.titleDePrueba}>{MainQuestion}</h1>
