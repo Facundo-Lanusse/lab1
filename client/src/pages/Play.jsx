@@ -12,6 +12,7 @@ const Play = () => {
     const [questionId, setQuestionId] = useState();
     const [answers, setAnswers] = useState([]);
     const [message, setMessage] = useState('');
+    const [score, setScore] = useState(0);
 
 
     const FetchQuestionAndAnswers = useCallback(async () => {
@@ -27,6 +28,7 @@ const Play = () => {
            else{
                setMainQuestion(res.data.question.questiontext);
                setQuestionId(res.data.question.question_id);
+
 
                const shuffledAnswers = res.data.answers.sort(() => Math.random() - 0.5);
                setAnswers(shuffledAnswers);
@@ -60,9 +62,12 @@ const Play = () => {
 
     const isCorrect = async (answerIsCorrect) => {
         if (answerIsCorrect.is_correct) {
-            handleQuestionCheck();
             setMessage('Es correcta');
-            await FetchQuestionAndAnswers();
+            setScore(score + 1);
+            setTimeout(async () => {
+                handleQuestionCheck();
+                await FetchQuestionAndAnswers();
+            }, 1000)
         } else {
             setMessage('Mal');
             alert('Mal');
@@ -75,6 +80,8 @@ const Play = () => {
 
     return(
         <div>
+            <p className={styles.score}>Score: {score}</p>
+            <div>
             <h1 className={styles.titleDePrueba}>{MainQuestion}</h1>
 
             {answers.map((ans, index) => (//Mapa de las respuestas, lo hace para cada elemento del map
@@ -83,6 +90,7 @@ const Play = () => {
                 </button>
             ))}
             {message && <p className={styles.message}>{message}</p>}
+            </div>
         </div>
     )
 }
