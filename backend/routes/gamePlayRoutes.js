@@ -64,6 +64,22 @@ router.post('/UncheckQuestion', async (req, res) =>{
 
 })
 
+router.get('/FetchCategory', async (req, res) =>{
+    const {categoryId} = req.body;
+
+    try {
+        const categoryQuery = 'SELECT name FROM category Where  WHERE category_id = $1';
+        const categoryQueryResult = await db.query(categoryQuery, [categoryId])
+        res.json({
+            category: categoryQueryResult.rows[0]
+        })
+    }
+    catch (error){
+        console.error('Error al traer categoria', error);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+})
+
 
 
 module.exports = router;
