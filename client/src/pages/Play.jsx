@@ -11,8 +11,10 @@ const Play = () => {
     const [MainQuestion, setMainQuestion] = useState('');
     const [questionId, setQuestionId] = useState();
     const [answers, setAnswers] = useState([]);
-    const [message, setMessage] = useState('');
     const [score, setScore] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+    const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+
 
 
     const FetchQuestionAndAnswers = useCallback(async () => {
@@ -28,12 +30,9 @@ const Play = () => {
            else{
                setMainQuestion(res.data.question.questiontext);
                setQuestionId(res.data.question.question_id);
-
-
                const shuffledAnswers = res.data.answers.sort(() => Math.random() - 0.5);
                setAnswers(shuffledAnswers);
 
-               setMessage('');
            }
 
         } catch (error) {
@@ -60,38 +59,53 @@ const Play = () => {
         navigate('/home');
     }, [navigate]);
 
-    const isCorrect = async (answerIsCorrect) => {
-        if (answerIsCorrect.is_correct) {
-            setMessage('Es correcta');
+    const isCorrect = async (answer, index) => {
+        setSelectedIndex(index);
+        setIsAnswerCorrect(answer.is_correct);
+
+        if (answer.is_correct) {
             setScore(score + 1);
             setTimeout(async () => {
+                setSelectedIndex(null);
+                setIsAnswerCorrect(null);
                 handleQuestionCheck();
                 await FetchQuestionAndAnswers();
-            }, 1000)
+            }, 1000);
         } else {
-            setMessage('Mal');
-            alert('Mal');
-            handleQuestionUncheck();
+            setTimeout(() => {
+                setSelectedIndex(null);
+                setIsAnswerCorrect(null);
+                handleQuestionUncheck();
+            }, 1000);
         }
     };
 
-
-
-
-    return(
+    return (
         <div>
             <p className={styles.score}>Score: {score}</p>
             <div>
-            <h1 className={styles.titleDePrueba}>{MainQuestion}</h1>
+                <h1 className={styles.titleDePrueba}>{MainQuestion}</h1>
 
-            {answers.map((ans, index) => (//Mapa de las respuestas, lo hace para cada elemento del map
-                <button className={styles.buttonAnswers} key={index} onClick={() => isCorrect(ans)}>
-                    {ans.text}
-                </button>
-            ))}
-            {message && <p className={styles.message}>{message}</p>}
+                {answers.map((ans, index) => {
+                    let buttonClass = styles.buttonAnswers;
+
+                    if (selectedIndex === index) {
+                        buttonClass += ans.is_correct ? ` ${styles.correct}` : ` ${styles.incorrect}`;
+                    }
+
+                    return (
+                        <button
+                            key={index}
+                            className={buttonClass}
+                            onClick={() => isCorrect(ans, index)}
+                            disabled={selectedIndex !== null}
+                        >
+                            {ans.text}
+                        </button>
+                    );
+                })}
             </div>
         </div>
-    )
-}
+    );
+};
 export default Play;
