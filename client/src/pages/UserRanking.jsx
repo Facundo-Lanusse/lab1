@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import styles from "./css/GamePlay.module.css";
+
 
 function UserRanking() {
     const navigate = useNavigate();
@@ -33,15 +35,21 @@ function UserRanking() {
         }
     };
 
-
     return (
         <div>
-            <h2>Ranking de Usuarios</h2>
-            <ul>
+            <div><img
+                className={styles.arrowLeftSolid1Icon}
+                alt="Back"
+                src="arrow-left-solid.svg"
+                onClick={() => navigate('/home')}
+            /></div>
+
+            <h2 className={styles.titleDePrueba}>Ranking de Usuarios</h2>
+            <ul >
                 {users.map((user) => (
-                    <li key={user.id}>
-                        {user.username} ({user.rank_points})
-                    </li>
+                    <button className = {styles.buttonAnswers} key={user.id}>
+                        {user.username} : ({user.rank_points})
+                    </button>
                 ))}
             </ul>
         </div>
