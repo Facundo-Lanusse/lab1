@@ -7,6 +7,7 @@ import Welcome from "./pages/Welcome";
 import Home from "./pages/Home";
 import UploadQuestionForm from "./pages/UploadQuestionForm";
 import PlayGame from "./pages/Play";
+import Ranking from "./pages/UserRanking";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/Home" element={<Home />} />
             <Route path="/UploadQuestion" element={<UploadQuestionForm />} />
             <Route path="/Play" element={<PlayGame />} />
+            <Route path="/Ranking" element={<Ranking />} />
         </Routes>
       </Router>
   );

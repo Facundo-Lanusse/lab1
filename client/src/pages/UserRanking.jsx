@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
-function Admin() {
+function UserRanking() {
     const navigate = useNavigate();
 
     useEffect(() => { //Igual a las líneas de home
         const user = JSON.parse(localStorage.getItem('user'));
-        if (!user || !user.is_admin) {
+        if (!user) {
             navigate('/home');
         }
         else {
@@ -33,23 +33,14 @@ function Admin() {
         }
     };
 
-    const deleteUser = async (id) => {
-        try {
-            await axios.delete(`http://localhost:3000/api/users/${id}`);
-            setUsers(users.filter((user) => user.id !== id));
-        } catch (error) {
-            console.error("Error al eliminar usuario", error);
-        }
-    };
 
     return (
         <div>
-            <h2>Administración de Usuarios</h2>
+            <h2>Ranking de Usuarios</h2>
             <ul>
                 {users.map((user) => (
                     <li key={user.id}>
-                        {user.username} ({user.email})
-                        <button onClick={() => deleteUser(user.id)}>Eliminar</button>
+                        {user.username} ({user.rank_points})
                     </li>
                 ))}
             </ul>
@@ -57,4 +48,4 @@ function Admin() {
     );
 }
 
-export default Admin;
+export default UserRanking;

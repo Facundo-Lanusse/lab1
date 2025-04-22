@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
 
-//Todo:Que sume puntos del ranking al usuario
 
 const Play = () => {
     const navigate = useNavigate();
@@ -68,17 +67,24 @@ const Play = () => {
             setTimeout(async () => {
                 setSelectedIndex(null);
                 setIsAnswerCorrect(null);
-                handleQuestionCheck();
+                await handleQuestionCheck();
                 await FetchQuestionAndAnswers();
             }, 1000);
         } else {
-            setTimeout(() => {
+            setTimeout(async () => {
                 setSelectedIndex(null);
                 setIsAnswerCorrect(null);
-                handleQuestionUncheck();
+                await handleQuestionUncheck();
+                await handleScoreUpload();
             }, 1000);
         }
     };
+
+    async function handleScoreUpload(){
+        const userId = JSON.parse(localStorage.getItem('user')).id
+        const scoreMessage = await axios.post("http://localhost:3000/api/uploadUserScore", {score, userId});
+        console.log(scoreMessage.data.message);
+    }
 
 
     async function handleGoBackClick ()  {
