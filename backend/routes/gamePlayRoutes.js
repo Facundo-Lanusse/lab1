@@ -7,7 +7,6 @@ const validateUser = require('../middleware/authenticationMiddleware');
 router.get('/PlayQuestions', async(req, res) =>{
 
     try{
-
         const randomQuestionQuery = 'SELECT * FROM question where alreadypicked = false ORDER BY RANDOM() LIMIT 1';
         const queryQuestionResult = await db.query(randomQuestionQuery)
 
@@ -68,7 +67,7 @@ router.get('/FetchCategory', async (req, res) =>{
     const {categoryId} = req.body;
 
     try {
-        const categoryQuery = 'SELECT name FROM category Where  WHERE category_id = $1';
+        const categoryQuery = 'SELECT name FROM category WHERE category_id = $1';
         const categoryQueryResult = await db.query(categoryQuery, [categoryId])
         res.json({
             category: categoryQueryResult.rows[0]
@@ -78,6 +77,22 @@ router.get('/FetchCategory', async (req, res) =>{
         console.error('Error al traer categoria', error);
         res.status(500).json({ error: 'Error en el servidor' });
     }
+})
+
+router.post('/uploadUserScore', async(req, res) =>{
+    const {score, userId} = req.body;
+
+    try {
+        const uploadUserScoreQuery = 'update users set rank_points = rank_points + $1 where user_id = $2'
+        await db.query(uploadUserScoreQuery, [score, userId])
+
+        res.json({message: 'Se actualizó bien el score: '+score})
+    }
+    catch (error){
+        console.error('Error al sumar score', error);
+    }
+
+
 })
 
 
