@@ -40,6 +40,10 @@ const Play = () => {
     }, [navigate]);
 
     useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) { //Si no lo está lo mando a su casa
+            navigate('/login');
+        }
         FetchQuestionAndAnswers();
     }, [FetchQuestionAndAnswers]);
 
@@ -65,17 +69,18 @@ const Play = () => {
         if (answer.is_correct) {
             setScore(score + 1);
             setTimeout(async () => {
-                setSelectedIndex(null);
-                setIsAnswerCorrect(null);
-                await handleQuestionCheck();
-                await FetchQuestionAndAnswers();
+                setSelectedIndex(null); //Resteo el index para volver a usarlo
+                setIsAnswerCorrect(null);//Resteo el buleano para volver a usarlo
+                await handleQuestionCheck(); //Marco la pregunta como ya respondida
+                await FetchQuestionAndAnswers();//traigo la siguiente pregunta
             }, 1000);
         } else {
             setTimeout(async () => {
                 setSelectedIndex(null);
                 setIsAnswerCorrect(null);
-                await handleQuestionUncheck();
-                await handleScoreUpload();
+                await handleQuestionUncheck();//Desmarco a todas las preguntas
+                await handleScoreUpload();//Agrego el score al ranking del usuario
+
             }, 1000);
         }
     };
@@ -84,6 +89,7 @@ const Play = () => {
         const userId = JSON.parse(localStorage.getItem('user')).id
         const scoreMessage = await axios.post("http://localhost:3000/api/uploadUserScore", {score, userId});
         console.log(scoreMessage.data.message);
+        await handleSoloHistoryUpload();
     }
 
 
@@ -91,6 +97,13 @@ const Play = () => {
         await handleQuestionUncheck()
         navigate('/home');
     }
+
+    async function handleSoloHistoryUpload() {
+        const userId = JSON.parse(localStorage.getItem('user')).id
+        await axios.post("http://localhost:3000/api/SetSoloHistory", {score, userId});
+        console.log('Solo history uploaded', userId);
+    }
+
     return (
         <div>
             <img

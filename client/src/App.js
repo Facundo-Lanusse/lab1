@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import UploadQuestionForm from "./pages/UploadQuestionForm";
 import PlayGame from "./pages/Play";
 import Ranking from "./pages/UserRanking";
+import SoloHistory from "./pages/SoloHistory";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/UploadQuestion" element={<UploadQuestionForm />} />
             <Route path="/Play" element={<PlayGame />} />
             <Route path="/Ranking" element={<Ranking />} />
+            <Route path="/SoloHistory" element={<SoloHistory />} />
         </Routes>
       </Router>
   );

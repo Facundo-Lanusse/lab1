@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 
 // Rutas
 app.use('/api', require('./routes/authRoutes'));
+app.use('/api', require('./routes/historyRoutes'));
 app.use('/api', require('./routes/userRoutes'));
 app.use('/api', require('./routes/questionRoutes'));
 app.use('/api', require('./routes/gamePlayRoutes'));
