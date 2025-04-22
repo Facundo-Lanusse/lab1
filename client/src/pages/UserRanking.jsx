@@ -43,7 +43,6 @@ function UserRanking() {
                 src="arrow-left-solid.svg"
                 onClick={() => navigate('/home')}
             /></div>
-
             <h2 className={styles.titleDePrueba}>Ranking de Usuarios</h2>
             <ul >
                 {users.map((user) => (
