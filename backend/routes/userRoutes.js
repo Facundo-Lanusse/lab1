@@ -5,7 +5,7 @@ const validateUser = require('../middleware/authenticationMiddleware');
 
 router.get('/users', validateUser, async (req, res) => {
     try {
-        const query = 'SELECT user_id, username, rank_points, email FROM users order by rank_points';
+        const query = 'SELECT user_id, username, rank_points, email FROM users order by rank_points desc';
         const result = await db.query(query);
         res.json(result.rows);
     } catch (error) {
