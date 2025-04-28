@@ -22,6 +22,8 @@ const SoloHistory = () => {
                 params: { userId }
             });
             setGames(res.data);
+            const sortedGames = games.sort((a, b) => new Date(b.game_date) - new Date(a.game_date));
+            setGames(sortedGames) //ordeno descendientemente
         } catch (error) {
             console.error("Error al cargar partidas:", error);
         }
@@ -44,7 +46,7 @@ const SoloHistory = () => {
     return (
         <div className={styles.historyContainer}>
             <img
-                className={styles.arrowLeftSolid1Icon}
+                className={styles.arrow}
                 alt="Back"
                 src="arrow-left-solid.svg"
                 onClick={() => navigate('/home')}
