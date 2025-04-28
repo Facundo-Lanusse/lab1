@@ -1,8 +1,8 @@
-/* Contenedor principal */
+
 .historyContainer {
     width: 100%;
     min-height: 100vh;
-    background-color: #16b3b9; /* Fondo vibrante */
+    background-color: #16b3b9;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -16,7 +16,7 @@
     position: relative;
 }
 
-/* Título principal */
+
 .historyTitle {
     font-size: 36px;
     font-weight: bold;
@@ -27,7 +27,7 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Contenedor de la lista de partidas */
+
 .gamesList {
     display: flex;
     flex-direction: column;
@@ -38,25 +38,25 @@
     padding: 0;
 }
 
-/* Estilo de cada tarjeta de partida */
+
 .gameCard {
-    background: rgba(255, 255, 255, 0.2); /* Fondo semi-transparente */
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 20px;
-    width: 100%;
+    width: 80%;
     text-align: center;
-    backdrop-filter: blur(10px); /* Efecto de desenfoque */
+    backdrop-filter: blur(10px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Efecto al pasar el ratón sobre la tarjeta */
+
 .gameCard:hover {
-    transform: translateY(-5px); /* Efecto de levitación */
+    transform: translateY(-5px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Estilo del texto dentro de cada tarjeta */
+
 .score, .date {
     font-size: 1.2rem;
     margin: 10px 0;
@@ -64,10 +64,20 @@
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-/* Mensaje cuando no hay partidas */
+
 .noGamesMessage {
     font-size: 1.5rem;
     font-weight: bold;
     color: #ff5252;
     text-align: center;
+}
+
+.arrow {
+    position: fixed;
+    z-index: 1000;
+    top: 20px;
+    left: 20px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
 }

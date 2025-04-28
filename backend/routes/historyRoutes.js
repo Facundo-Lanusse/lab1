@@ -20,7 +20,7 @@ router.post('/SetSoloHistory', async (req, res) => {
 router.get('/FetchSoloHistory', async (req, res) => {
     const { userId } = req.query;
     try {
-        const soloHistoryQuery = 'select score, game_date from solo_history where user_id = $1';
+        const soloHistoryQuery = 'select score, game_date from solo_history where user_id = $1 order by game_date desc limit 10';
         const result = await db.query(soloHistoryQuery, [userId]);
         res.json(result.rows);
     }
