@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
+import NavigationBar from "./NavigationBar";
 
 
 const Play = () => {
@@ -135,6 +136,7 @@ const Play = () => {
                     );
                 })}
             </div>
+            <NavigationBar/>
         </div>
     );
 };

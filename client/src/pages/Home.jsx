@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {BurgerMenu} from "./BurgerMenu";
-import styles2 from "./css/GamePlay.module.css";
+import styles from "./css/GamePlay.module.css";
+import NavigationBar from "./NavigationBar";
 
 
 //Faltaria hacerle un style a este view
@@ -21,13 +22,9 @@ const Home = () => {
 
     return(
         <div>
-            <h1>
-                Brain Battle
-            </h1>
             <BurgerMenu/>
-
-            <h1  className={styles2.titleDePrueba} >Welcome {userName}</h1>
-            <button className={styles2.buttonAnswers} onClick={() => navigate('/play')}>PLAY</button>
+            <h1  className={styles.titleDePrueba} >Welcome {userName}</h1>
+            <NavigationBar/>
         </div>
 
     )

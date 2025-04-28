@@ -1,0 +1,118 @@
+:root {
+    --clr: white;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--clr);
+}
+
+.navigation {
+    position: relative;
+    margin: 100px auto 0 auto ;
+    width: 400px;
+    height: 115px;
+    background: #16b3b9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+}
+
+.navigation ul {
+    display: flex;
+    justify-content: space-evenly; /* 👈 este es el cambio CLAVE */
+    width: 100%; /* en vez de 350px */
+    padding: 0; /* 👈 agregamos padding manualmente */
+}
+.navigation ul li {
+    position: relative;
+    list-style: none;
+    width: 120px;
+    height: 120px;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column; /* 👈 importantísimo */
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation ul li a{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    font-weight: 500;
+}
+.navigation ul li img {
+    width: 50px; /* mejor usar width fijo */
+    height: 50px;
+    transition: 0.5s ease;
+    transform: translateY(0); /* posición inicial normal */
+}
+
+
+.navigation ul li.active img {
+    transform: translateY(-55px); /* sube 50px arriba */
+    transition: 0.5s ease;
+}
+
+.navigation ul li .text {
+    position: absolute;
+    top: 65%; /* 👈 esto es clave */
+    font-size: 0.75em;
+    color: var(--clr);
+    letter-spacing: 0.05em;
+    transition: 0.5s ease;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+
+.navigation ul li.active .text {
+    opacity: 1;
+    transform: translateY(5px);
+}
+.indicator {
+    position: absolute;
+    top: -50%;
+    left: 0;
+    width: 105px;
+    height: 105px;
+    background: #16b3b9;
+    border-radius: 50%;
+    border: 6px solid var(--clr);
+    transition: transform 0.5s; /* 💥 transicion super suave */
+    transform: translateX(-50%); /* centrado inicial */
+}
+
+
+.indicator::before{
+    content: "";
+    position: absolute;
+    top: 49%;
+    left: -23px;
+    width: 20px;
+    height: 22px;
+    background: transparent;
+    border-top-right-radius: 50px;
+    box-shadow: 0px -10px 0 0 var(--clr);
+}
+.indicator::after{
+    content: "";
+    position: absolute;
+    top: 49%;
+    right: -23px;
+    width: 20px;
+    height: 22px;
+    background: transparent;
+    border-top-left-radius: 50px;
+    box-shadow: 0px -10px 0 0 var(--clr);
+}
