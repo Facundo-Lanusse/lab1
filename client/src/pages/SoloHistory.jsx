@@ -1,39 +1,34 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import styles from "./css/GamePlay.module.css";
+import styles from "./css/SoloHistory.module.css";
 
 const SoloHistory = () => {
     const navigate = useNavigate();
-
-    const [games, setGames] = useState([])
+    const [games, setGames] = useState([]);
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) { //Si no lo está lo mando a su casa
+        if (!user) {
             navigate('/login');
+        } else {
+            fetchUserHistory(user.id);
         }
-        fetchUserHistory()
     }, [navigate]);
 
-
-    const fetchUserHistory = async () => {
+    const fetchUserHistory = async (userId) => {
         try {
-            const userId = JSON.parse(localStorage.getItem('user')).id
             const res = await axios.get("http://localhost:3000/api/FetchSoloHistory", {
-                params: {
-                    userId: userId
-                }
+                params: { userId }
             });
             setGames(res.data);
         } catch (error) {
-            console.error("Error al cargar partidas", error);
+            console.error("Error al cargar partidas:", error);
         }
-    }
+    };
 
-    function formatDate(rawDate) {
+    const formatDate = (rawDate) => {
         const date = new Date(rawDate);
-
         const options = {
             day: '2-digit',
             month: '2-digit',
@@ -43,25 +38,38 @@ const SoloHistory = () => {
             hour12: false,
             timeZone: 'America/Argentina/Buenos_Aires'
         };
-
         return new Intl.DateTimeFormat('es-AR', options).format(date);
-    }
+    };
 
-    return(
-        <div>
-            <h2 className={styles.titleDePrueba}>Historial de partidas en solo</h2>
-            <ul>
-                {games.map((game) => (
-                    <button key={game.game_id} className={styles.score} >
-                        Score: {game.score} Fecha: ({formatDate(game.game_date)})
-                    </button>
-                ))}
-            </ul>
+    return (
+        <div className={styles.historyContainer}>
+            <img
+                className={styles.arrowLeftSolid1Icon}
+                alt="Back"
+                src="arrow-left-solid.svg"
+                onClick={() => navigate('/home')}
+            />
+            <h2 className={styles.historyTitle}>Historial de Partidas Solo</h2>
+            <div className={styles.gamesList}>
+                {games.length > 0 ? (
+                    games.map((game) => (
+                        <div key={game.game_id} className={styles.gameCard}>
+                            <p className={styles.score}>
+                                <strong>Score:</strong> {game.score}
+                            </p>
+                            <p className={styles.date}>
+                                <strong>Fecha:</strong> {formatDate(game.game_date)}
+                            </p>
+                        </div>
+                    ))
+                ) : (
+                    <p className={styles.noGamesMessage}>
+                        Aún no jugaste ninguna partida.
+                    </p>
+                )}
+            </div>
         </div>
     );
-
-
-}
-
+};
 
 export default SoloHistory;

@@ -1,0 +1,73 @@
+/* Contenedor principal */
+.historyContainer {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #16b3b9; /* Fondo vibrante */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+}
+
+/* Título principal */
+.historyTitle {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Contenedor de la lista de partidas */
+.gamesList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 600px;
+    padding: 0;
+}
+
+/* Estilo de cada tarjeta de partida */
+.gameCard {
+    background: rgba(255, 255, 255, 0.2); /* Fondo semi-transparente */
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    backdrop-filter: blur(10px); /* Efecto de desenfoque */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto al pasar el ratón sobre la tarjeta */
+.gameCard:hover {
+    transform: translateY(-5px); /* Efecto de levitación */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo del texto dentro de cada tarjeta */
+.score, .date {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Mensaje cuando no hay partidas */
+.noGamesMessage {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff5252;
+    text-align: center;
+}

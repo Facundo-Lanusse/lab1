@@ -1,29 +1,25 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Navigate} from 'react-router-dom';
 import {BurgerMenu} from "./BurgerMenu";
-import styles from "./css/GamePlay.module.css";
+import styles from "./css/Home.module.css";
 import NavigationBar from "./NavigationBar";
 
-
-//Faltaria hacerle un style a este view
 const Home = () => {
-    const navigate = useNavigate();
 
+    const user = JSON.parse(localStorage.getItem('user'));
 
-    useEffect(() => { //cuando entre a esta pagina pregunte lo siguiente
-        const user = JSON.parse(localStorage.getItem('user')); //Si está logueado el user todo bien
-        if (!user) { //Si no lo está lo mando a su casa
-            navigate('/login');
-        }
-    }, [navigate]);
-
-    const userName = JSON.parse(localStorage.getItem('user')).username
-
+    if (!user) {
+        return <Navigate to="/login" />;
+    }
 
     return(
         <div>
             <BurgerMenu/>
-            <h1  className={styles.titleDePrueba} >Welcome {userName}</h1>
+            <div>
+                <h1  className={styles.titleDePrueba} >Welcome {user.username}</h1>
+
+            </div>
+            <br></br>
+            <br></br>
             <NavigationBar/>
         </div>
 

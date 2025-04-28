@@ -26,7 +26,7 @@ export const BurgerMenu = () => {
     }
 
     return (
-        <div>
+        <div className={styles.burgerMenu}>
             <Hamburger
                 size={24}
                 toggled={isOpen}
@@ -37,6 +37,7 @@ export const BurgerMenu = () => {
                 <div><button onClick={handleLogOut} className={styles.buttonForDesplegableMenu}>Log out</button></div>
                 <div>{userIsAdmin && <button onClick={handleClickOnAdminButton} className={styles.buttonForDesplegableMenu}>Upload Question</button>}</div>
                 <div>{<button onClick={() => navigate('/ranking')} className={styles.buttonForDesplegableMenu}>Users ranking</button>}</div>
+                <div>{<button onClick={() => navigate('/soloHistory')} className={styles.buttonForDesplegableMenu}>Solo History</button>}</div>
             </div>}
         </div>
 
