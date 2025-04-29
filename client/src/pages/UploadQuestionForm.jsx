@@ -22,21 +22,21 @@ function UploadQuestionForm(){
     const [allCategories, setAllCategories] = useState([]);
     const [suggestedCategory, setSuggestedCategories] = useState([]);
 
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get("http://localhost:3000/api/FetchCategories");
+            const name = response.data.map(cat => cat.name)
+            setAllCategories(name);
+        }
+        catch (err){
+            console.error("Error al traer categorias", err)
+        }
+    };
 
     useEffect(() => { //Igual a las líneas de admin
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.get("http://localhost:3000/api/FetchCategories");
-                const name = response.data.map(cat => cat.name)
-                setAllCategories(name);
-            }
-            catch (err){
-                console.error("Error al traer categorias", err)
-            }
-        };
-        fetchCategories()
         try {
             const user = JSON.parse(localStorage.getItem('user'));
+            fetchCategories()
             if(!user){
                 navigate("/");
             }

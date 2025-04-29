@@ -17,11 +17,11 @@ router.get('/FetchCategories', async (req, res) => {
 
 
 router.post('/CreateCategory', async (req, res) => {
-    const {categoryName} = req.body;
+    const {name} = req.body;
     try {
 
         const createCategoryQuery = 'insert into category(name) values($1) ';
-        await db.query(createCategoryQuery, [categoryName]);
+        await db.query(createCategoryQuery, [name]);
         res.json({ success: 'Categoria creada exitosamente'});
     }
     catch (err) {
@@ -31,11 +31,15 @@ router.post('/CreateCategory', async (req, res) => {
 })
 
 router.post('/ModifyCategory', async (req, res) => {
-    const {categoryName} = req.body;
+    const {oldName, newName} = req.body;
     try {
-        const createCategoryQuery = 'update category set name = $1';
-        await db.query(createCategoryQuery, [categoryName]);
-        res.json({ success: 'Categoria modificada exitosamente'});
+        const modifyCategoryQuery = 'UPDATE category SET name = $1 WHERE TRIM(LOWER(name)) = TRIM(LOWER($2))';
+        const result = await db.query(modifyCategoryQuery, [newName.trim(), oldName.trim()]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Categoría no encontrada' });
+        }
+
+        res.json({ success: 'Categoría modificada exitosamente' });
     }
     catch (err) {
         console.error("Error al modificar categoria", err);
