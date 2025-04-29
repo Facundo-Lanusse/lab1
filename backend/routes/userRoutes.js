@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../database');
 const validateUser = require('../middleware/authenticationMiddleware');
 
-router.get('/users', validateUser, async (req, res) => {
+router.get('/users', async (req, res) => {
     try {
         const query = 'SELECT user_id, username, rank_points, email FROM users order by rank_points desc';
         const result = await db.query(query);
@@ -14,7 +14,7 @@ router.get('/users', validateUser, async (req, res) => {
     }
 });
 
-router.delete('/users/:id', validateUser, async (req, res) => {
+router.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const query = 'DELETE FROM users WHERE user_id = $1 RETURNING *';

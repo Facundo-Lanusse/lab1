@@ -49,7 +49,7 @@ function Admin() {
                 {users.map((user) => (
                     <li key={user.id}>
                         {user.username} ({user.email})
-                        <button onClick={() => deleteUser(user.id)}>Eliminar</button>
+                        <button onClick={() => deleteUser(user.user_id)}>Eliminar</button>
                     </li>
                 ))}
             </ul>
