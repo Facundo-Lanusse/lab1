@@ -18,6 +18,7 @@ function UploadQuestionForm(){
 
     const [message, setMessage] = useState("");
     const [message1, setMessage1] = useState("");
+    const [suggestedCategory, setSuggestedCategory] = useState([]);
 
     useEffect(() => { //Igual a las líneas de admin
         try {
@@ -39,6 +40,12 @@ function UploadQuestionForm(){
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+        if(e.target.name === "categoryName"){
+            if(value.length > 0){
+
+            }
+            setSuggestedCategory(e.target.value);
+        }
     };
 
     const handleQuestionForm = useCallback(async () => {//Manejo la pregunta
@@ -83,6 +90,7 @@ function UploadQuestionForm(){
                     onChange={handleChange}
                     required
                 />
+
             </div>
 
             <div className={styles.rectangleGroup}>
