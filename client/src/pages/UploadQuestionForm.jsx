@@ -20,10 +20,20 @@ function UploadQuestionForm(){
     const [message1, setMessage1] = useState("");
 
     useEffect(() => { //Igual a las líneas de admin
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user && !user.is_admin) {
-            navegate('/home');
+        try {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if(!user){
+                navegate("/");
+            }
+            if (!user.is_admin) {
+                navegate('/home');
+            }
         }
+        catch (err){
+            console.log(err);
+            navegate("/login");
+        }
+
 
     }, [navegate]);
 
