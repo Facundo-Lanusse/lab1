@@ -17,6 +17,7 @@ app.use('/api', require('./routes/historyRoutes'));
 app.use('/api', require('./routes/userRoutes'));
 app.use('/api', require('./routes/questionRoutes'));
 app.use('/api', require('./routes/gamePlayRoutes'));
+app.use('/api', require('./routes/categoriesRoutes'));
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
