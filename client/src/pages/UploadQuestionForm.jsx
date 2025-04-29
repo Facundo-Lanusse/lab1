@@ -1,11 +1,12 @@
 import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import {data, useNavigate} from 'react-router-dom';
 import styles from "./css/SignUp.module.css";
+import styles2 from "./css/SuggestionList.module.css"
 
 function UploadQuestionForm(){
 
-    const navegate = useNavigate();
+    const navigate = useNavigate();
 
     const [form, setForm] = useState({  //Lo que va a recibir el formulario para cargar los datos
         categoryName: "",
@@ -18,27 +19,52 @@ function UploadQuestionForm(){
 
     const [message, setMessage] = useState("");
     const [message1, setMessage1] = useState("");
+    const [allCategories, setAllCategories] = useState([]);
+    const [suggestedCategory, setSuggestedCategories] = useState([]);
+
 
     useEffect(() => { //Igual a las líneas de admin
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get("http://localhost:3000/api/FetchCategories");
+                const name = response.data.map(cat => cat.name)
+                setAllCategories(name);
+            }
+            catch (err){
+                console.error("Error al traer categorias", err)
+            }
+        };
+        fetchCategories()
         try {
             const user = JSON.parse(localStorage.getItem('user'));
             if(!user){
-                navegate("/");
+                navigate("/");
             }
             if (!user.is_admin) {
-                navegate('/home');
+                navigate('/home');
             }
         }
         catch (err){
             console.log(err);
-            navegate("/login");
+            navigate("/login");
         }
 
 
-    }, [navegate]);
+    }, [navigate]);
 
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setForm({ ...form, [e.target.name]: e.target.value });
+        if (name === "categoryName") {
+            const filter = allCategories.filter(cat =>
+                cat.toLowerCase().includes(value.toLowerCase()));
+            setSuggestedCategories(filter);
+        }
+    };
+
+    const handleSuggestionClick = (cat) => {
+        setForm({ ...form, categoryName: cat });
+        setSuggestedCategories([]);
     };
 
     const handleQuestionForm = useCallback(async () => {//Manejo la pregunta
@@ -83,6 +109,17 @@ function UploadQuestionForm(){
                     onChange={handleChange}
                     required
                 />
+
+                {suggestedCategory.length > 0 && (
+                    <ul className={styles2.suggestionList}>
+                        {suggestedCategory.map((cat, index) => (
+                            <li key={index} onClick={() => handleSuggestionClick(cat)}>
+                                {cat}
+                            </li>
+                        ))}
+                    </ul>
+
+                )}
             </div>
 
             <div className={styles.rectangleGroup}>
@@ -147,7 +184,7 @@ function UploadQuestionForm(){
                 className={styles.arrowLeftSolid1Icon}
                 alt="Back"
                 src="arrow-left-solid.svg"
-                onClick={() => navegate('/home')}
+                onClick={() => navigate('/home')}
             />
 
 
