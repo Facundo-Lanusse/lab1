@@ -77,6 +77,17 @@ CREATE TABLE points (
                         PRIMARY KEY (battle_id, user_id, category_id)
 );
 
+create table solo_history
+(
+    game_id   serial
+        primary key,
+    user_id   integer not null
+        references users
+            on delete cascade,
+    score     integer not null,
+    game_date timestamp(0) default CURRENT_TIMESTAMP
+);
+
 ALTER TABLE question
     rename column question to questionText;
 
