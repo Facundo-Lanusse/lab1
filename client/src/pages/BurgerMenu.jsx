@@ -25,6 +25,10 @@ export const BurgerMenu = () => {
         navigate('/uploadQuestion')
     }
 
+    function handleClickOnAdminUsersButton(){//solo si es admin aparece el boton
+        navigate('/admin')
+    }
+
     return (
         <div className={styles.burgerMenu}>
             <Hamburger
@@ -36,6 +40,7 @@ export const BurgerMenu = () => {
                 <div><button className={styles.buttonForDesplegableMenu} onClick={handleClickOnEditProfile}>Edit profile</button></div>
                 <div><button onClick={handleLogOut} className={styles.buttonForDesplegableMenu}>Log out</button></div>
                 <div>{userIsAdmin && <button onClick={handleClickOnAdminButton} className={styles.buttonForDesplegableMenu}>Upload Question</button>}</div>
+                <div>{userIsAdmin && <button onClick={handleClickOnAdminUsersButton} className={styles.buttonForDesplegableMenu}>User manager</button>}</div>
                 <div>{<button onClick={() => navigate('/ranking')} className={styles.buttonForDesplegableMenu}>Users ranking</button>}</div>
                 <div>{<button onClick={() => navigate('/soloHistory')} className={styles.buttonForDesplegableMenu}>Solo History</button>}</div>
             </div>}
