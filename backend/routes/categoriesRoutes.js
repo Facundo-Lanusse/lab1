@@ -17,11 +17,11 @@ router.get('/FetchCategories', async (req, res) => {
 
 
 router.post('/CreateCategory', async (req, res) => {
-    const {categoryName} = req.body;
+    const {name} = req.body;
     try {
 
         const createCategoryQuery = 'insert into category(name) values($1) ';
-        await db.query(createCategoryQuery, [categoryName]);
+        await db.query(createCategoryQuery, [name]);
         res.json({ success: 'Categoria creada exitosamente'});
     }
     catch (err) {
