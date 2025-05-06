@@ -1,81 +1,131 @@
-drop table category cascade;
-drop table answer cascade;
-drop table history cascade;
-drop table battle cascade;
-drop table points cascade;
-drop table turns cascade;
-drop table users cascade;
-drop table question cascade;
+create sequence users_id_seq
+    as integer;
 
+alter sequence users_id_seq owner to postgres;
+
+create type friendship_state as enum ('accepted', 'pending', 'rejected');
+
+alter type friendship_state owner to postgres;
 
 create table users
 (
-    id          serial primary key,
+    user_id     integer default nextval('users_id_seq'::regclass) not null
+        primary key,
     username    varchar(100),
-    password    varchar(100),
-    email       varchar(100) unique,
-    rank_points int default 0
-
-);
-ALTER TABLE users
-    ADD COLUMN is_admin boolean default false;
-
-ALTER TABLE users
-    rename column id to user_id;
-
-ALTER TABLE users
-    ALTER COLUMN password set NOT NULL;
-
-CREATE TABLE category (
-                          category_id SERIAL PRIMARY KEY,
-                          name VARCHAR(100) NOT NULL UNIQUE
+    password    varchar(100)                                      not null,
+    email       varchar(100)
+        unique,
+    rank_points integer default 0,
+    is_admin    boolean default false
 );
 
-CREATE TABLE question (
-                          question_id SERIAL PRIMARY KEY,
-                          question TEXT NOT NULL,
-                          category_id INT REFERENCES category(category_id) ON DELETE SET NULL);
+alter table users
+    owner to postgres;
 
-ALTER TABLE question ADD COLUMN alreadyPicked BOOLEAN DEFAULT FALSE;
+alter sequence users_id_seq owned by users.user_id;
 
-
-CREATE TABLE answer (
-                        answer_id SERIAL PRIMARY KEY,
-                        question_id INT NOT NULL REFERENCES question(question_id) ON DELETE CASCADE,
-                        text TEXT NOT NULL,
-                        is_correct BOOLEAN NOT NULL DEFAULT FALSE
+create table category
+(
+    category_id serial
+        primary key,
+    name        varchar(100) not null
+        unique
 );
 
-CREATE TABLE battle (
-                        battle_id SERIAL PRIMARY KEY,
-                        status VARCHAR(20) NOT NULL DEFAULT 'ongoing', -- 'ongoing', 'finished'
-                        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        user_id1 INT NOT NULL REFERENCES "users"(user_id),
-                        user_id2 INT NOT NULL REFERENCES "users"(user_id),
-                        whos_next INT REFERENCES "users"(user_id)
+alter table category
+    owner to postgres;
+
+create table question
+(
+    question_id   serial
+        primary key,
+    questiontext  text not null,
+    category_id   integer
+                       references category
+                           on delete set null,
+    alreadypicked boolean default false
 );
 
-CREATE TABLE turns (
-                       battle_id INT NOT NULL REFERENCES battle(battle_id) ON DELETE CASCADE,
-                       user_id INT NOT NULL REFERENCES "users"(user_id),
-                       question_id INT NOT NULL REFERENCES question(question_id),
-                       answer_id INT NOT NULL REFERENCES answer(answer_id),
-                       PRIMARY KEY (battle_id, user_id, question_id)
+alter table question
+    owner to postgres;
+
+create table answer
+(
+    answer_id   serial
+        primary key,
+    question_id integer               not null
+        references question
+            on delete cascade,
+    text        text                  not null,
+    is_correct  boolean default false not null
 );
 
-CREATE TABLE history (
-                         battle_id INT PRIMARY KEY REFERENCES battle(battle_id) ON DELETE CASCADE,
-                         result VARCHAR(20), -- 'draw', 'user1_win', 'user2_win'
-                         winner_user_id INT REFERENCES "users"(user_id)
+alter table answer
+    owner to postgres;
+
+create table battle
+(
+    battle_id serial
+        primary key,
+    status    varchar(20) default 'ongoing'::character varying not null,
+    date      timestamp   default CURRENT_TIMESTAMP,
+    user_id1  integer                                          not null
+        references users,
+    user_id2  integer                                          not null
+        references users,
+    whos_next integer
+        references users
 );
 
-CREATE TABLE points (
-                        battle_id INT REFERENCES battle(battle_id) ON DELETE CASCADE,
-                        user_id INT REFERENCES "users"(user_id),
-                        category_id INT REFERENCES category(category_id),
-                        points INT DEFAULT 0,
-                        PRIMARY KEY (battle_id, user_id, category_id)
+alter table battle
+    owner to postgres;
+
+create table turns
+(
+    battle_id   integer not null
+        references battle
+            on delete cascade,
+    user_id     integer not null
+        references users,
+    question_id integer not null
+        references question,
+    answer_id   integer not null
+        references answer,
+    primary key (battle_id, user_id, question_id)
 );
+
+alter table turns
+    owner to postgres;
+
+create table history
+(
+    battle_id      integer not null
+        primary key
+        references battle
+            on delete cascade,
+    result         varchar(20),
+    winner_user_id integer
+        references users
+);
+
+alter table history
+    owner to postgres;
+
+create table points
+(
+    battle_id   integer not null
+        references battle
+            on delete cascade,
+    user_id     integer not null
+        references users,
+    category_id integer not null
+        references category,
+    points      integer default 0,
+    primary key (battle_id, user_id, category_id)
+);
+
+alter table points
+    owner to postgres;
 
 create table solo_history
 (
@@ -88,8 +138,32 @@ create table solo_history
     game_date timestamp(0) default CURRENT_TIMESTAMP
 );
 
-ALTER TABLE question
-    rename column question to questionText;
+alter table solo_history
+    owner to postgres;
 
-insert into users (username, password, email, is_admin)
-values('admin', 'admin123', 'admin@gmail.com', true);
+create table friends
+(
+    user_id   integer                                              not null
+        references users,
+    friend_id integer                                              not null
+        references users,
+    state     friendship_state default 'pending'::friendship_state not null,
+    primary key (user_id, friend_id)
+);
+
+alter table friends
+    owner to postgres;
+
+create table profile_image
+(
+    img_id     serial
+        primary key,
+    user_id    integer not null
+        unique
+        references users
+            on delete cascade,
+    image_path text    not null
+);
+
+alter table profile_image
+    owner to postgres;
