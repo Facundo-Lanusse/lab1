@@ -8,14 +8,14 @@ function UploadQuestionForm(){
 
     const navigate = useNavigate();
 
-    const [form, setForm] = useState({  //Lo que va a recibir el formulario para cargar los datos
+    const [form, setForm] = useState({
         categoryName: "",
         questionText: "",
         answerCorrect: "",
         answerFalse1: "",
         answerFalse2: "",
         answerFalse3: ""
-    });//Seteo el value inicial como vacio
+    });
 
     const [message, setMessage] = useState("");
     const [message1, setMessage1] = useState("");

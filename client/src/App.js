@@ -10,6 +10,7 @@ import PlayGame from "./pages/Play";
 import Ranking from "./pages/UserRanking";
 import SoloHistory from "./pages/SoloHistory";
 import CategoryManager from "./pages/CategoryManager";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/Ranking" element={<Ranking />} />
             <Route path="/SoloHistory" element={<SoloHistory />} />
             <Route path="/CategoryManager" element={<CategoryManager />} />
+            <Route path="/Profile" element={<Profile />} />
         </Routes>
       </Router>
   );

@@ -15,7 +15,7 @@ export const BurgerMenu = () => {
         navigate('/login')
     }
     const handleClickOnEditProfile = () => {
-        navigate('profile')
+        navigate('/profile')
     }
     const user = JSON.parse(localStorage.getItem('user'))
 
@@ -37,7 +37,7 @@ export const BurgerMenu = () => {
                 toggle={setOpen}
             />
             {isOpen && <div>
-                <div><button className={styles.buttonForDesplegableMenu} onClick={handleClickOnEditProfile}>Edit profile</button></div>
+                <div><button className={styles.buttonForDesplegableMenu} onClick={handleClickOnEditProfile}>Profile</button></div>
                 <div><button onClick={handleLogOut} className={styles.buttonForDesplegableMenu}>Log out</button></div>
                 <div>{userIsAdmin && <button onClick={handleClickOnAdminButton} className={styles.buttonForDesplegableMenu}>Upload Question</button>}</div>
                 <div>{userIsAdmin && <button onClick={handleClickOnAdminUsersButton} className={styles.buttonForDesplegableMenu}>User manager</button>}</div>
