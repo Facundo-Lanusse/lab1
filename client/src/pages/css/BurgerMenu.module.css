@@ -1,20 +1,139 @@
 .buttonForDesplegableMenu {
-    margin-top: 3px;
     width: 100%;
-    max-width: 150px;
-    height: 25px;
-    border-radius: 15px;
-    background-color: #72a0b6;
-    color: white;
-    font-size: 15px;
+    padding: 12px 20px;
+    background-color: white;
     border: none;
+    border-radius: 8px;
+    color: black;
+    font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    text-align: left;
 }
 
 .burgerMenu {
     position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
+    top: 20px;
+    left: 30%;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.menuContainer {
+    position: fixed;
+    top: 95px;
+    left: 30%;
+    width: 40%;
+    height: calc(100vh - 90px);
+    background-color: #16b3b9;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    padding-bottom: 135px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: slideIn 0.3s ease-out;
+    overflow-y: auto;
+    z-index: 1001;
+    visibility: visible;
+    opacity: 1;
+    border-radius: 20px 20px 0 0;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.buttonForDesplegableMenu:hover {
+    background-color: #f0f0f0;
+    transform: translateX(5px);
+}
+
+.buttonForDesplegableMenu:active {
+    transform: scale(0.98);
+}
+
+/* Media queries para responsividad */
+@media screen and (max-width: 1200px) {
+    .burgerMenu {
+        left: 25%;
+    }
+    
+    .menuContainer {
+        left: 25%;
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .burgerMenu {
+        left: 20%;
+    }
+    
+    .menuContainer {
+        left: 20%;
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .burgerMenu {
+        left: 15%;
+    }
+    
+    .menuContainer {
+        left: 15%;
+        width: 70%;
+    }
+    
+    .buttonForDesplegableMenu {
+        padding: 10px 15px;
+        font-size: 15px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .burgerMenu {
+        left: 10px;
+    }
+    
+    .menuContainer {
+        left: 10px;
+        width: 85%;
+    }
+    
+    .buttonForDesplegableMenu {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .burgerMenu {
+        left: 5px;
+    }
+    
+    .menuContainer {
+        left: 5px;
+        width: 90%;
+    }
+    
+    .buttonForDesplegableMenu {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
 }

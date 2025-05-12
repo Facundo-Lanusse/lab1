@@ -6,8 +6,9 @@ const NavigationBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const listRefs = useRef([]);
+    const indicatorRef = useRef(null);
     const [indicatorPosition, setIndicatorPosition] = useState(null);
-    const [indicatorIsReady, setIndicatorIsReady] = useState(false);
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     const items = [
         { icon: "glass.svg", text: "Search", path: "/search" },
@@ -15,25 +16,33 @@ const NavigationBar = () => {
         { icon: "play.svg", text: "Play", path: "/play" },
     ];
 
-    // Detectar cuál es el índice activo según la URL
     const activeIndex = items.findIndex(item => item.path === location.pathname);
 
+    const calculatePosition = (index) => {
+        if (listRefs.current[index]) {
+            const liElement = listRefs.current[index];
+            const rect = liElement.getBoundingClientRect();
+            const ulRect = liElement.parentElement.getBoundingClientRect();
+            const liCenter = rect.left + rect.width / 2;
+            const ulLeft = ulRect.left;
+            return liCenter - ulLeft;
+        }
+        return null;
+    };
+
     const handleLink = (index) => {
+        const newPosition = calculatePosition(index);
+        if (newPosition !== null) {
+            setIsTransitioning(true);
+            setIndicatorPosition(newPosition);
+        }
         navigate(items[index].path);
     };
 
     useEffect(() => {
-        if (listRefs.current[activeIndex]) {
-            const liElement = listRefs.current[activeIndex];
-            const rect = liElement.getBoundingClientRect();
-            const ulRect = liElement.parentElement.getBoundingClientRect();
-
-            const liCenter = rect.left + rect.width / 2;
-            const ulLeft = ulRect.left;
-            const relativeCenter = liCenter - ulLeft;
-
-            setIndicatorPosition(relativeCenter);
-            setIndicatorIsReady(true); //abilitamos al trancicion recien cuando sabemos su posicion
+        const position = calculatePosition(activeIndex);
+        if (position !== null) {
+            setIndicatorPosition(position);
         }
     }, [activeIndex]);
 
@@ -52,10 +61,11 @@ const NavigationBar = () => {
                     </li>
                 ))}
                 <div
+                    ref={indicatorRef}
                     className={styles.indicator}
                     style={{
                         transform: `translateX(${indicatorPosition}px) translateX(-50%)`,
-                        transition: indicatorIsReady ? "transform 0.4s ease" : "none",
+                        transition: isTransitioning ? "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)" : "none"
                     }}
                 />
             </ul>

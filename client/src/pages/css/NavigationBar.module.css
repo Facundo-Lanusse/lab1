@@ -2,99 +2,110 @@
     --clr: white;
 }
 
-body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+body {
     min-height: 100vh;
     background: var(--clr);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 .navigation {
-    position: relative;
-    margin: 100px auto 0 auto ;
-    width: 400px;
-    height: 115px;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 100px;
     background: #16b3b9;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 20px;
+    border-radius: 20px 20px 0 0;
+    z-index: 1000;
+    margin: 0;
+    padding: 0;
 }
 
 .navigation ul {
     display: flex;
-    justify-content: space-evenly; /* 👈 este es el cambio CLAVE */
-    width: 100%; /* en vez de 350px */
-    padding: 0; /* 👈 agregamos padding manualmente */
+    justify-content: space-evenly;
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
+
 .navigation ul li {
     position: relative;
     list-style: none;
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     z-index: 1;
-
     display: flex;
-    flex-direction: column; /* 👈 importantísimo */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.navigation ul li a{
+.navigation ul li a {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     width: 100%;
+    height: 100%;
     text-align: center;
     font-weight: 500;
 }
+
 .navigation ul li img {
-    width: 50px; /* mejor usar width fijo */
-    height: 50px;
+    width: 40px;
+    height: 40px;
     transition: 0.5s ease;
-    transform: translateY(0); /* posición inicial normal */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-
 .navigation ul li.active img {
-    transform: translateY(-55px); /* sube 50px arriba */
+    transform: translate(-50%, -170%);
     transition: 0.5s ease;
 }
 
 .navigation ul li .text {
     position: absolute;
-    top: 65%; /* 👈 esto es clave */
+    bottom: 15px;
     font-size: 0.75em;
     color: var(--clr);
     letter-spacing: 0.05em;
     transition: 0.5s ease;
     opacity: 0;
     transform: translateY(10px);
+    width: 100%;
+    text-align: center;
 }
-
 
 .navigation ul li.active .text {
     opacity: 1;
-    transform: translateY(5px);
+    transform: translateY(0);
 }
+
 .indicator {
     position: absolute;
     top: -50%;
     left: 0;
-    width: 105px;
-    height: 105px;
+    width: 90px;
+    height: 90px;
     background: #16b3b9;
     border-radius: 50%;
     border: 6px solid var(--clr);
-    transition: transform 0.5s; /* 💥 transicion super suave */
-    transform: translateX(-50%); /* centrado inicial */
+    transition: transform 0.5s;
+    transform: translateX(-50%);
 }
 
-
-.indicator::before{
+.indicator::before {
     content: "";
     position: absolute;
     top: 49%;
@@ -103,9 +114,10 @@ body{
     height: 22px;
     background: transparent;
     border-top-right-radius: 50px;
-    box-shadow: 0px -10px 0 0 var(--clr);
+    box-shadow: 1px -10px 0 0 var(--clr);
 }
-.indicator::after{
+
+.indicator::after {
     content: "";
     position: absolute;
     top: 49%;
@@ -114,5 +126,151 @@ body{
     height: 22px;
     background: transparent;
     border-top-left-radius: 50px;
-    box-shadow: 0px -10px 0 0 var(--clr);
+    box-shadow: -1px -10px 0 0 var(--clr);
+}
+
+/* Media queries para responsividad */
+@media screen and (max-width: 1200px) {
+    .navigation {
+        width: 50%;
+        height: 90px;
+    }
+    
+    .navigation ul li {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .navigation ul li img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .navigation ul li.active img {
+        transform: translate(-50%, -170%);
+    }
+    
+    .indicator {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .navigation {
+        width: 60%;
+        height: 85px;
+    }
+    
+    .navigation ul li {
+        width: 85px;
+        height: 85px;
+    }
+    
+    .navigation ul li img {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .navigation ul li.active img {
+        transform: translate(-50%, -170%);
+    }
+    
+    .indicator {
+        width: 75px;
+        height: 75px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .navigation {
+        width: 70%;
+        height: 80px;
+    }
+    
+    .navigation ul li {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .navigation ul li img {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .navigation ul li.active img {
+        transform: translate(-50%, -170%);
+    }
+    
+    .indicator {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .navigation ul li .text {
+        font-size: 0.7em;
+        bottom: 12px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .navigation {
+        width: 85%;
+        height: 75px;
+    }
+    
+    .navigation ul li {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .navigation ul li img {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .navigation ul li.active img {
+        transform: translate(-50%, -170%);
+    }
+    
+    .indicator {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .navigation ul li .text {
+        font-size: 0.65em;
+        bottom: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .navigation {
+        width: 90%;
+        height: 70px;
+    }
+    
+    .navigation ul li {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .navigation ul li img {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .navigation ul li.active img {
+        transform: translate(-50%, -170%);
+    }
+    
+    .indicator {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .navigation ul li .text {
+        font-size: 0.6em;
+        bottom: 8px;
+    }
 }

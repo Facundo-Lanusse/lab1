@@ -1,73 +1,83 @@
-
 .logIn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #fff;
-    min-height: 100vh;
-    padding: 5vh 5vw;
+    justify-content: center;
+    background-color: #f7f7f7;
+    height: 100vh;
+    padding: 20px;
     font-family: Inter, sans-serif;
     color: #000;
     text-align: center;
     font-size: 15px;
     position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .arrowLeftSolid1Icon {
     position: absolute;
-    top: 16px;
-    left: 16px;
-    width: 28px;
-    height: auto;
+    top: 15px;
+    left: 15px;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
+    z-index: 2;
 }
 
 .loginImageIcon {
-    width: 50vw;
-    max-width: 226px;
+    width: 100%;
+    max-width: 180px;
     height: auto;
-    margin-top: 64px;
+    margin-bottom: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .loginPage {
     font-size: 24px;
-    margin-top: 32px;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 300px;
 }
 
 .rectangleGroup {
     width: 100%;
-    max-width: 333px;
-    margin-top: 24px;
+    max-width: 300px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: left;
 }
 
 .inputField {
     width: 100%;
-    max-width: 333px;
-    height: 52px;
-    padding: 0 12px;
-    font-size: 16px;
-    border-radius: 10px;
+    height: 40px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 8px;
     border: none;
     outline: none;
     background-color: rgba(245, 245, 245, 0.76);
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+    text-align: left;
 }
 
 .forgotPassword {
-    margin-top: 16px;
+    margin-top: 8px;
     font-weight: 300;
     color: #16b3b9;
     cursor: pointer;
     font-size: 14px;
     width: 100%;
-    max-width: 333px;
+    max-width: 300px;
     text-align: right;
 }
 
 .errorMessage {
-    margin-top: 12px;
+    margin-top: 8px;
     width: 100%;
-    max-width: 333px;
+    max-width: 300px;
     color: red;
     font-size: 14px;
     font-weight: 500;
@@ -75,23 +85,70 @@
 }
 
 .logInButton {
-    display: block;
-    margin-top: 32px;
+    margin-top: 15px;
     width: 100%;
-    max-width: 333px;
-    height: 62px;
-    border-radius: 15px;
+    max-width: 300px;
+    height: 45px;
+    border-radius: 10px;
     background-color: #16b3b9;
     color: white;
-    font-size: 24px;
+    font-size: 18px;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .logInButton:hover {
-    background-color: #139ba0;
+    background-color: #139aa0;
+}
+
+@media (max-width: 480px) {
+    .logIn {
+        padding: 15px;
+    }
+
+    .loginPage {
+        font-size: 20px;
+        margin-bottom: 12px;
+        max-width: 250px;
+    }
+
+    .rectangleGroup {
+        max-width: 250px;
+        margin-bottom: 10px;
+    }
+
+    .inputField {
+        height: 35px;
+        font-size: 13px;
+    }
+
+    .forgotPassword {
+        max-width: 250px;
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    .errorMessage {
+        max-width: 250px;
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    .logInButton {
+        max-width: 250px;
+        height: 40px;
+        font-size: 16px;
+        margin-top: 12px;
+    }
+
+    .loginImageIcon {
+        max-width: 150px;
+        margin-bottom: 12px;
+    }
 }
 
 

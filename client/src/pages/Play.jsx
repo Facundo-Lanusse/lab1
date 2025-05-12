@@ -26,13 +26,21 @@ const Play = () => {
                alert('Todas las preguntas respondidas bien')
                navigate('/home')
            }
-
            else{
+               // Removemos las clases CSS de los botones
+               const buttons = document.getElementsByClassName(styles.buttonAnswers);
+               Array.from(buttons).forEach(button => {
+                   button.classList.remove(styles.correct, styles.incorrect);
+                   button.style.transform = 'scale(1)';
+               });
+
+               // Luego cargamos la nueva pregunta
                setMainQuestion(res.data.question.questiontext);
                setQuestionId(res.data.question.question_id);
                const shuffledAnswers = res.data.answers.sort(() => Math.random() - 0.5);
                setAnswers(shuffledAnswers);
-
+               setSelectedIndex(null);
+               setIsAnswerCorrect(null);
            }
 
         } catch (error) {
@@ -106,17 +114,20 @@ const Play = () => {
     }
 
     return (
-        <div>
-            <img
-                className={styles.arrowLeftSolid1Icon}
-                alt="Back"
-                src="arrow-left-solid.svg"
-                onClick={() => handleGoBackClick()}
-            />
-            <p className={styles.score}>Score: {score}</p>
-            <div>
+        <div className={styles.gameContainer}>
+            <div className={styles.header}>
+                <img
+                    className={styles.arrowLeftSolid1Icon}
+                    alt="Back"
+                    src="arrow-left-solid.svg"
+                    onClick={() => handleGoBackClick()}
+                />
+                <p className={styles.score}>Score: {score}</p>
+            </div>
+            <div className={styles.questionContainer}>
                 <h1 className={styles.titleDePrueba}>{MainQuestion}</h1>
-
+            </div>
+            <div className={styles.answersContainer} key={questionId}>
                 {answers.map((ans, index) => {
                     let buttonClass = styles.buttonAnswers;
 

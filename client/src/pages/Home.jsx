@@ -4,7 +4,6 @@ import styles from "./css/Home.module.css";
 import NavigationBar from "./NavigationBar";
 
 const Home = () => {
-
     const user = JSON.parse(localStorage.getItem('user'));
 
     if (!user) {
@@ -12,20 +11,12 @@ const Home = () => {
     }
 
     return(
-        <div>
+        <div className={styles.homeContainer}>
             <BurgerMenu/>
-            <div>
-                <h1  className={styles.titleDePrueba} >Welcome {user.username}</h1>
-
-            </div>
-            <br></br>
-            <br></br>
+            <h1 className={styles.titleDePrueba}>Welcome {user.username}</h1>
             <NavigationBar/>
         </div>
-
     )
-
 };
-
 
 export default Home;
