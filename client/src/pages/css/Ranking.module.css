@@ -1,0 +1,96 @@
+/* Ranking.module.css */
+
+.container {
+    background-color: #0bc7d3;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    position: relative;
+}
+
+.backButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.headerSection {
+    margin-top: 80px;
+    text-align: center;
+}
+
+.gameTitle {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.subtitle {
+    font-size: 18px;
+    margin-top: 4px;
+    color: white;
+}
+
+.rankingList {
+    margin-top: 10px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.rankingItem {
+    background-color: white;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.firstPlace {
+    border: 2px solid gold;
+}
+
+.rankNumber {
+    width: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.rankUsername {
+    flex-grow: 1;
+    text-align: left;
+    margin-left: 16px;
+}
+
+.rankScore {
+    font-weight: bold;
+}
+
+.playButton {
+    margin-top: auto;
+    margin-bottom: 40px;
+    background-color: #ffcc00;
+    color: white;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 40px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.playButton:hover {
+    background-color: #ffd633;
+}
