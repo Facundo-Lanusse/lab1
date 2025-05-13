@@ -1,83 +1,57 @@
-
 .historyContainer {
-    width: 100%;
+    background-color: #0bc7d3;
     min-height: 100vh;
-    background-color: #16b3b9;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 40px 20px;
-    box-sizing: border-box;
-    text-align: center;
-    font-size: 16px;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    position: relative;
-}
-
-
-.historyTitle {
-    font-size: 36px;
-    font-weight: bold;
-    margin-bottom: 50px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-
-.gamesList {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 600px;
-    padding: 0;
-}
-
-
-.gameCard {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
     padding: 20px;
-    width: 80%;
-    text-align: center;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-
-.gameCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-}
-
-
-.score, .date {
-    font-size: 1.2rem;
-    margin: 10px 0;
+    font-family: 'Segoe UI', sans-serif;
     color: white;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-}
-
-
-.noGamesMessage {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #ff5252;
-    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .arrow {
-    position: fixed;
-    z-index: 1000;
+    position: absolute;
     top: 20px;
     left: 20px;
     width: 24px;
     height: 24px;
     cursor: pointer;
+}
+
+.historyTitle {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 80px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.gamesList {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.gameCard {
+    background-color: white;
+    color: black;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.score, .date {
+    margin: 6px 0;
+    font-size: 16px;
+}
+
+.noGamesMessage {
+    margin-top: 40px;
+    font-size: 18px;
+    color: #fdfdfd;
+    font-weight: 500;
+    text-align: center;
 }

@@ -45,26 +45,22 @@ const SoloHistory = () => {
         <div className={styles.historyContainer}>
             <img
                 className={styles.arrow}
-                alt="Back"
+                alt="Volver"
                 src="arrow-left-solid.svg"
                 onClick={() => navigate('/home')}
             />
-            <h2 className={styles.historyTitle}>Historial de Partidas Solo</h2>
+            <h2 className={styles.historyTitle}>Solo history</h2>
             <div className={styles.gamesList}>
                 {games.length > 0 ? (
                     games.map((game) => (
                         <div key={game.game_id} className={styles.gameCard}>
-                            <p className={styles.score}>
-                                <strong>Score:</strong> {game.score}
-                            </p>
-                            <p className={styles.date}>
-                                <strong>Fecha:</strong> {formatDate(game.game_date)}
-                            </p>
+                            <p className={styles.score}><strong>Score:</strong> {game.score}</p>
+                            <p className={styles.date}><strong>Date:</strong> {formatDate(game.game_date)}</p>
                         </div>
                     ))
                 ) : (
                     <p className={styles.noGamesMessage}>
-                        Aún no jugaste ninguna partida.
+                        No game registered.
                     </p>
                 )}
             </div>

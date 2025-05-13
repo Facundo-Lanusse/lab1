@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import styles from "./css/GamePlay.module.css";
+import styles from "./css/Ranking.module.css";
 
 
 function UserRanking() {
@@ -36,21 +36,30 @@ function UserRanking() {
     };
 
     return (
-        <div>
-            <div><img
-                className={styles.arrowLeftSolid1Icon}
-                alt="Back"
+        <div className={styles.container}>
+            <img
+                className={styles.backButton}
+                alt="Volver"
                 src="arrow-left-solid.svg"
                 onClick={() => navigate('/home')}
-            /></div>
-            <h2 className={styles.titleDePrueba}>Ranking de Usuarios</h2>
-            <ul >
-                {users.map((user) => (
-                    <button className = {styles.buttonAnswers} key={user.id}>
-                        {user.username} : ({user.rank_points})
-                    </button>
+            />
+
+            <div className={styles.headerSection}>
+                <h1 className={styles.gameTitle}>Ranking</h1>
+                <h2 className={styles.subtitle}>Best historical scores</h2>
+            </div>
+
+            <div className={styles.rankingList}>
+                {users.map((user, index) => (
+                    <div key={user.id} className={`${styles.rankingItem} ${index === 0 ? styles.firstPlace : ''}`}>
+                        <div className={styles.rankNumber}>{index + 1}</div>
+                        <div className={styles.rankUsername}>{user.username}</div>
+                        <div className={styles.rankScore}>{user.rank_points}</div>
+                    </div>
                 ))}
-            </ul>
+            </div>
+
+            <button className={styles.playButton} onClick={() => navigate('/play')}>Play</button>
         </div>
     );
 }
