@@ -18,16 +18,19 @@ function Profile () {
     const [emailForm, setEmailForm] = useState({email:""});
     const [passwordForm, setPasswordForm] = useState({password:"", repeatPassword:""});
 
-    const handleUsernameSumbit = async() =>{
+    const handleUsernameSubmit = async() =>{
         try {
-            const res = await axios.post("http://localhost:3000/api/editProfile/:username", {nameForm, userId: userId});
+            const res = await axios.put("http://localhost:3000/api/editProfile/username", {
+                username: nameForm.username,
+                userId: userId
+            });
             setMessage(res.data.message);
         } catch (error) {
             setMessage(error.response?.data?.error || "Error al cambiar");
         }
     }
 
-    const handleEmailSumbit = async() =>{
+    const handleEmailSubmit = async() =>{
         try {
             const res = await axios.post("http://localhost:3000/api/editProfile/:email", {emailForm, userId: userId});
             setMessage(res.data.message);
@@ -88,7 +91,7 @@ function Profile () {
                             value={nameForm.username}
                             onChange={handleNameChange}
                         />
-                        <button onClick={handleUsernameSumbit}>Modificar</button>
+                        <button onClick={handleUsernameSubmit}>Modificar</button>
                     </div>
 
                     <h2 className={styles.profileEmail}>{mail}</h2>
@@ -99,7 +102,7 @@ function Profile () {
                         value={emailForm.email}
                         onChange={handleEmailChange}
                     />
-                    <button onClick={handleEmailSumbit}>Modificar</button>
+                    <button onClick={handleEmailSubmit}>Modificar</button>
 
                     <h1 className={styles.profileEmail}>Change password</h1>
                     <input

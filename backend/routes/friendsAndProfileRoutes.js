@@ -3,11 +3,12 @@ const validateUser = require('../middleware/authenticationMiddleware');
 const express = require("express");
 const router = express.Router();
 
-router.put('/editProfile/:username', validateUser, async (req, res) => {
+router.put('/editProfile/username', validateUser, async (req, res) => {
     const { username, userId } = req.body;
     try {
         const checkNameQuery = 'select username from users where username = $1'
         const checkNameResult = await db.query(checkNameQuery,[username]);
+
         if (checkNameResult.rows.length > 0) {
             res.status(400).send({message: 'El nombre de usuario ya existe'});
         }
@@ -19,7 +20,7 @@ router.put('/editProfile/:username', validateUser, async (req, res) => {
     }
     catch (err) {
         console.log('Error al cargar el perfil desde la db',err);
-        res.status(400).send({message: 'No se pudo cargar el perfil'})
+        res.status(500).send({message: 'No se pudo cargar el perfil'})
     }
 })
 
@@ -30,7 +31,7 @@ router.put('/editProfile/:email', validateUser, async (req, res) => {
         const checkEmailQuery = 'select email from users where email = $1'
         const checkEmailResult = await db.query(checkEmailQuery,[email]);
         if (checkEmailResult.rows.length > 0) {
-            res.status(400).send({message: 'Este correo ya ha sido utilizado'});
+            res.status(400).send({message: 'Este correo ya ha sido utilizado por otra cuneta'});
         }
         else{
             const updateEmailQuery = 'update users set email=$1 where user_id=$2';
