@@ -12,14 +12,14 @@ router.post('/login', async (req, res) => {
 
         if (userQuery.rows.length > 0) {
             const user = userQuery.rows[0];
-            const token = jwt.sign({ id: user.user_id, username: user.username }, process.env.SECRET_JWT_KEY, {
+            const token = jwt.sign({ user_id: user.user_id}, process.env.SECRET_JWT_KEY, {
                 expiresIn: '1h'
             });
 
             return res.json({
                 message: 'Logueado correctamente',
                 user: {
-                    id: user.user_id,
+                    user_id: user.user_id,
                     email: user.email,
                     username: user.username,
                     is_admin: user.is_admin
