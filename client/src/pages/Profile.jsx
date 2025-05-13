@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { motion } from "framer-motion";
 import styles from "./css/Profile.module.css";
 
 function Profile () {
@@ -87,62 +88,74 @@ function Profile () {
     }
 
     return (
-        <div>
-            <div className={styles.container}>
-                <img
-                    className={styles.backButton}
-                    alt="Volver"
-                    src="arrow-left-solid.svg"
-                    onClick={() => navigate('/home')}
-                />
+        <div className={styles.container}>
+            <img
+                className={styles.backButton}
+                alt="Volver"
+                src="arrow-left-solid.svg"
+                onClick={() => navigate('/home')}
+            />
 
-                <div className={styles.card}>
+            <motion.div
+                className={styles.card}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <div className={styles.avatarSection}>
                     <img
                         className={styles.profileImage}
                         alt="Foto de perfil"
                         src={`defaultProfileImage.png`}
                     />
-                    <div>
-                        <h1 className={styles.profileName}>{user.username}</h1>
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="Enter new name..."
-                            value={nameForm.username}
-                            onChange={handleNameChange}
-                        />
-                        <button onClick={handleUsernameSubmit}>Modificar</button>
-                    </div>
+                    <p className={styles.usernameLabel}>@{user.username}</p>
+                </div>
 
-                    <h2 className={styles.profileEmail}>{user.email}</h2>
+                <div className={styles.inputGroup}>
+                    <label>Name</label>
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="New name..."
+                        value={nameForm.username}
+                        onChange={(e) => setNameForm({ ...nameForm, [e.target.name]: e.target.value })}
+                    />
+                    <motion.button whileTap={{ scale: 0.95 }} onClick={handleUsernameSubmit}>Submit</motion.button>
+                </div>
+
+                <div className={styles.inputGroup}>
+                    <label>Email</label>
                     <input
                         type="email"
                         name="email"
-                        placeholder="Enter new email..."
+                        placeholder="New email..."
                         value={emailForm.email}
-                        onChange={handleEmailChange}
+                        onChange={(e) => setEmailForm({ ...emailForm, [e.target.name]: e.target.value })}
                     />
-                    <button onClick={handleEmailSubmit}>Modificar mail</button>
+                    <motion.button whileTap={{ scale: 0.95 }} onClick={handleEmailSubmit}>Submit</motion.button>
+                </div>
 
-                    <h1 className={styles.profileEmail}>Change password</h1>
+                <div className={styles.inputGroup}>
+                    <label>New password</label>
                     <input
                         type="password"
                         name="password"
-                        placeholder="Enter new password..."
+                        placeholder="New password..."
                         value={passwordForm.password}
-                        onChange={handlePasswordChange}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, [e.target.name]: e.target.value })}
                     />
                     <input
                         type="password"
                         name="repeatPassword"
-                        placeholder="Repeat password..."
+                        placeholder="Repete password..."
                         value={passwordForm.repeatPassword}
-                        onChange={handlePasswordChange}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, [e.target.name]: e.target.value })}
                     />
-                    <button onClick={handlePasswordSubmit}>Modificar</button>
-                    <h3>{message}</h3>
+                    <motion.button whileTap={{ scale: 0.95 }} onClick={handlePasswordSubmit}>Submit</motion.button>
                 </div>
-            </div>
+
+                {message && <motion.p className={styles.message} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{message}</motion.p>}
+            </motion.div>
         </div>
     );
 
