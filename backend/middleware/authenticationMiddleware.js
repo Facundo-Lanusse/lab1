@@ -8,7 +8,7 @@ function validateUser (req, res, next) {
 
     jwt.verify(token, process.env.SECRET_JWT_KEY, (err, user) => {
         if (err) return res.sendStatus(403);
-        req.users = user
+        req.user = user
         next()
     });
 }

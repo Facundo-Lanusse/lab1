@@ -1,19 +1,22 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/Profile.module.css";
 
-
 function Profile () {
+
     const navigate = useNavigate();
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    const username = user.username;
-    const mail = user.email;
-    const userId = user.user_id;
+    const [user, setUser] = useState({ username: "", email: "", user_id: null });
+
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    },[]);
 
     const [message, setMessage] = useState("");
-
     const [nameForm, setNameForm] = useState({username:""});
     const [emailForm, setEmailForm] = useState({email:""});
     const [passwordForm, setPasswordForm] = useState({password:"", repeatPassword:""});
@@ -22,9 +25,15 @@ function Profile () {
         try {
             const res = await axios.put("http://localhost:3000/api/editProfile/username", {
                 username: nameForm.username,
-                userId: userId
+                userId: user.user_id
             });
+            //Actualizo la variable del localStorage
+            const updatedUser = { ...user, username: nameForm.username };
+            setUser(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
             setMessage(res.data.message);
+
         } catch (error) {
             setMessage(error.response?.data?.error || "Error al cambiar");
         }
@@ -32,8 +41,34 @@ function Profile () {
 
     const handleEmailSubmit = async() =>{
         try {
-            const res = await axios.post("http://localhost:3000/api/editProfile/:email", {emailForm, userId: userId});
+            const res = await axios.put("http://localhost:3000/api/editProfile/email", {
+                email: emailForm.email,
+                userId: user.user_id
+            });
             setMessage(res.data.message);
+            //Actualizo la variable del localStorage
+            const updatedUser = { ...user, email: emailForm.email };
+            setUser(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
+            setMessage(res.data.message);
+        } catch (error) {
+            setMessage(error.response?.data?.error || "Error al modificar");
+        }
+    }
+
+    const handlePasswordSubmit = async() =>{
+        try {
+            if(passwordForm.password === passwordForm.repeatPassword){const res = await axios.put("http://localhost:3000/api/editProfile/password", {
+                password: passwordForm.password,
+                userId: user.user_id
+            });
+                setMessage(res.data.message);
+
+            }
+            else{
+                setMessage("Las constrseñas no coinciden");
+            }
         } catch (error) {
             setMessage(error.response?.data?.error || "Error al modificar");
         }
@@ -50,21 +85,6 @@ function Profile () {
     const handlePasswordChange = (e) =>{
         setPasswordForm({...passwordForm, [e.target.name]: e.target.value});
     }
-
-
-    const handlePasswordSumbit = async() =>{
-        try {
-            if(passwordForm.password === passwordForm.password){const res = await axios.post("http://localhost:3000/api/editProfile/:email", {passwordForm, userId: userId});
-                setMessage(res.data.message);
-            }
-            else{
-                setMessage("Las constrseñas no coinciden");
-            }
-        } catch (error) {
-            setMessage(error.response?.data?.error || "Error al modificar");
-        }
-    }
-
 
     return (
         <div>
@@ -83,7 +103,7 @@ function Profile () {
                         src={`defaultProfileImage.png`}
                     />
                     <div>
-                        <h1 className={styles.profileName}>{username}</h1>
+                        <h1 className={styles.profileName}>{user.username}</h1>
                         <input
                             type="text"
                             name="username"
@@ -94,7 +114,7 @@ function Profile () {
                         <button onClick={handleUsernameSubmit}>Modificar</button>
                     </div>
 
-                    <h2 className={styles.profileEmail}>{mail}</h2>
+                    <h2 className={styles.profileEmail}>{user.email}</h2>
                     <input
                         type="email"
                         name="email"
@@ -102,7 +122,7 @@ function Profile () {
                         value={emailForm.email}
                         onChange={handleEmailChange}
                     />
-                    <button onClick={handleEmailSubmit}>Modificar</button>
+                    <button onClick={handleEmailSubmit}>Modificar mail</button>
 
                     <h1 className={styles.profileEmail}>Change password</h1>
                     <input
@@ -119,7 +139,8 @@ function Profile () {
                         value={passwordForm.repeatPassword}
                         onChange={handlePasswordChange}
                     />
-                    <button onClick={handlePasswordSumbit}>Modificar</button>
+                    <button onClick={handlePasswordSubmit}>Modificar</button>
+                    <h3>{message}</h3>
                 </div>
             </div>
         </div>
