@@ -114,6 +114,46 @@ router.delete('/deleteFriend:id', validateUser, async (req, res) => {
     }
 })
 
+// Endpoint para obtener amigos de un usuario
+router.get('/friends', async (req, res) => {
+    try {
+        // Obtener el ID del usuario de los parámetros de consulta
+        const userId = parseInt(req.query.userId);
+
+        if (isNaN(userId)) {
+            return res.status(400).json({ message: 'ID de usuario no válido' });
+        }
+
+        // Consulta SQL para obtener amigos con estado 'accepted'
+        const query = `
+            SELECT u.user_id, u.username, u.email, u.rank_points
+            FROM users u
+            JOIN friends f ON u.user_id = f.friend_id
+            WHERE f.user_id = $1 AND f.state = 'pending'
+            
+            UNION
+            
+            SELECT u.user_id, u.username, u.email, u.rank_points
+            FROM users u
+            JOIN friends f ON u.user_id = f.user_id
+            WHERE f.friend_id = $1 AND f.state = 'pending'
+        `;
+
+        const result = await db.query(query, [userId]);
+
+        console.log(`Encontrados ${result.rows.length} amigos para el usuario ${userId}`);
+
+        res.status(200).json({
+            friends: result.rows
+        });
+    } catch (error) {
+        console.error('Error al obtener amigos:', error);
+        res.status(500).json({
+            message: 'Error al cargar los amigos'
+        });
+    }
+});
+
 
 
 //todo: Faltaria lo de las imagenes del perfil, ya cree la tabla

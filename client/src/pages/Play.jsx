@@ -95,7 +95,7 @@ const Play = () => {
     };
 
     async function handleScoreUpload(){
-        const userId = JSON.parse(localStorage.getItem('user')).id
+        const userId = JSON.parse(localStorage.getItem('user')).user_id
         const scoreMessage = await axios.post("http://localhost:3000/api/uploadUserScore", {score, userId});
         console.log(scoreMessage.data.message);
         await handleSoloHistoryUpload();
@@ -108,7 +108,7 @@ const Play = () => {
     }
 
     async function handleSoloHistoryUpload() {
-        const userId = JSON.parse(localStorage.getItem('user')).id
+        const userId = JSON.parse(localStorage.getItem('user')).user_id
         await axios.post("http://localhost:3000/api/SetSoloHistory", {score, userId});
         console.log('Solo history uploaded', userId);
     }
