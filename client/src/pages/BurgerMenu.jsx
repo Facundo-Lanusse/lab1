@@ -58,6 +58,9 @@ export const BurgerMenu = () => {
                     <button className={styles.buttonForDesplegableMenu} onClick={handleLogOut}>
                         Log out
                     </button>
+                    <button className={styles.buttonForDesplegableMenu} onClick={() => navigate('/Friends')}>
+                        Friends
+                    </button>
                 </div>
             )}
         </div>
