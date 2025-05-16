@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 function Admin() {
+
     const navigate = useNavigate();
 
     useEffect(() => { //Igual a las líneas de home

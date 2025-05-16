@@ -66,54 +66,6 @@ router.put('/editProfile/password', async (req, res) => {
 })
 
 
-router.post('/friendRequest:id', validateUser, async (req, res) => {
-    const { username, friendId } = req.body;
-    try {
-        const checkFriendQuery = 'select * from users where username = $1';
-        const checkFriendResult = await db.query(checkFriendQuery,[username]);
-        if (checkFriendResult.rows < 1) {
-            res.status(404).send({message: 'No se encontro al usuario'});
-        }
-        else{
-            const userId = checkFriendResult.rows[0].user_id;
-            const checkFriendQuery = 'select * from friends where user_id = $1 and friend_id=$2';
-            const checkFriendResult = await db.query(checkFriendQuery,[userId, friendId]);
-            if (checkFriendResult.rows > 1) {
-                res.status(404).send({message: 'Ya eres amigo de este usuario'});
-            }
-            else{
-                const friendRequestQuery = 'insert into friends(user_id, friend_id) VALUES ($1, $2) ';
-                await db.query(friendRequestQuery,[userId, friendId]);
-                }
-        res.status(200).send({message: 'Solicitud enviada con exito'});
-        }
-    }
-    catch (err) {
-        console.log('Error al crear solicitud',err);
-        res.status(400).send({message: 'Error al enviar solicitud'});
-    }
-})
-
-router.delete('/deleteFriend:id', validateUser, async (req, res) => {
-    const { userId, friendId } = req.body;
-    try {
-        const checkFriendQuery = 'select * from friends where user_id = $1 and friend_id=$2';
-        const checkFriendResult = await db.query(checkFriendQuery,[userId, friendId]);
-        if (checkFriendResult.rows < 1) {
-            res.status(404).send({message: 'No existe está amistad'});
-        }
-        else{
-            const deleteFriendQuery = 'delete from friends where user_id = $1 and friend_id=$2 returning *';
-            await db.query(deleteFriendQuery,[userId, friendId]);
-            res.status(200).send({message: 'Amigo eliminado correctamente'});
-        }
-    }
-    catch (err) {
-        console.log('Error al eliminar amistad',err);
-        res.status(400).send({message: 'Error al enviar solicitud'});
-    }
-})
-
 
 
 //todo: Faltaria lo de las imagenes del perfil, ya cree la tabla

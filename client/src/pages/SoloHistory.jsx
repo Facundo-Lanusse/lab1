@@ -6,13 +6,13 @@ import styles from "./css/SoloHistory.module.css";
 const SoloHistory = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
+    const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
             navigate('/login');
         } else {
-            fetchUserHistory(user.id);
+            fetchUserHistory(user.user_id).then(r => {});
         }
     }, [navigate]);
 
