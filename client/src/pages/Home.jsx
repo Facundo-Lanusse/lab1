@@ -1,5 +1,6 @@
-import {Navigate} from 'react-router-dom';
-import {BurgerMenu} from "./BurgerMenu";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { BurgerMenu } from "./BurgerMenu";
 import styles from "./css/Home.module.css";
 import NavigationBar from "./NavigationBar";
 
@@ -10,13 +11,20 @@ const Home = () => {
         return <Navigate to="/login" />;
     }
 
-    return(
+    return (
         <div className={styles.homeContainer}>
-            <BurgerMenu/>
-            <h1 className={styles.titleDePrueba}>Welcome {user.username}</h1>
-            <NavigationBar/>
+            <BurgerMenu />
+
+            <div className={styles.homeContent}>
+                <h1 className={styles.welcomeTitle}>Bienvenido, <span>{user.username}</span></h1>
+
+                <div className={styles.featuresContainer}>
+                </div>
+            </div>
+
+            <NavigationBar />
         </div>
-    )
+    );
 };
 
 export default Home;

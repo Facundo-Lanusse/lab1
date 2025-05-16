@@ -20,6 +20,7 @@ app.use('/api', require('./routes/gamePlayRoutes'));
 app.use('/api', require('./routes/categoriesRoutes'));
 app.use('/api', require('./routes/profileRoutes'));
 app.use('/api', require('./routes/friendsRoutes'));
+app.use('/api', require('./routes/externUserProfileRoutes'));
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

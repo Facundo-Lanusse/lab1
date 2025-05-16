@@ -1,26 +1,114 @@
+/* Home.module.css */
+
+/* Variables de colores - manteniendo consistencia con FriendsMenu */
+:root {
+    --primary-color: #16b3b9;      /* Turquesa - color principal */
+    --secondary-color: #f5ba26;    /* Amarillo - acento */
+    --bg-color: #ffffff;           /* Fondo blanco */
+    --text-color: #333333;         /* Texto principal */
+    --text-light: #ffffff;         /* Texto claro */
+    --border-color: #e0e0e0;       /* Bordes suaves */
+    --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+}
+
 .homeContainer {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    background-color: white;
+    background-color: #f9f9f9;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    font-family: Inter, sans-serif;
+    overflow-y: auto;
 }
 
-.titleDePrueba {
-    font-family: sans-serif;
-    color: #000;
+.homeContent {
+    width: 100%;
+    max-width: 900px;
+    margin: 80px auto 30px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.welcomeTitle {
+    font-size: 36px;
+    color: var(--text-color);
     text-align: center;
+    margin-bottom: 40px;
+    font-weight: 600;
+}
+
+.welcomeTitle span {
+    color: var(--primary-color);
+}
+
+.featuresContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+}
+
+.featureCard {
+    background-color: var(--bg-color);
+    border-radius: 20px;
+    padding: 30px;
+    width: 250px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.featureCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.featureIcon {
     font-size: 40px;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    margin-bottom: 15px;
+}
+
+.featureCard h2 {
+    color: var(--primary-color);
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.featureCard p {
+    color: var(--text-color);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .homeContent {
+        margin-top: 60px;
+    }
+
+    .welcomeTitle {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .featuresContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .featureCard {
+        width: 100%;
+        max-width: 300px;
+    }
 }

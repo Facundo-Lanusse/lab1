@@ -112,6 +112,7 @@ function Friends() {
 
     const rejectFriendRequest = async (requestId) => {
         try {
+            console.log(requestId)
             await axios.delete('http://localhost:3000/api/rejectRequest', {
                 data: { requestId }
             });
