@@ -15,7 +15,6 @@ function Friends() {
     const [requestsLoading, setRequestsLoading] = useState(false);
     const [requestActionStatus, setRequestActionStatus] = useState(null);
 
-
     const [showAddFriendMenu, setShowAddFriendMenu] = useState(false);
     const [newFriendUsername, setNewFriendUsername] = useState('');
     const [friendRequestStatus, setFriendRequestStatus] = useState(null);
@@ -49,7 +48,6 @@ function Friends() {
         fetchFriends();
     }, [navigate]);
 
-
     const fetchPendingRequests = async () => {
         try {
             setRequestsLoading(true);
@@ -68,7 +66,6 @@ function Friends() {
         }
     };
 
-
     const toggleRequestsMenu = () => {
         if (!showRequestsMenu) {
             fetchPendingRequests();
@@ -76,14 +73,11 @@ function Friends() {
         setShowRequestsMenu(!showRequestsMenu);
     };
 
-
     const acceptFriendRequest = async (requestId) => {
         try {
             await axios.put('http://localhost:3000/api/acceptRequest', { requestId });
 
-
             setPendingRequests(pendingRequests.filter(req => req.request_id !== requestId));
-
 
             const user = JSON.parse(localStorage.getItem('user'));
             const userId = Number(user.user_id);
@@ -109,14 +103,12 @@ function Friends() {
         }
     };
 
-
     const rejectFriendRequest = async (requestId) => {
         try {
-            console.log(requestId)
+            console.log(requestId);
             await axios.delete('http://localhost:3000/api/rejectRequest', {
                 data: { requestId }
             });
-
 
             setPendingRequests(pendingRequests.filter(req => req.request_id !== requestId));
 
@@ -136,7 +128,6 @@ function Friends() {
             });
         }
     };
-
 
     const sendFriendRequest = async () => {
         if (!newFriendUsername.trim()) {
@@ -176,7 +167,6 @@ function Friends() {
                 setShowAddFriendMenu(false);
                 setFriendRequestStatus(null);
             }, 3000);
-
         } catch (err) {
             console.error('Error al enviar solicitud:', err);
             setFriendRequestStatus({
@@ -196,26 +186,35 @@ function Friends() {
             const user = JSON.parse(localStorage.getItem('user'));
             const userId = Number(user.user_id);
             const friendId = Number(friend.user_id);
-            console.log(friendId)
-            console.log(userId)
+            console.log(friendId);
+            console.log(userId);
 
             const response = await axios.delete('http://localhost:3000/api/deleteFriend:id', {
                 data: { userId, friendId }
             });
 
             setFriends(friends.filter(f => f.user_id !== friendId));
-
-
         } catch (error) {
             console.error('Error al eliminar amigo:', error);
             alert(error.response?.data?.message || 'Error al eliminar amigo');
         }
-    }
+    };
 
+    const handleGoBack = () => {
+        navigate(-1); // Navega a la página anterior
+    };
 
-return (
+    return (
         <div className={styles.pageContainer}>
             <div className={styles.friendsContainer}>
+                {/* Botón para volver atrás */}
+                <button
+                    className={styles.backButton}
+                    onClick={handleGoBack}
+                    aria-label="Volver atrás">
+                    <img src="arrow-left-solid.svg" alt="Volver" />
+                </button>
+
                 <h1 className={styles.friendsTitle}>Mis Amigos</h1>
 
                 {/* Contenedor de búsqueda con botones para añadir amigos y ver solicitudes */}
@@ -398,3 +397,4 @@ return (
 }
 
 export default Friends;
+

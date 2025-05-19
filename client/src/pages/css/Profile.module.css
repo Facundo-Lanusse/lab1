@@ -1,8 +1,22 @@
+/* Variables de colores - consistentes con FriendsMenu */
+:root {
+    --primary-color: #16b3b9;      /* Turquesa - color principal */
+    --secondary-color: #f5ba26;    /* Amarillo - acento */
+    --bg-color: #ffffff;           /* Fondo blanco */
+    --text-color: #333333;         /* Texto principal */
+    --text-light: #ffffff;         /* Texto claro */
+    --border-color: #e0e0e0;       /* Bordes suaves */
+    --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+    --error-color: #ff4c4c;        /* Color para errores */
+    --success-color: #42b983;      /* Color para éxito */
+}
+
 .container {
-    background-color: #0bc7d3;
+    background: linear-gradient(135deg, #16b3b9 0%, #14a1a6 100%);
     min-height: 100vh;
     padding: 20px 16px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -14,99 +28,201 @@
     position: absolute;
     top: 20px;
     left: 20px;
-    width: 24px;
-    height: 24px;
+    background-color: white; /* Cambiado a fondo blanco */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada para destacar del fondo */
+    padding: 0;
+    border: none;
+    overflow: hidden;
+}
+
+.backButton:hover {
+    transform: scale(1.05);
+    background-color: #f5f5f5; /* Color ligeramente gris al hover */
+}
+
+.backButton img {
+    width: 16px;
+    height: 16px;
+    filter: none; /* Quitado el filtro para que la flecha sea negra (color original) */
 }
 
 .card {
-    background-color: white;
+    background-color: var(--bg-color);
     width: 100%;
     max-width: 480px;
     border-radius: 24px;
-    padding: 32px 24px 48px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    margin-top: 60px;
+    padding: 24px 24px 32px; /* Reducido el padding */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    margin-top: 40px; /* Reducido el margen superior */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
 }
 
 .avatarSection {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 20px; /* Reducido el margen inferior */
+    position: relative;
 }
 
 .profileImage {
-    width: 96px;
-    height: 96px;
+    width: 80px; /* Reducido el tamaño */
+    height: 80px;
     border-radius: 50%;
-    background-color: #ccc;
     object-fit: cover;
-    margin-bottom: 8px;
+    margin-bottom: 12px; /* Reducido el margen */
+    border: 3px solid var(--bg-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.profileImage:hover {
+    transform: scale(1.05);
 }
 
 .usernameLabel {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--primary-color);
+    margin: 0;
+    padding: 6px 16px;
+    background-color: rgba(22, 179, 185, 0.1);
+    border-radius: 20px;
+}
+
+.userInfoLabel {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+    text-align: center;
 }
 
 .inputGroup {
     display: flex;
     flex-direction: column;
-    margin-bottom: 24px;
-    gap: 8px;
+    margin-bottom: 16px; /* Reducido el margen inferior */
+    gap: 8px; /* Reducido el espacio entre elementos */
+    position: relative;
+    padding: 6px; /* Reducido el padding */
+    border-radius: 16px;
+    transition: all 0.3s ease;
 }
 
-label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #444;
+.inputGroup:hover {
+    background-color: rgba(0, 0, 0, 0.02);
 }
 
-input {
-    padding: 12px;
-    border: 1px solid #ddd;
+.inputGroup label {
+    font-size: 13px; /* Reducido el tamaño de fuente */
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 2px; /* Reducido el margen */
+}
+
+.inputGroup input {
+    padding: 10px 14px; /* Reducido el padding */
+    border: 2px solid var(--border-color);
     border-radius: 12px;
-    font-size: 15px;
-    color: #333;
+    font-size: 14px; /* Reducido el tamaño de fuente */
+    color: var(--text-color);
     outline: none;
-    transition: border 0.2s;
+    transition: all 0.3s ease;
     width: 100%;
     box-sizing: border-box;
 }
 
-input:focus {
-    border-color: #0bc7d3;
+.inputGroup input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(22, 179, 185, 0.2);
 }
 
-button {
-    background-color: #ffcc00;
-    color: black;
+.inputGroup button {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
     border: none;
-    padding: 12px;
-    font-weight: bold;
-    font-size: 15px;
-    border-radius: 999px;
+    padding: 10px; /* Reducido el padding */
+    font-weight: 600;
+    font-size: 14px; /* Reducido el tamaño de fuente */
+    border-radius: 12px;
     cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-    transition: background-color 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
     width: 100%;
+    margin-top: 6px; /* Reducido el margen */
 }
 
-button:hover {
-    background-color: #ffe066;
+.inputGroup button:hover {
+    background-color: #e0aa20;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .message {
-    background-color: #e7f7f6;
-    color: #0c4d4a;
+    background-color: rgba(66, 185, 131, 0.15);
+    color: var(--success-color);
     font-size: 14px;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 14px;
+    border-radius: 12px;
     text-align: center;
-    margin-top: 12px;
+    margin-top: 16px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease-in-out;
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para mensajes de error */
+.errorMessage {
+    background-color: rgba(255, 76, 76, 0.15);
+    color: var(--error-color);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .card {
+        padding: 24px 16px 32px;
+        margin-top: 40px;
+    }
+
+    .profileImage {
+        width: 100px;
+        height: 100px;
+    }
+
+    .backButton {
+        top: 12px;
+        left: 12px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .inputGroup {
+        gap: 8px;
+    }
+
+    .inputGroup input,
+    .inputGroup button {
+        padding: 12px;
+    }
+}
+

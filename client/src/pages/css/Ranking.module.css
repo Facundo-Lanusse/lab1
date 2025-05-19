@@ -1,14 +1,29 @@
 /* Ranking.module.css */
 
+/* Variables de colores - consistentes con el resto de la aplicación */
+:root {
+    --primary-color: #16b3b9;      /* Turquesa - color principal */
+    --secondary-color: #f5ba26;    /* Amarillo - acento */
+    --bg-color: #ffffff;           /* Fondo blanco */
+    --text-color: #333333;         /* Texto principal */
+    --text-light: #ffffff;         /* Texto claro */
+    --border-color: #e0e0e0;       /* Bordes suaves */
+    --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+    --gold: #ffd700;               /* Color oro para primer lugar */
+    --silver: #c0c0c0;             /* Color plata para segundo lugar */
+    --bronze: #cd7f32;             /* Color bronce para tercer lugar */
+}
+
 .container {
-    background-color: #0bc7d3;
+    background: linear-gradient(135deg, #16b3b9 0%, #14a1a6 100%);
     min-height: 100vh;
     padding: 20px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: white;
+    color: var(--text-light);
     position: relative;
 }
 
@@ -16,81 +31,346 @@
     position: absolute;
     top: 20px;
     left: 20px;
-    width: 24px;
-    height: 24px;
+    background-color: var(--bg-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    border: none;
+}
+
+.backButton img {
+    width: 16px;
+    height: 16px;
+    filter: none;
+}
+
+.backButton:hover {
+    transform: scale(1.05);
+    background-color: #f5f5f5;
 }
 
 .headerSection {
-    margin-top: 80px;
+    margin-top: 70px;
     text-align: center;
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .gameTitle {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: bold;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
     font-size: 18px;
-    margin-top: 4px;
-    color: white;
+    margin-top: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.rankingContainer {
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--bg-color);
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    margin-top: 30px;
+    animation: slideUp 0.7s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.rankingHeader {
+    display: flex;
+    padding: 10px 12px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 15px;
+    color: #777;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.rankingHeader .rankNumber {
+    width: 40px;
+    text-align: center;
+}
+
+.rankingHeader .rankUsername {
+    flex-grow: 1;
+    text-align: left;
+    padding-left: 16px;
+}
+
+.rankingHeader .rankScore {
+    width: 80px;
+    text-align: right;
 }
 
 .rankingList {
-    margin-top: 10px;
-    width: 90%;
-    max-width: 400px;
+    width: 100%;
+    overflow-y: auto;
+    max-height: 50vh;
+    padding-right: 5px;
+}
+
+.rankingList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rankingList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.rankingList::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
 }
 
 .rankingItem {
-    background-color: white;
-    color: black;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 16px;
+    padding: 12px 16px;
     margin-bottom: 10px;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.firstPlace {
-    border: 2px solid gold;
+.rankingItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .rankNumber {
-    width: 24px;
+    width: 40px;
     text-align: center;
     font-weight: bold;
+}
+
+/* Estilos para los primeros lugares */
+.firstPlace, .secondPlace, .thirdPlace {
+    position: relative;
+}
+
+.firstPlace {
+    background-color: rgba(255, 215, 0, 0.1);
+    border-left: 4px solid var(--gold);
+}
+
+.secondPlace {
+    background-color: rgba(192, 192, 192, 0.1);
+    border-left: 4px solid var(--silver);
+}
+
+.thirdPlace {
+    background-color: rgba(205, 127, 50, 0.1);
+    border-left: 4px solid var(--bronze);
+}
+
+.medal {
+    position: absolute;
+    right: 95px; /* Cambiado de 10px para evitar superposición con los puntos */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    opacity: 0.5; /* Aumentado de 0.3 para mejor visibilidad */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px; /* Ligeramente más grande */
+}
+
+.firstPlace .medal {
+    color: var(--gold);
+}
+
+.secondPlace .medal {
+    color: var(--silver);
+}
+
+.thirdPlace .medal {
+    color: var(--bronze);
 }
 
 .rankUsername {
     flex-grow: 1;
     text-align: left;
     margin-left: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
 }
 
 .rankScore {
     font-weight: bold;
+    color: var(--primary-color);
+    width: 80px;
+    text-align: right;
 }
 
 .playButton {
-    margin-top: auto;
+    margin-top: 30px;
     margin-bottom: 40px;
-    background-color: #ffcc00;
-    color: white;
+    background-color: var(--secondary-color);
+    color: var(--text-light);
     border: none;
-    border-radius: 999px;
-    padding: 14px 40px;
-    font-size: 30px;
-    font-weight: bold;
+    border-radius: 30px;
+    padding: 16px 36px;
+    font-size: 20px;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.playButton svg {
+    width: 20px;
+    height: 20px;
 }
 
 .playButton:hover {
-    background-color: #ffd633;
+    background-color: #e0aa20;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.filterControls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.searchInput {
+    padding: 10px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 14px;
+    width: 60%;
+    transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.sortButton {
+    background-color: transparent;
+    border: 2px solid var(--border-color);
+    color: #555;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sortButton:hover {
+    background-color: #f5f5f5;
+}
+
+.noResults {
+    text-align: center;
+    padding: 30px 0;
+    color: #777;
+}
+
+/* Para resaltar al usuario actual */
+.currentUser {
+    background-color: rgba(22, 179, 185, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Responsive para tablets y móviles */
+@media screen and (max-width: 768px) {
+    .rankingContainer {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .rankingItem {
+        padding: 10px 12px;
+    }
+
+    .playButton {
+        padding: 14px 30px;
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .gameTitle {
+        font-size: 28px;
+    }
+
+    .subtitle {
+        font-size: 16px;
+    }
+
+    .rankingContainer {
+        padding: 12px;
+    }
+
+    .rankingItem {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .rankNumber {
+        width: 30px;
+    }
+
+    .rankUsername {
+        margin-left: 8px;
+    }
+
+    .rankScore {
+        width: 60px;
+    }
+
+    .playButton {
+        padding: 12px 24px;
+        font-size: 16px;
+        margin-bottom: 80px; /* Espacio para la barra de navegación */
+    }
+
+    .filterControls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .searchInput {
+        width: 100%;
+    }
 }

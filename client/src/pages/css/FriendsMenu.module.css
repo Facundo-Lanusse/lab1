@@ -10,6 +10,39 @@
     --border-color: #e0e0e0;       /* Bordes suaves */
     --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+    --error-color: #ff4c4c;        /* Color para errores */
+    --success-color: #42b983;      /* Color para éxito */
+}
+
+/* Botón para volver atrás */
+.backButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+    padding: 0; /* Eliminar padding para que la imagen se ajuste mejor */
+}
+
+.backButton:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05);
+}
+
+.backButton img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1); /* Hace que el SVG sea blanco */
 }
 
 /* Contenedor principal */
@@ -22,6 +55,7 @@
     border-radius: 20px;
     box-shadow: var(--shadow);
     font-family: Inter, sans-serif;
+    position: relative;
 }
 
 /* Título principal */
@@ -33,7 +67,7 @@
     font-weight: 600;
 }
 
-/* Barra de búsqueda y botón de añadir */
+/* Barra de búsqueda y botones de acción */
 .searchAndAddContainer {
     display: flex;
     justify-content: space-between;
@@ -48,7 +82,7 @@
 }
 
 .searchInput {
-    width: 100%;
+    width: 90%;
     padding: 12px 20px;
     border: 2px solid var(--border-color);
     border-radius: 30px;
@@ -63,6 +97,35 @@
     box-shadow: 0 0 0 2px rgba(22, 179, 185, 0.2);
 }
 
+/* Contenedor de botones de acción */
+.actionButtons {
+    display: flex;
+    gap: 20px;
+}
+
+/* Botón para ver solicitudes */
+.requestsButton {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+}
+
+.requestsButton:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05);
+}
+
+/* Botón para añadir amigos */
 .addFriendButton {
     background-color: var(--secondary-color);
     color: var(--text-light);
@@ -147,15 +210,22 @@
 .actionButton {
     background: none;
     border: none;
-    color: var(--primary-color);
+    font-size: 18px;
     cursor: pointer;
-    font-size: 16px;
-    transition: color 0.2s;
-    padding: 5px;
+    transition: all 0.2s;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    width: 36px;
+    height: 36px;
 }
 
 .actionButton:hover {
-    color: var(--hover-color);
+    background-color: var(--border-color);
+    transform: scale(1.05);
 }
 
 /* Menú para añadir amigos */
@@ -170,9 +240,30 @@
     z-index: 100;
     width: 300px;
     border: 1px solid var(--border-color);
+    animation: fadeIn 0.2s ease-in-out;
 }
 
-.addFriendMenu h3 {
+/* Menú de solicitudes de amistad */
+.requestsMenu {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background-color: var(--bg-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    z-index: 100;
+    width: 320px;
+    border: 1px solid var(--border-color);
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.requestsMenu h3, .addFriendMenu h3 {
     color: var(--primary-color);
     margin-top: 0;
     margin-bottom: 15px;
@@ -212,8 +303,108 @@
     background-color: #e0aa20;
 }
 
+/* Lista de solicitudes */
+.requestsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.requestItem {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.requestItem:hover {
+    background-color: #f0f0f0;
+}
+
+.requestAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 16px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.requestInfo {
+    flex-grow: 1;
+}
+
+.requestUsername {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.requestActions {
+    display: flex;
+    gap: 8px;
+}
+
+.requestActionButton {
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.acceptButton {
+    background-color: var(--success-color);
+    color: var(--text-light);
+}
+
+.acceptButton:hover {
+    background-color: #38a572;
+    transform: scale(1.05);
+}
+
+.rejectButton {
+    background-color: var(--error-color);
+    color: var(--text-light);
+}
+
+.rejectButton:hover {
+    background-color: #e63c3c;
+    transform: scale(1.05);
+}
+
+/* Estado de carga y mensajes vacíos */
+.menuLoadingState {
+    padding: 20px 0;
+    text-align: center;
+    color: #777777;
+}
+
+.emptyRequestsMessage {
+    padding: 15px 0;
+    text-align: center;
+    color: #777777;
+    font-size: 14px;
+}
+
 /* Estados de notificación */
-.requestStatus {
+.requestStatus, .actionStatus {
     margin-top: 12px;
     padding: 10px;
     border-radius: 8px;
@@ -222,13 +413,13 @@
 }
 
 .statusSuccess {
-    background-color: rgba(22, 179, 185, 0.2);
-    color: var(--primary-color);
+    background-color: rgba(66, 185, 131, 0.2);
+    color: var(--success-color);
 }
 
 .statusError {
     background-color: rgba(255, 76, 76, 0.2);
-    color: #ff4c4c;
+    color: var(--error-color);
 }
 
 /* Estados de carga y error */
@@ -265,6 +456,21 @@
     font-size: 16px;
 }
 
+/* Contenedor para la página completa */
+.pageContainer {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    background: linear-gradient(135deg, #16b3b9 0%, #14a1a6 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    font-family: Inter, system-ui, sans-serif;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .friendsContainer {
@@ -277,22 +483,85 @@
         margin-bottom: 20px;
     }
 
-    .addFriendMenu {
-        width: 90%;
-        right: 5%;
+    .searchAndAddContainer {
+        flex-wrap: wrap;
+    }
+
+    .searchContainer {
+        margin-bottom: 15px;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .actionButtons {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .addFriendMenu, .requestsMenu {
+        width: 100%;
+        right: 0;
+        box-sizing: border-box;
+    }
+
+    .friendItem {
+        padding: 12px 15px;
+    }
+
+    .actionButton {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
     }
 }
 
-/* Contenedor para la página completa */
-.pageContainer {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #16b3b9;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 30px 20px;
-    box-sizing: border-box;
-    font-family: Inter, sans-serif;
+/* Tema oscuro - si se implementa en el futuro */
+@media (prefers-color-scheme: dark) {
+    body.dark-theme .pageContainer {
+        background: linear-gradient(135deg, #14a1a6 0%, #0e8285 100%);
+    }
+
+    body.dark-theme .friendsContainer {
+        background-color: #222222;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-theme .friendsTitle,
+    body.dark-theme .requestsMenu h3,
+    body.dark-theme .addFriendMenu h3 {
+        color: var(--primary-color);
+    }
+
+    body.dark-theme .searchInput,
+    body.dark-theme .addFriendInput {
+        background-color: #333333;
+        color: #ffffff;
+        border-color: #444444;
+    }
+
+    body.dark-theme .friendItem,
+    body.dark-theme .requestItem {
+        background-color: #333333;
+        border-color: #444444;
+    }
+
+    body.dark-theme .friendUsername,
+    body.dark-theme .requestUsername {
+        color: #ffffff;
+    }
+
+    body.dark-theme .friendStatus {
+        color: #aaaaaa;
+    }
+
+    body.dark-theme .actionButton {
+        background-color: #444444;
+        color: #ffffff;
+    }
+
+    body.dark-theme .actionButton:hover {
+        background-color: #555555;
+    }
 }
+
+
