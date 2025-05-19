@@ -67,9 +67,7 @@ router.get('/friends', async (req, res) => {
             FROM users u
             JOIN friends f ON u.user_id = f.friend_id
             WHERE f.user_id = $1 AND f.state = 'accepted'
-            
             UNION
-            
             SELECT u.user_id, u.username, u.email, u.rank_points
             FROM users u
             JOIN friends f ON u.user_id = f.user_id

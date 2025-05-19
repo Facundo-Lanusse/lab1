@@ -21,6 +21,7 @@ app.use('/api', require('./routes/categoriesRoutes'));
 app.use('/api', require('./routes/profileRoutes'));
 app.use('/api', require('./routes/friendsRoutes'));
 app.use('/api', require('./routes/externUserProfileRoutes'));
+app.use('/api', require('./routes/clsssicModeRoutes'));
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
