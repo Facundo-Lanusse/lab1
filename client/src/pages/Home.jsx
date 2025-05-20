@@ -1,8 +1,8 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { BurgerMenu } from "./BurgerMenu";
+import { BurgerMenu } from "../components/BurgerMenu";
 import styles from "./css/Home.module.css";
-import NavigationBar from "./NavigationBar";
+import NavigationBar from "../components/NavigationBar";
 
 const Home = () => {
     const user = JSON.parse(localStorage.getItem('user'));

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import styles from "./css/NavigationBar.module.css";
+import styles from "../pages/css/NavigationBar.module.css";
 
 const NavigationBar = () => {
     const navigate = useNavigate();

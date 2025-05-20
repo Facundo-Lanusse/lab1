@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
-import NavigationBar from "./NavigationBar";
+import NavigationBar from "../components/NavigationBar";
 
 const PlayMenu = () => {
     const navigate = useNavigate();
