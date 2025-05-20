@@ -15,6 +15,20 @@ router.get('/FetchCategories', async (req, res) => {
     }
 })
 
+router.get('/categories', async (req, res) => {
+    try {
+        const categoriesQuery = 'SELECT category_id, name FROM category';
+        const categoryQueryResult = await db.query(categoriesQuery);
+        res.json({
+            success: true,
+            categories: categoryQueryResult.rows
+        });
+    }
+    catch(err) {
+        console.error("Error al obtener categorías con IDs", err);
+        res.status(500).json({ success: false, error: 'Error al obtener categorías' });
+    }
+});
 
 router.post('/CreateCategory', async (req, res) => {
     const {name} = req.body;
@@ -49,3 +63,4 @@ router.post('/ModifyCategory', async (req, res) => {
 
 
 module.exports = router;
+

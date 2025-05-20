@@ -89,9 +89,9 @@ const validateFriendship = async (req, res, next) => {
     try {
         const checkFriendshipQuery = `
         SELECT * 
-        FROM friendships 
-        WHERE ((user_id1 = $1 AND user_id2 = $2) OR (user_id1 = $2 AND user_id2 = $1))
-        AND status = 'accepted'
+        FROM friends 
+        WHERE ((user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1))
+        AND state = 'accepted'
         `;
         const friendshipResult = await db.query(checkFriendshipQuery, [userId, opponentId]);
 

@@ -5,7 +5,7 @@ const { validateFriendship, validateBattleExists, validateUserTurn } = require('
 const {route} = require("express/lib/application");
 
 // Ruta para iniciar una batalla - usamos validateFriendship como middleware
-router.post('/start', validateFriendship, async (req, res) => {
+router.post('/classic/start', validateFriendship, async (req, res) => {
     const { userId, opponentId } = req.body;
 
     try {
@@ -48,7 +48,7 @@ async function initializeCategories(battleid, userId) {
     for ( const category in categoriesResult.rows) {
         const categoryId = categoriesResult.rows[category].category_id;
         const insertCategoryQuery = `
-        INSERT INTO battle_category (battle_id, user_id, category_id, completed)
+        INSERT INTO battle_categories (battle_id, user_id, category_id, completed)
         VALUES ($1, $2, $3, false)
         `;
         await db.query(insertCategoryQuery, [battleid, userId, categoryId]);
@@ -56,7 +56,7 @@ async function initializeCategories(battleid, userId) {
 }
 
 // Ruta para obtener información de una batalla - usamos validateBattleExists como middleware
-router.get('/battle/:battleId', validateBattleExists, async (req, res) => {
+router.get('/classic/battle/:battleId', validateBattleExists, async (req, res) => {
     // Ya tenemos la batalla en req.battle gracias al middleware
     res.json({
         success: true,
@@ -65,7 +65,7 @@ router.get('/battle/:battleId', validateBattleExists, async (req, res) => {
 });
 
 // Esta ruta obtiene el estado de la batalla - usamos validateBattleExists
-router.get('/battle/:battleId/state', validateBattleExists, async (req, res) => {
+router.get('/classic/battle/:battleId/state', validateBattleExists, async (req, res) => {
     try {
         const battleId = req.params.battleId;
         const battle = req.battle; // Usamos la batalla que ya fue validada por el middleware
@@ -73,7 +73,7 @@ router.get('/battle/:battleId/state', validateBattleExists, async (req, res) => 
         // Busco estado de las categorías
         const categoriesQuery = `
         select bc.user_id, bc.category_id, bc.completed, c.name
-        from battle_category bc
+        from battle_categories bc
         join category c on bc.category_id = c.category_id
         where bc.battle_id = $1
         `;
@@ -112,7 +112,7 @@ router.get('/battle/:battleId/state', validateBattleExists, async (req, res) => 
 });
 
 // Esta ruta obtiene preguntas aleatorias - usamos validateBattleExists
-router.get('/battle/:battleId/questions', validateBattleExists, async (req, res) => {
+router.get('/classic/battle/:battleId/questions', validateBattleExists, async (req, res) => {
     try {
         const categoryId = req.query.categoryId;
 
@@ -157,7 +157,7 @@ router.get('/battle/:battleId/questions', validateBattleExists, async (req, res)
 });
 
 // Ruta para procesar respuesta a pregunta - usamos validateBattleExists y validateUserTurn
-router.post('/battle/:battleId/answer', validateBattleExists, validateUserTurn, async (req, res) => {
+router.post('/classic/battle/:battleId/answer', validateBattleExists, validateUserTurn, async (req, res) => {
    try {
        const battleId = req.params.battleId;
        const { questionId, answerId, userId } = req.body;
@@ -248,7 +248,7 @@ router.post('/battle/:battleId/answer', validateBattleExists, validateUserTurn, 
 });
 
 // Ruta para seleccionar categoría - usamos validateBattleExists y validateUserTurn
-router.post('/battle/:battleId/select-category', validateBattleExists, validateUserTurn, async (req, res) => {
+router.post('/classic/battle/:battleId/select-category', validateBattleExists, validateUserTurn, async (req, res) => {
     try {
         const battleId = req.params.battleId;
         const { categoryId, userId } = req.body;
@@ -256,7 +256,7 @@ router.post('/battle/:battleId/select-category', validateBattleExists, validateU
 
         // Actualizo la categoria seleccionada
         const selectCategoryQuery = `
-            update battle_category
+            update battle_categories
             set completed = true
             where battle_id = $1 and user_id = $2 and category_id = $3
             returning *
@@ -294,3 +294,8 @@ router.post('/battle/:battleId/select-category', validateBattleExists, validateU
 });
 
 module.exports = router;
+
+
+
+
+
