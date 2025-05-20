@@ -4,7 +4,6 @@ import styles from "./css/SignUp.module.css";
 import { useNavigate } from 'react-router-dom';
 import styles2 from "./css/SuggestionList.module.css";
 
-
 const CreateCategory = () => {
     const navigate = useNavigate();
 

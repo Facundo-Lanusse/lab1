@@ -187,3 +187,29 @@ CREATE TABLE IF NOT EXISTS battle_answer (
     answer_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (battle_id, user_id, question_id)
     );
+
+CREATE TABLE community_category (
+                                    community_category_id SERIAL PRIMARY KEY,
+                                    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+alter table community_category
+    add COLUMN user_id int references users(user_id);
+
+CREATE TABLE community_question (
+                                    community_question_id SERIAL PRIMARY KEY,
+                                    question_text TEXT NOT NULL,
+                                    community_category_id INT REFERENCES community_category(community_category_id) ON DELETE SET NULL,
+                                    alreadyPicked BOOLEAN DEFAULT FALSE
+);
+
+
+CREATE TABLE community_answer (
+                                  community_answer_id SERIAL PRIMARY KEY,
+                                  community_question_id INT NOT NULL REFERENCES community_question(community_question_id) ON DELETE CASCADE,
+                                  answer_text TEXT NOT NULL,
+                                  is_correct BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+
+

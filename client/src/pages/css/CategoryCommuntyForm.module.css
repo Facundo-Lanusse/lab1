@@ -1,0 +1,326 @@
+/* CategoryCommuntyForm.module.css */
+
+/* Variables de colores - similar a FriendsMenu */
+:root {
+    --primary-color: #16b3b9;      /* Turquesa - color principal */
+    --secondary-color: #3fb916;    /* Verde - acento */
+    --bg-color: #ffffff;           /* Fondo blanco */
+    --text-color: #333333;         /* Texto principal */
+    --text-light: #ffffff;         /* Texto claro */
+    --border-color: #e0e0e0;       /* Bordes suaves */
+    --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+    --error-color: #ff4c4c;        /* Color para errores */
+    --success-color: #42b983;      /* Color para éxito */
+    --section-bg: #f9f9f9;         /* Fondo para secciones */
+    --inactive-color: #d1d1d1;     /* Color para elementos inactivos */
+}
+
+/* Contenedor principal */
+.categoryContainer {
+    width: 100%;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 40px 30px;
+    background-color: var(--bg-color);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    font-family: Inter, sans-serif;
+    position: relative;
+}
+
+/* Botón para volver atrás */
+.backButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+    padding: 0;
+}
+
+.backButton:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05);
+}
+
+.backButton img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1); /* Hace que el SVG sea blanco */
+}
+
+/* Título principal */
+.categoryTitle {
+    font-size: 32px;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+    padding-top: 15px;
+}
+
+/* Contenedor del formulario */
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Secciones del formulario */
+.formSection {
+    background-color: var(--section-bg);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Título de sección */
+.sectionTitle {
+    font-size: 20px;
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 500;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+/* Grupo de inputs */
+.inputGroup {
+    margin-bottom: 20px;
+}
+
+/* Etiquetas para inputs */
+.inputLabel {
+    display: block;
+    font-size: 16px;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* Inputs del formulario */
+.formInput {
+    width: 90%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(22, 179, 185, 0.2);
+}
+
+/* Estilo especial para la respuesta correcta */
+.correctAnswer {
+    border-color: var(--secondary-color);
+    background-color: rgba(63, 185, 22, 0.05);
+}
+
+.correctAnswer:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 2px rgba(63, 185, 22, 0.2);
+}
+
+/* Contenedor de respuestas */
+.answerContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Título de la pregunta */
+.questionTitle {
+    font-size: 22px;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Navegación de preguntas */
+.questionNavigation {
+    background-color: var(--section-bg);
+    padding: 15px 20px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.questionIndicators {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.questionIndicator {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid var(--inactive-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.activeIndicator {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.completedIndicator {
+    border-color: var(--secondary-color);
+    background-color: var(--bg-color);
+    color: var(--secondary-color);
+}
+
+.completionStatus {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-top: 5px;
+}
+
+/* Formulario de pregunta */
+.questionForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Botones de navegación entre preguntas */
+.navigationButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.navButton {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.navButton:hover:not(:disabled) {
+    background-color: var(--hover-color);
+}
+
+.navButton:disabled {
+    background-color: var(--inactive-color);
+    cursor: not-allowed;
+}
+
+/* Botón de envío */
+.submitButton {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+    margin-top: 10px;
+    align-self: center;
+    max-width: 400px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.submitButton:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+/* Mensajes de estado */
+.statusMessage {
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    text-align: center;
+    margin: 0 auto;
+    max-width: 500px;
+}
+
+/* Estado de éxito */
+.success {
+    background-color: rgba(66, 185, 131, 0.1);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+/* Estado de error */
+.error {
+    background-color: rgba(255, 76, 76, 0.1);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+/* Estado de carga */
+.loading {
+    background-color: rgba(22, 179, 185, 0.1);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+/* Adaptabilidad para móviles */
+@media (max-width: 768px) {
+    .categoryContainer {
+        padding: 25px 15px;
+        margin: 20px auto;
+    }
+
+    .answerContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .categoryTitle {
+        font-size: 26px;
+        margin-top: 30px;
+    }
+
+    .backButton {
+        top: 15px;
+        left: 15px;
+    }
+
+    .questionIndicator {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+}

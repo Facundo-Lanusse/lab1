@@ -16,6 +16,8 @@ import Friends from "./pages/Friends";
 import UserProfile from "./pages/ExternUserProfile";
 import ClassicMode from "./pages/ClassicMode";
 import Roulette from "./pages/Roulette";
+import Community from "./pages/Community";
+import CreateCommunityCategory from "./pages/CreateCommunityCategory";
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
           <Route path="/classic/:battleId" element={<ClassicMode />} />
           <Route path="/classic" element={<ClassicMode />} />
           <Route path="/roulette" element={<Roulette />} />
+          <Route path="/Communities" element={<Community />} />
+          <Route path="/Create-Category" element={<CreateCommunityCategory />} />
         </Routes>
       </Router>
   );
