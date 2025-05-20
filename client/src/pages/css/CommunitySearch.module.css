@@ -1,0 +1,72 @@
+
+.categoryCardsContainer{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.categoryCard{
+    background-color: var(--bg-color);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-Items: center;
+    transition: all 0.2s ease;
+    box-Shadow: var(--shadow);
+    cursor: pointer;
+}
+
+.categoryCard:hover{
+    transform: scale(1.05);
+}
+
+.categoryIcon{
+    background-color: var(--primary-color);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    color: var(--text-light);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+.categoryName{
+    color: var(--text-color);
+    margin: 0 0 10px 0;
+    text-Align: center;
+}
+
+.categoryButton{
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    margin-top: auto;
+}
+
+.createCategoryButton{
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

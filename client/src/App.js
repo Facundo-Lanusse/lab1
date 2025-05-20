@@ -13,6 +13,8 @@ import CategoryManager from "./pages/CategoryManager";
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
 import UserProfile from "./pages/ExternUserProfile";
+import Community from "./pages/Community";
+import CreateCommunityCategory from "./pages/CreateCommunityCategory";
 
 function App() {
   return (
@@ -30,7 +32,9 @@ function App() {
             <Route path="/CategoryManager" element={<CategoryManager />} />
             <Route path="/Profile" element={<Profile />} />
             <Route path="/Friends" element={<Friends />} />
-          <Route path="/profile/:userId" element={<UserProfile />} />
+          <Route path="/Profile/:userId" element={<UserProfile />} />
+          <Route path="/Communities" element={<Community />} />
+          <Route path="/Create-Category" element={<CreateCommunityCategory />} />
         </Routes>
       </Router>
   );
