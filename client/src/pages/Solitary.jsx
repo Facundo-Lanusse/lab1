@@ -2,29 +2,28 @@ import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
-import NavigationBar from "./NavigationBar";
 
-
-const Play = () => {
+const Solitary = () => {
     const navigate = useNavigate();
-
     const [MainQuestion, setMainQuestion] = useState('');
     const [questionId, setQuestionId] = useState();
     const [answers, setAnswers] = useState([]);
     const [score, setScore] = useState(0);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-
-
+    // Función para cargar preguntas y respuestas
     const FetchQuestionAndAnswers = useCallback(async () => {
         try {
+            setLoading(true);
             const res = await axios.get("http://localhost:3000/api/PlayQuestions");
 
-           if(res.data.allQuestionChecked){//Si ya se respondieron todas, vuelve al home y las deschequea
+           if(res.data.allQuestionChecked){
+               // Si ya se respondieron todas, vuelve al home y las deschequea
                handleQuestionUncheck()
                alert('Todas las preguntas respondidas bien')
-               navigate('/home')
+               navigate('/play')
            }
            else{
                // Removemos las clases CSS de los botones
@@ -42,34 +41,37 @@ const Play = () => {
                setSelectedIndex(null);
                setIsAnswerCorrect(null);
            }
-
+           setLoading(false);
         } catch (error) {
             console.log('Fallo la llamada a la consulta', error);
+            setLoading(false);
         }
     }, [navigate]);
 
+    // Cargar preguntas al iniciar
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) { //Si no lo está lo mando a su casa
+        if (!user) {
             navigate('/login');
+            return;
         }
         FetchQuestionAndAnswers();
-    }, [FetchQuestionAndAnswers]);
+    }, [FetchQuestionAndAnswers, navigate]);
 
     // Marco como respondida las preguntas
     const handleQuestionCheck = useCallback(async () => {
+        if (!questionId) return;
+
         const res = await axios.post("http://localhost:3000/api/CheckQuestion", {
             questionId: questionId,
         });
         console.log(res.data.message);
-        console.log(res.data.id);
     }, [questionId]);
 
     // Desmarco todas las preguntas para poder volver a jugar
     const handleQuestionUncheck = useCallback(async () => {
         await axios.post("http://localhost:3000/api/UncheckQuestion");
-        navigate('/home');
-    }, [navigate]);
+    }, []);
 
     const isCorrect = async (answer, index) => {
         setSelectedIndex(index);
@@ -78,18 +80,18 @@ const Play = () => {
         if (answer.is_correct) {
             setScore(score + 1);
             setTimeout(async () => {
-                setSelectedIndex(null); //Resteo el index para volver a usarlo
-                setIsAnswerCorrect(null);//Resteo el buleano para volver a usarlo
-                await handleQuestionCheck(); //Marco la pregunta como ya respondida
-                await FetchQuestionAndAnswers();//traigo la siguiente pregunta
+                setSelectedIndex(null); // Reseteo el index para volver a usarlo
+                setIsAnswerCorrect(null); // Reseteo el booleano para volver a usarlo
+                await handleQuestionCheck(); // Marco la pregunta como ya respondida
+                await FetchQuestionAndAnswers(); // Traigo la siguiente pregunta
             }, 1000);
         } else {
             setTimeout(async () => {
                 setSelectedIndex(null);
                 setIsAnswerCorrect(null);
-                await handleQuestionUncheck();//Desmarco a todas las preguntas
-                await handleScoreUpload();//Agrego el score al ranking del usuario
-
+                await handleQuestionUncheck(); // Desmarco a todas las preguntas
+                await handleScoreUpload(); // Agrego el score al ranking del usuario
+                navigate('/play'); // Volver al menú de juego
             }, 1000);
         }
     };
@@ -101,16 +103,19 @@ const Play = () => {
         await handleSoloHistoryUpload();
     }
 
-
-    async function handleGoBackClick ()  {
-        await handleQuestionUncheck()
-        navigate('/home');
+    async function handleGoBackClick() {
+        await handleQuestionUncheck();
+        navigate('/play');
     }
 
     async function handleSoloHistoryUpload() {
         const userId = JSON.parse(localStorage.getItem('user')).user_id
         await axios.post("http://localhost:3000/api/SetSoloHistory", {score, userId});
         console.log('Solo history uploaded', userId);
+    }
+
+    if (loading) {
+        return <div className={styles.loading}>Cargando...</div>;
     }
 
     return (
@@ -147,8 +152,8 @@ const Play = () => {
                     );
                 })}
             </div>
-            <NavigationBar/>
         </div>
     );
 };
-export default Play;
+
+export default Solitary;

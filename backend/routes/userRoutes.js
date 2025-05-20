@@ -14,6 +14,23 @@ router.get('/users', async (req, res) => {
     }
 });
 
+router.get('/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = 'SELECT user_id, username, rank_points, email FROM users WHERE user_id = $1';
+        const result = await db.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al obtener información del usuario:', error);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+});
+
 router.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
