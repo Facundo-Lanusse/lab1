@@ -18,6 +18,7 @@ import ClassicMode from "./pages/ClassicMode";
 import Roulette from "./pages/Roulette";
 import Community from "./pages/Community";
 import CreateCommunityCategory from "./pages/CreateCommunityCategory";
+import PlayCommunityCategories from "./pages/PlayCommunityCategories";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/roulette" element={<Roulette />} />
           <Route path="/Communities" element={<Community />} />
           <Route path="/Create-Category" element={<CreateCommunityCategory />} />
+          <Route path="/Play-Categories/:category_id" element={<PlayCommunityCategories />} />
         </Routes>
       </Router>
   );

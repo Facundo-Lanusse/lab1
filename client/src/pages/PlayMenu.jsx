@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
 import NavigationBar from "../components/NavigationBar";
+import {BurgerMenu} from "../components/BurgerMenu";
 
 const PlayMenu = () => {
     const navigate = useNavigate();
@@ -88,13 +89,8 @@ const PlayMenu = () => {
 
     return (
         <div className={`${styles.gameContainer} ${styles.modeSelection}`}>
+            <BurgerMenu />
             <div className={styles.header}>
-                <img
-                    className={styles.arrowLeftSolid1Icon}
-                    alt="Back"
-                    src="arrow-left-solid.svg"
-                    onClick={() => navigate('/home')}
-                />
                 <h2>Selecciona un modo de juego</h2>
             </div>
 

@@ -11,7 +11,7 @@ const NavigationBar = () => {
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     const items = [
-        { icon: "glass.svg", text: "Search", path: "/search" },
+        { icon: "glass.svg", text: "Search", path: "/communities" },
         { icon: "house.svg", text: "Home", path: "/home" },
         { icon: "play.svg", text: "Play", path: "/play" },
     ];
