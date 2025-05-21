@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/FriendsMenu.module.css"; // Usando los estilos de FriendsMenu
 import styles2 from "./css/CommunitySearch.module.css";
+import NavigationBar from "../components/NavigationBar";
+import {BurgerMenu} from "../components/BurgerMenu";
 
 const Community = () => {
 
@@ -17,7 +19,7 @@ const Community = () => {
         if (!user) {
             navigate('/home');
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
 
@@ -26,7 +28,7 @@ const Community = () => {
             category.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredCategories(filtered);
-    }, [searchTerm, communityCategories]);
+    }, [searchTerm, communityCategories, navigate]);
 
     const fetchCommunities = async () => {
         try {
@@ -43,7 +45,7 @@ const Community = () => {
 
     return (
         <div className={styles.friendsContainer}>
-
+            <BurgerMenu />
             <h2 className={styles.friendsTitle}>Comunidades</h2>
             <div className="centered-div" style={{
                 display: 'flex',
@@ -74,7 +76,7 @@ const Community = () => {
                     <div
                         key={category.community_category_id}
                         className={styles2.categoryCard}
-                        onClick={() => navigate(`/category/${category.community_category_id}`)}
+                        onClick={() => navigate(`/Play-Categories/${category.community_category_id}`)}
                     >
                         <div
                             className={styles2.categoryIcon}
@@ -88,7 +90,7 @@ const Community = () => {
                             className={styles2.categoryButton}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/category/${category.community_category_id}`);
+                                navigate(`/Play-Categories/${category.community_category_id}`);
                             }}
                         >
                             Ver Detalles
@@ -106,6 +108,7 @@ const Community = () => {
                     No se encontraron categorías que coincidan con tu búsqueda.
                 </div>
             )}
+            <NavigationBar />
         </div>
     );
 };

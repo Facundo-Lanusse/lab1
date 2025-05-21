@@ -257,7 +257,7 @@
 /* Variables de colores - manteniendo consistencia con otras páginas */
 :root {
     --primary-color: #16b3b9;      /* Turquesa - color principal */
-    --secondary-color: #f5ba26;    /* Amarillo - acento */
+    --secondary-color: #3fb916;    /* Amarillo - acento */
     --bg-color: #ffffff;           /* Fondo blanco */
     --text-color: #333333;         /* Texto principal */
     --text-light: #ffffff;         /* Texto claro */
@@ -938,3 +938,91 @@
     background-color: #0069d9;
 }
 
+
+.loadingContainer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+}
+
+.loadingBox {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.loadingBox h1 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.loadingBox p {
+    color: #666;
+    margin-top: 1rem;
+}
+
+.loadingSpinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.errorContainer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+}
+
+.errorBox {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.errorBox h2 {
+    color: #e74c3c;
+    margin-bottom: 1rem;
+}
+
+.errorBox p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.returnButton {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.returnButton:hover {
+    background-color: #2980b9;
+}
