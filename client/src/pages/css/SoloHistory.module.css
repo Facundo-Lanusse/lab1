@@ -1,9 +1,10 @@
+/* Estilos mejorados para el Historial de Partidas Solo */
+
 .historyContainer {
-    background-color: #0bc7d3;
+    background: linear-gradient(160deg, #f8fcfc, #e6f7f7);
     min-height: 100vh;
-    padding: 20px;
-    font-family: 'Segoe UI', sans-serif;
-    color: white;
+    padding: 30px;
+    font-family: 'Segoe UI', 'Inter', sans-serif;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -14,44 +15,154 @@
     position: absolute;
     top: 20px;
     left: 20px;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     cursor: pointer;
+    filter: invert(52%) sepia(78%) saturate(1156%) hue-rotate(155deg) brightness(96%) contrast(101%);
+    transition: transform 0.3s ease;
+}
+
+.arrow:hover {
+    transform: translateX(-3px);
 }
 
 .historyTitle {
-    font-size: 28px;
-    font-weight: bold;
-    margin-top: 80px;
-    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-size: 36px;
+    font-weight: 700;
+    margin-top: 70px;
+    margin-bottom: 35px;
     text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.historyTitle::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--gradient);
+    border-radius: 2px;
 }
 
 .gamesList {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
+    padding: 10px;
 }
 
 .gameCard {
     background-color: white;
-    color: black;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    color: var(--text-color);
+    border-radius: 16px;
+    padding: 22px 25px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(22, 179, 185, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.score, .date {
-    margin: 6px 0;
+.gameCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(22, 179, 185, 0.2);
+    border-color: rgba(22, 179, 185, 0.3);
+}
+
+.score {
+    font-size: 18px;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.score strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.date {
     font-size: 16px;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #777;
+}
+
+.date strong {
+    color: var(--text-color);
+    font-weight: 600;
 }
 
 .noGamesMessage {
-    margin-top: 40px;
-    font-size: 18px;
-    color: #fdfdfd;
+    margin-top: 60px;
+    font-size: 20px;
+    color: #666;
     font-weight: 500;
     text-align: center;
+    background-color: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    position: relative;
+    border: 1px solid rgba(22, 179, 185, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.noGamesMessage::before {
+    content: '📊';
+    font-size: 40px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .historyTitle {
+        font-size: 32px;
+        margin-top: 60px;
+    }
+
+    .gameCard {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .score, .date {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .historyContainer {
+        padding: 20px;
+    }
+
+    .historyTitle {
+        font-size: 28px;
+        margin-top: 50px;
+    }
+
+    .noGamesMessage {
+        padding: 30px;
+        font-size: 18px;
+    }
+
+    .arrow {
+        top: 15px;
+        left: 15px;
+        width: 24px;
+        height: 24px;
+    }
 }
