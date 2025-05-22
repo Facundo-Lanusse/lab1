@@ -126,7 +126,7 @@ export const BurgerMenu = () => {
                     size={24}
                     toggled={isOpen}
                     toggle={setOpen}
-                    color="#16b3b9"
+                    color="#000000"
                     rounded
                     label="Show menu"
                 />
