@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import styles from "./css/Profile.module.css";
+import fetchProfileImage from "../components/FetchProfileImage";
 
 function Profile() {
     const navigate = useNavigate();
@@ -34,25 +35,22 @@ function Profile() {
     }, [message]);
 
     useEffect(() => {
-        const fetchProfileImage = async () => {
-            if (user.user_id) {
+        const loadProfileImage = async () => {
+            if (user?.user_id) {
                 try {
-                    const response = await axios.get(`http://localhost:3000/api/profile-image/${user.user_id}`);
-                    console.log("Response:", response);
-                    if (response.data.success) {
-                        setProfileImage(response.data.imagePath);
-                    } else {
-                        setProfileImage('/defaultProfileImage.png');
-                    }
+                    const path = await fetchProfileImage(user.user_id);
+                    setProfileImage(path);
                 } catch (error) {
-                    console.log("Error al cargar la imagen de perfil:", error);
+                    console.error("Error loading profile image:", error);
                     setProfileImage('/defaultProfileImage.png');
                 }
             }
         };
 
-        fetchProfileImage();
-    }, [user.user_id]);
+        loadProfileImage().then();
+
+
+    }, [user?.user_id]);
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -183,7 +181,7 @@ function Profile() {
             transition={{ duration: 0.5 }}
         >
             <button className={styles.backButton} onClick={goBack}>
-                <img src="/icons/back-arrow.svg"  alt={"volver"}/>
+                <img src="arrow-left-solid.svg"  alt={"volver"}/>
             </button>
 
             <div className={styles.headerSection}>

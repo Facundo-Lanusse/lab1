@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styles from './css/FriendsMenu.module.css';
+import fetchProfileImage from "../components/FetchProfileImage";
 
 function Friends() {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ function Friends() {
     const [newFriendUsername, setNewFriendUsername] = useState('');
     const [friendRequestStatus, setFriendRequestStatus] = useState(null);
 
+    // Solo actualiza esta parte del código manteniendo todas las clases existentes exactamente iguales
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
 
@@ -36,7 +38,16 @@ function Friends() {
                     params: { userId }
                 });
 
-                setFriends(response.data.friends);
+                const friendsWithImages = await Promise.all(response.data.friends.map(async (friend) => {
+                    try {
+                        const imagePath = await fetchProfileImage(friend.user_id);
+                        return { ...friend, profileImage: imagePath };
+                    } catch (error) {
+                        return { ...friend, profileImage: '/defaultProfileImage.png' };
+                    }
+                }));
+
+                setFriends(friendsWithImages);
                 setLoading(false);
             } catch (err) {
                 console.error('Error al obtener amigos:', err);
@@ -264,8 +275,8 @@ function Friends() {
                                 <ul className={styles.requestsList}>
                                     {pendingRequests.map(request => (
                                         <li key={request.request_id} className={styles.requestItem}>
-                                            <div className={styles.requestAvatar}>
-                                                {request.username.charAt(0).toUpperCase()}
+                                            <div >
+                                                <img className={styles.requestAvatar} src={request.profileImage || '/defaultProfileImage.png'} alt={`${request.sender_username} avatar`} />
                                             </div>
                                             <div className={styles.requestInfo}>
                                                 <div className={styles.requestUsername}>{request.username}</div>
@@ -354,7 +365,7 @@ function Friends() {
                                 {filteredFriends.map(friend => (
                                     <li key={friend.user_id} className={styles.friendItem}>
                                         <div className={styles.friendAvatar}>
-                                            {friend.username.charAt(0).toUpperCase()}
+                                            <img className={styles.friendAvatar} src={friend.profileImage || '/defaultProfileImage.png'} alt={`${friend.username} avatar`} />
                                         </div>
                                         <div className={styles.friendInfo}>
                                             <div className={styles.friendUsername}>{friend.username}</div>

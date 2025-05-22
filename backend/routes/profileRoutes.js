@@ -153,7 +153,6 @@ router.get('/profile-image/:userId', async (req, res) => {
             const imagePath = result.rows[0].image_path;
 
             const clientPath = imagePath.replace('..\\client\\public', '');
-            console.log(clientPath);
             res.status(200).json({
                 imagePath: clientPath,
                 success: true
