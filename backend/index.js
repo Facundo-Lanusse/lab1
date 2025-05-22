@@ -11,6 +11,9 @@ app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+app.use('client/public/uploads', express.static('client/public/uploads'));
+
+
 // Rutas
 app.use('/api', require('./routes/authRoutes'));
 app.use('/api', require('./routes/historyRoutes'));

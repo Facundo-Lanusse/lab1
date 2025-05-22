@@ -3,12 +3,14 @@ import Hamburger from 'hamburger-react'
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../pages/css/BurgerMenu.module.css';
+import axios from "axios";
 
 export const BurgerMenu = () => {
     const navigate = useNavigate();
     const [isOpen, setOpen] = useState(false);
     const user = JSON.parse(localStorage.getItem('user'));
     const userIsAdmin = user.is_admin;
+    const [profileImage, setProfileImage] = useState(null);
 
     // Cerrar menú al hacer clic fuera del mismo
     useEffect(() => {
@@ -24,6 +26,28 @@ export const BurgerMenu = () => {
             return () => document.removeEventListener('mousedown', handleClickOutside);
         }
     }, [isOpen, styles]);
+
+    useEffect(() => {
+        const fetchProfileImage = async () => {
+            if (user.user_id) {
+                try {
+                    const response = await axios.get(`http://localhost:3000/api/profile-image/${user.user_id}`);
+                    console.log("Response:", response);
+                    if (response.data.success) {
+                        setProfileImage(response.data.imagePath);
+                    } else {
+                        setProfileImage('/defaultProfileImage.png');
+                    }
+                } catch (error) {
+                    console.log("Error al cargar la imagen de perfil:", error);
+                    setProfileImage('/defaultProfileImage.png');
+                }
+            }
+        };
+
+        fetchProfileImage().then();
+    }, [user.user_id]);
+
 
     const handleLogOut = () => {
 
@@ -118,13 +142,22 @@ export const BurgerMenu = () => {
                         exit="exit"
                     >
                         <div className={styles.menuHeader}>
-                            <div className={styles.userAvatar}>
-                                {user.username.charAt(0).toUpperCase()}
-                            </div>
+                            {profileImage ? (
+                                <img
+                                    src={`${profileImage}`}
+                                    alt="Foto de perfil"
+                                    className={styles.userAvatar}
+                                />
+                            ) : (
+                                <div className={styles.userAvatar}>
+                                    {user.username.charAt(0).toUpperCase()}
+                                </div>
+                            )}
                             <div className={styles.userInfo}>
                                 <h3>{user.username}</h3>
                                 <p>{userIsAdmin ? 'Administrator' : 'Player'}</p>
                             </div>
+
                         </div>
 
                         <div className={styles.menuDivider}></div>
