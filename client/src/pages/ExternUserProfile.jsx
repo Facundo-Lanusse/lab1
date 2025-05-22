@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import styles from './css/ExternUserProfile.module.css';
+import fetchProfileImage from "../components/FetchProfileImage";
 
 const ExternUserProfile = () => {
     const { userId } = useParams();
@@ -11,6 +12,7 @@ const ExternUserProfile = () => {
     const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -41,6 +43,24 @@ const ExternUserProfile = () => {
         fetchProfileData();
     }, [userId]);
 
+    useEffect(() => {
+        const loadProfileImage = async () => {
+            if (userId) {
+                try {
+                    const path = await fetchProfileImage(userId);
+                    setProfileImage(path);
+                } catch (error) {
+                    console.error("Error loading profile image:", error);
+                    setProfileImage('/defaultProfileImage.png');
+                }
+            }
+        };
+
+        loadProfileImage().then();
+
+
+    }, [userId]);
+
     if (loading) return <div>Cargando perfil...</div>;
     if (error) return <div>Error: {error}</div>;
     if (!profileData) return <div>No se encontró el perfil</div>;
@@ -50,7 +70,7 @@ const ExternUserProfile = () => {
             <div className={styles.profileHeader}>
                 {profileData.profileImage ? (
                     <img
-                        src={profileData.profileImage}
+                        src={`${profileImage}`}
                         alt={`${profileData.username}'s profile`}
                         className={styles.profileImage}
                     />

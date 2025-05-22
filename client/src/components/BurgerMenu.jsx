@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../pages/css/BurgerMenu.module.css';
 import axios from "axios";
+import fetchProfileImage from "./FetchProfileImage";
 
 export const BurgerMenu = () => {
     const navigate = useNavigate();
@@ -27,26 +28,26 @@ export const BurgerMenu = () => {
         }
     }, [isOpen, styles]);
 
+
+
     useEffect(() => {
-        const fetchProfileImage = async () => {
-            if (user.user_id) {
+        const loadProfileImage = async () => {
+            if (user?.user_id) {
                 try {
-                    const response = await axios.get(`http://localhost:3000/api/profile-image/${user.user_id}`);
-                    console.log("Response:", response);
-                    if (response.data.success) {
-                        setProfileImage(response.data.imagePath);
-                    } else {
-                        setProfileImage('/defaultProfileImage.png');
-                    }
+                    const path = await fetchProfileImage(user.user_id);
+                    setProfileImage(path);
                 } catch (error) {
-                    console.log("Error al cargar la imagen de perfil:", error);
+                    console.error("Error loading profile image:", error);
                     setProfileImage('/defaultProfileImage.png');
                 }
             }
         };
 
-        fetchProfileImage().then();
-    }, [user.user_id]);
+        loadProfileImage().then();
+
+
+    }, [user?.user_id]);
+
 
 
     const handleLogOut = () => {
