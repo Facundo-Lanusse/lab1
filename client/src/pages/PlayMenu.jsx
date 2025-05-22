@@ -88,74 +88,95 @@ const PlayMenu = () => {
     }, [selectedFriend, navigate]);
 
     return (
-        <div className={`${styles.gameContainer} ${styles.modeSelection}`}>
-            <BurgerMenu />
-            <div className={styles.header}>
-                <h2>Selecciona un modo de juego</h2>
+        <div className={styles.playMenuContainer}>
+            <div className={styles.burgerMenuWrapper}>
+                <BurgerMenu />
             </div>
 
-            <div className={styles.gameModes}>
-                <div
-                    className={styles.gameModeCard}
-                    onClick={() => navigate('/solitary')}
-                >
-                    <h3>Modo Solo</h3>
-                    <p>Responde preguntas aleatorias y consigue puntos</p>
+            <div className={styles.playMenuContent}>
+                <div className={styles.menuHeader}>
+                    <h2>Selecciona un modo de juego</h2>
                 </div>
 
-                <div
-                    className={styles.gameModeCard}
-                    onClick={() => setShowFriendSelector(true)}
-                >
-                    <h3>Modo Clásico</h3>
-                    <p>Compite con un amigo para ver quién completa primero las categorías</p>
-                </div>
-            </div>
-
-            {showFriendSelector && (
-                <div className={styles.friendSelector}>
-                    <h3>Desafía a un amigo</h3>
-                    {friends.length > 0 ? (
-                        <div className={styles.friendsList}>
-                            {friends.map(friend => (
-                                <div
-                                    key={friend.user_id}
-                                    className={`${styles.friendCard} ${selectedFriend && selectedFriend.user_id === friend.user_id ? styles.selectedFriend : ''}`}
-                                    onClick={() => setSelectedFriend(friend)}
-                                >
-                                    <img
-                                        src={friend.profile_picture || "defaultProfileImage.png"}
-                                        alt={friend.username}
-                                        className={styles.friendAvatar}
-                                    />
-                                    <span>{friend.username}</span>
-                                </div>
-                            ))}
+                <div className={styles.gameModeCards}>
+                    <div
+                        className={styles.gameModeCard}
+                        onClick={() => navigate('/solitary')}
+                    >
+                        <div className={styles.cardIcon}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#16b3b9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 8v4l3 3"></path>
+                            </svg>
                         </div>
-                    ) : (
-                        <p className={styles.noFriends}>No tienes amigos para jugar. ¡Agrega algunos amigos primero!</p>
-                    )}
+                        <h3>Modo Solo</h3>
+                        <p>Responde preguntas aleatorias y consigue puntos</p>
+                    </div>
 
-                    <div className={styles.actionButtons}>
-                        <button
-                            className={styles.cancelButton}
-                            onClick={() => {
-                                setShowFriendSelector(false);
-                                setSelectedFriend(null);
-                            }}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            className={styles.startButton}
-                            disabled={!selectedFriend}
-                            onClick={startClassicGame}
-                        >
-                            Desafiar y Comenzar Juego
-                        </button>
+                    <div
+                        className={styles.gameModeCard}
+                        onClick={() => setShowFriendSelector(true)}
+                    >
+                        <div className={styles.cardIcon}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#16b3b9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h3>Modo Clásico</h3>
+                        <p>Compite con un amigo para ver quién completa primero las categorías</p>
                     </div>
                 </div>
-            )}
+
+                {showFriendSelector && (
+                    <div className={styles.friendSelectorOverlay}>
+                        <div className={styles.friendSelector}>
+                            <h3>Desafía a un amigo</h3>
+                            {friends.length > 0 ? (
+                                <div className={styles.friendsList}>
+                                    {friends.map(friend => (
+                                        <div
+                                            key={friend.user_id}
+                                            className={`${styles.friendCard} ${selectedFriend && selectedFriend.user_id === friend.user_id ? styles.selectedFriend : ''}`}
+                                            onClick={() => setSelectedFriend(friend)}
+                                        >
+                                            <img
+                                                src={friend.profile_picture || "defaultProfileImage.png"}
+                                                alt={friend.username}
+                                                className={styles.friendAvatar}
+                                            />
+                                            <span>{friend.username}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className={styles.noFriends}>No tienes amigos para jugar. ¡Agrega algunos amigos primero!</p>
+                            )}
+
+                            <div className={styles.actionButtons}>
+                                <button
+                                    className={styles.cancelButton}
+                                    onClick={() => {
+                                        setShowFriendSelector(false);
+                                        setSelectedFriend(null);
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    className={styles.startButton}
+                                    disabled={!selectedFriend}
+                                    onClick={startClassicGame}
+                                >
+                                    Desafiar y Comenzar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <NavigationBar/>
         </div>
