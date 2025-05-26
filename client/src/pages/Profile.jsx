@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "./css/Profile.module.css";
 import fetchProfileImage from "../components/FetchProfileImage";
 
@@ -14,6 +14,9 @@ function Profile() {
     const [passwordForm, setPasswordForm] = useState({password:"", repeatPassword:""});
     const [selectedImage, setSelectedImage] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [imageName, setImageName] = useState("");
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -47,15 +50,26 @@ function Profile() {
             }
         };
 
-        loadProfileImage().then();
-
-
+        loadProfileImage();
     }, [user?.user_id]);
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
-            setSelectedImage(e.target.files[0]);
+            const file = e.target.files[0];
+            setSelectedImage(file);
+
+            // Limita el nombre del archivo a 15 caracteres
+            let displayName = file.name;
+            if (displayName.length > 15) {
+                const ext = displayName.split('.').pop();
+                displayName = `${displayName.substring(0, 12)}...${ext}`;
+            }
+            setImageName(displayName);
         }
+    };
+
+    const handleClickFileInput = () => {
+        fileInputRef.current?.click();
     };
 
     const handleImageUpload = async () => {
@@ -64,6 +78,7 @@ function Profile() {
             return;
         }
 
+        setIsLoading(true);
         const formData = new FormData();
         formData.append('profileImage', selectedImage);
         formData.append('userId', user.user_id);
@@ -79,6 +94,7 @@ function Profile() {
                 setProfileImage(response.data.imagePath);
                 setMessage({ text: response.data.message, isError: false });
                 setSelectedImage(null);
+                setImageName("");
             } else {
                 setMessage({ text: response.data.message || "Error al subir la imagen", isError: true });
             }
@@ -87,6 +103,8 @@ function Profile() {
                 text: error.response?.data?.message || "Error al subir la imagen",
                 isError: true
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -96,6 +114,7 @@ function Profile() {
             return;
         }
 
+        setIsLoading(true);
         try {
             const res = await axios.put("http://localhost:3000/api/editProfile/username", {
                 username: nameForm.username,
@@ -113,6 +132,8 @@ function Profile() {
                 text: error.response?.data?.message || "Error al actualizar el nombre de usuario",
                 isError: true
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -122,6 +143,7 @@ function Profile() {
             return;
         }
 
+        setIsLoading(true);
         try {
             const res = await axios.put("http://localhost:3000/api/editProfile/email", {
                 email: emailForm.email,
@@ -139,6 +161,8 @@ function Profile() {
                 text: error.response?.data?.message || "Error al actualizar el correo electrónico",
                 isError: true
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -153,6 +177,7 @@ function Profile() {
             return;
         }
 
+        setIsLoading(true);
         try {
             const res = await axios.put("http://localhost:3000/api/editProfile/password", {
                 password: passwordForm.password,
@@ -166,6 +191,8 @@ function Profile() {
                 text: error.response?.data?.message || "Error al actualizar la contraseña",
                 isError: true
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -178,136 +205,190 @@ function Profile() {
             className={styles.container}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.4 }}
         >
-            <button className={styles.backButton} onClick={goBack}>
-                <img src="arrow-left-solid.svg"  alt={"volver"}/>
-            </button>
+            <motion.button
+                className={styles.backButton}
+                onClick={goBack}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                title="Volver"
+            >
+                <img src="arrow-left-solid.svg" alt="volver"/>
+            </motion.button>
 
-            <div className={styles.headerSection}>
+            <motion.div
+                className={styles.headerSection}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+            >
                 <h1 className={styles.profileTitle}>Mi Perfil</h1>
-            </div>
+            </motion.div>
 
-            {message.text && (
-                <div className={`${styles.message} ${message.isError ? styles.error : styles.success}`}>
-                    {message.text}
-                </div>
-            )}
-
-            <div className={styles.profileImageContainer} >
-                {profileImage ? (
-                    <img
-                        src={`${profileImage}`}
-                        alt="Foto de perfil"
-                        className={styles.profileImage}
-                    />
-                ) : (
-                    <div className={styles.noImage}>
-                        Sin imagen
-                    </div>
+            <AnimatePresence>
+                {message.text && (
+                    <motion.div
+                        className={`${styles.message} ${message.isError ? styles.error : styles.success}`}
+                        initial={{ opacity: 0, y: -10, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        exit={{ opacity: 0, y: -10, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        {message.text}
+                    </motion.div>
                 )}
-            </div>
+            </AnimatePresence>
 
-            <div className={styles.profileContentContainer} >
-                <h3 className={styles.sectionTitle}>Información actual</h3>
-                <p><strong>Usuario:</strong> {user.username}</p>
-                <p><strong>Email:</strong> {user.email}</p>
+            <div className={styles.mainContentContainer}>
+                {/* Columna izquierda - Información del usuario */}
+                <motion.div
+                    className={styles.infoContainer}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, duration: 0.4 }}
+                >
+                    <div className={styles.profileContentContainer}>
+                        <h3 className={styles.sectionTitle}>Información actual</h3>
 
-            </div>
+                        <div className={styles.profileImageContainer}>
+                            {profileImage ? (
+                                <motion.img
+                                    src={`${profileImage}`}
+                                    alt="Foto de perfil"
+                                    className={styles.profileImage}
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                />
+                            ) : (
+                                <div className={styles.noImage}>
+                                    Sin imagen
+                                </div>
+                            )}
+                        </div>
 
-            <div className={styles.profileContentContainer}>
-                <p className={styles.subtitle}>Gestiona tu información personal</p>
+                        <div className={styles.userInfo}>
+                            <p><strong>Usuario:</strong> {user.username}</p>
+                            <p><strong>Email:</strong> {user.email}</p>
+                        </div>
 
-                <div className={styles.formSection}>
-
-                    <div className={styles.uploadSection}>
-                        <input
-                            type="file"
-                            onChange={handleImageChange}
-                            className={styles.fileInput}
-                            accept="image/*"
-                        />
-                        <motion.button
-                            onClick={handleImageUpload}
-                            className={styles.button}
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            Subir imagen
-                        </motion.button>
+                        <div className={styles.formSection}>
+                            <h3 className={styles.sectionTitle}>Cambiar imagen</h3>
+                            <div className={styles.uploadSection}>
+                                <div
+                                    className={styles.fileInput}
+                                    onClick={handleClickFileInput}
+                                >
+                                    {imageName || "Seleccionar archivo..."}
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        style={{display: 'none'}}
+                                    />
+                                </div>
+                                <motion.button
+                                    onClick={handleImageUpload}
+                                    className={`${styles.button} ${styles.buttonSmall}`}
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    disabled={isLoading || !selectedImage}
+                                >
+                                    {isLoading ? "..." : "Subir"}
+                                </motion.button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </motion.div>
 
-                <div className={styles.formSection}>
-                    <h3 className={styles.sectionTitle}>Cambiar nombre de usuario</h3>
-                    <div className={styles.inputGroup}>
-                        <input
-                            type="text"
-                            placeholder="Nuevo nombre de usuario"
-                            value={nameForm.username}
-                            onChange={(e) => setNameForm({username: e.target.value})}
-                            className={styles.input}
-                        />
-                        <motion.button
-                            onClick={handleUsernameSubmit}
-                            className={styles.button}
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            Actualizar
-                        </motion.button>
+                {/* Columna derecha - Formularios */}
+                <motion.div
+                    className={styles.formsContainer}
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.4 }}
+                >
+                    <div className={styles.profileContentContainer}>
+                        <h3 className={styles.sectionTitle}>Gestión de cuenta</h3>
+
+                        <div className={styles.formSection}>
+                            <h3 className={styles.sectionTitle}>Cambiar nombre de usuario</h3>
+                            <div className={styles.inputGroup}>
+                                <input
+                                    type="text"
+                                    placeholder="Nuevo nombre de usuario"
+                                    value={nameForm.username}
+                                    onChange={(e) => setNameForm({username: e.target.value})}
+                                    className={styles.input}
+                                />
+                                <motion.button
+                                    onClick={handleUsernameSubmit}
+                                    className={styles.button}
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    disabled={isLoading || !nameForm.username.trim()}
+                                >
+                                    {isLoading ? "..." : "Actualizar"}
+                                </motion.button>
+                            </div>
+                        </div>
+
+                        <div className={styles.formSection}>
+                            <h3 className={styles.sectionTitle}>Cambiar correo electrónico</h3>
+                            <div className={styles.inputGroup}>
+                                <input
+                                    type="email"
+                                    placeholder="Nuevo correo electrónico"
+                                    value={emailForm.email}
+                                    onChange={(e) => setEmailForm({email: e.target.value})}
+                                    className={styles.input}
+                                />
+                                <motion.button
+                                    onClick={handleEmailSubmit}
+                                    className={styles.button}
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    disabled={isLoading || !emailForm.email.trim()}
+                                >
+                                    {isLoading ? "..." : "Actualizar"}
+                                </motion.button>
+                            </div>
+                        </div>
+
+                        <div className={styles.formSection}>
+                            <h3 className={styles.sectionTitle}>Cambiar contraseña</h3>
+                            <div className={styles.passwordInputs}>
+                                <input
+                                    type="password"
+                                    placeholder="Nueva contraseña"
+                                    value={passwordForm.password}
+                                    onChange={(e) => setPasswordForm({...passwordForm, password: e.target.value})}
+                                    className={styles.input}
+                                />
+                                <input
+                                    type="password"
+                                    placeholder="Confirmar contraseña"
+                                    value={passwordForm.repeatPassword}
+                                    onChange={(e) => setPasswordForm({...passwordForm, repeatPassword: e.target.value})}
+                                    className={styles.input}
+                                />
+                            </div>
+                            <div className={styles.buttonContainer}>
+                                <motion.button
+                                    onClick={handlePasswordSubmit}
+                                    className={styles.button}
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    disabled={isLoading || !passwordForm.password || !passwordForm.repeatPassword}
+                                >
+                                    {isLoading ? "Actualizando..." : "Actualizar contraseña"}
+                                </motion.button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div className={styles.formSection}>
-                    <h3 className={styles.sectionTitle}>Cambiar correo electrónico</h3>
-                    <div className={styles.inputGroup}>
-                        <input
-                            type="email"
-                            placeholder="Nuevo correo electrónico"
-                            value={emailForm.email}
-                            onChange={(e) => setEmailForm({email: e.target.value})}
-                            className={styles.input}
-                        />
-                        <motion.button
-                            onClick={handleEmailSubmit}
-                            className={styles.button}
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            Actualizar
-                        </motion.button>
-                    </div>
-                </div>
-
-                <div className={styles.formSection}>
-                    <h3 className={styles.sectionTitle}>Cambiar contraseña</h3>
-                    <div className={styles.inputGroup}>
-                        <input
-                            type="password"
-                            placeholder="Nueva contraseña"
-                            value={passwordForm.password}
-                            onChange={(e) => setPasswordForm({...passwordForm, password: e.target.value})}
-                            className={styles.input}
-                        />
-                        <input
-                            type="password"
-                            placeholder="Confirmar contraseña"
-                            value={passwordForm.repeatPassword}
-                            onChange={(e) => setPasswordForm({...passwordForm, repeatPassword: e.target.value})}
-                            className={styles.input}
-                        />
-                        <motion.button
-                            onClick={handlePasswordSubmit}
-                            className={styles.button}
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            Actualizar
-                        </motion.button>
-                    </div>
-                </div>
-
+                </motion.div>
             </div>
         </motion.div>
     );
