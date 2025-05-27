@@ -109,7 +109,7 @@ function UserRanking() {
         <div className={styles.container}>
             <button
                 className={styles.backButton}
-                onClick={() => navigate('/home')}
+                onClick={() => navigate('/Home')}
                 aria-label="Volver"
             >
                 <img src="arrow-left-solid.svg" alt="Volver" />
@@ -177,7 +177,7 @@ function UserRanking() {
 
             <button
                 className={styles.playButton}
-                onClick={() => navigate('/play')}
+                onClick={() => navigate('/Play')}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                     <path d="M8 5v14l11-7z"/>

@@ -20,7 +20,7 @@ const PlayCommunityCategories = () => {
     const handleQuestionUncheck = useCallback(async () => {
         try {
             await axios.post("http://localhost:3000/api/UncheckCommunityQuestion");
-            navigate('/communities');
+            navigate('/Communities');
         } catch (error) {
             console.error("Error al desmarcar preguntas:", error);
             setError("Hubo un problema al desmarcar las preguntas. Inténtalo de nuevo.");
@@ -53,7 +53,7 @@ const PlayCommunityCategories = () => {
             if(res.data.allQuestionChecked) {
                 await handleQuestionUncheck();
                 alert('Todas las preguntas respondidas bien');
-                navigate('/communities');
+                navigate('/Communities');
             }
             else {
                 const buttons = document.getElementsByClassName(styles.buttonAnswers);
@@ -117,7 +117,7 @@ const PlayCommunityCategories = () => {
 
     async function handleGoBackClick() {
         await handleQuestionUncheck();
-        navigate('/communities');
+        navigate('/Communities');
     }
 
     if (isLoading) {

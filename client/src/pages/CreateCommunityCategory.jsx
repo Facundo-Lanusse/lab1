@@ -30,7 +30,7 @@ const CreateCommunityCategory = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         fetchCategories();
         if (!user) {
-            navigate('/login');
+            navigate('/Login');
         }
     }, [navigate]);
 
@@ -166,7 +166,7 @@ const CreateCommunityCategory = () => {
 
     return (
         <div className={styles.categoryContainer}>
-            <button className={styles.backButton} onClick={() => navigate('/communities')}>
+            <button className={styles.backButton} onClick={() => navigate('/Communities')}>
                 <img src="arrow-left-solid.svg" alt="Back" />
             </button>
 

@@ -27,6 +27,7 @@ app.use('/api', require('./routes/externUserProfileRoutes'));
 app.use('/api', require('./routes/clsssicModeRoutes'));
 app.use('/api', require('./routes/communityRoutes'));
 app.use('/api', require('./routes/communityPlayRoutes'));
+app.use('/api', require('./routes/communityCategoriesJudgementRoutes'));
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

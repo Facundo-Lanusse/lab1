@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import styles from './css/ExternUserProfile.module.css';
+import styles2 from './css/FriendsMenu.module.css';
 import fetchProfileImage from "../components/FetchProfileImage";
 
 const ExternUserProfile = () => {
+    const navigate  = useNavigate();
     const { userId } = useParams();
     const [profileData, setProfileData] = useState(null);
     const [soloHistory, setSoloHistory] = useState([]);
@@ -15,6 +17,7 @@ const ExternUserProfile = () => {
     const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
+
         const fetchProfileData = async () => {
             try {
                 setLoading(true);
@@ -67,7 +70,15 @@ const ExternUserProfile = () => {
 
     return (
         <div className={styles.profileContainer}>
+            <button
+                className={styles2.backButton}
+                onClick={() => navigate('/Friends')}
+                aria-label="Volver"
+            >
+                <img src="../arrow-left-solid.svg" alt="Volver" />
+            </button>
             <div className={styles.profileHeader}>
+
                 {profileData.profileImage ? (
                     <img
                         src={`${profileImage}`}
@@ -80,6 +91,7 @@ const ExternUserProfile = () => {
                     </div>
                 )}
                 <div className={styles.profileInfo}>
+
                     <h1>{profileData.username}</h1>
                     <p className={styles.rankPoints}>Puntos de rango: {profileData.rank_points}</p>
                     <p>Email: {profileData.email}</p>
@@ -87,6 +99,7 @@ const ExternUserProfile = () => {
             </div>
 
             <div className={styles.profileContent}>
+
                 <div className={styles.profileSection}>
                     <h2>Historial de juegos en solitario</h2>
                     {soloHistory.length > 0 ? (

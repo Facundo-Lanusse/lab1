@@ -249,12 +249,12 @@ body {
         width: 90%;
         height: 70px;
     }
-    
+
     .navigation ul li {
         width: 70px;
         height: 70px;
     }
-    
+
     .navigation ul li img {
         width: 25px;
         height: 25px;
@@ -263,12 +263,12 @@ body {
     .navigation ul li.active img {
         transform: translate(-50%, -170%);
     }
-    
+
     .indicator {
         width: 60px;
         height: 60px;
     }
-    
+
     .navigation ul li .text {
         font-size: 0.6em;
         bottom: 8px;

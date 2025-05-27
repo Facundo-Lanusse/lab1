@@ -197,7 +197,7 @@ function Profile() {
     };
 
     const goBack = () => {
-        navigate(-1);
+        navigate("/Home");
     };
 
     return (

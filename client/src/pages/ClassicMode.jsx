@@ -158,7 +158,7 @@ const ClassicMode = () => {
       });
 
       if (response.data.success) {
-        navigate(`/classic/${response.data.battleId}`);
+        navigate(`/Classic/${response.data.battleId}`);
       }
     } catch (err) {
       console.error('Error al iniciar batalla:', err);
@@ -243,7 +243,7 @@ const ClassicMode = () => {
       return (
         <div className="battle-result winner">
           <h2>¡Felicidades! Has ganado la partida</h2>
-          <button className="back-button" onClick={() => navigate('/play')}>
+          <button className="back-button" onClick={() => navigate('/Play')}>
             Volver al menú
           </button>
         </div>
@@ -254,7 +254,7 @@ const ClassicMode = () => {
       return (
         <div className="battle-result loser">
           <h2>Has perdido la partida contra {opponentInfo?.username || 'tu oponente'}</h2>
-          <button className="back-button" onClick={() => navigate('/play')}>
+          <button className="back-button" onClick={() => navigate('/Play')}>
             Volver al menú
           </button>
         </div>

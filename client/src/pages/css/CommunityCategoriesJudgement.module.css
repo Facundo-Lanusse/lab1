@@ -1,0 +1,188 @@
+/* CommunityCategoriesJudgement.module.css */
+
+:root {
+    --card-bg: #ffffff;
+    --input-bg: #f7f7f7;
+    --highlight-bg: #f7f7f7;
+    --primary-dark: #139aa0;
+    --success-dark: #449d44;
+    --danger-color: #d9534f;
+    --danger-dark: #c9302c;
+    --text-secondary: #777777;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.pageTitle {
+    font-size: 28px;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.subTitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.searchContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.searchInput {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1px solid var(--border-color);
+    font-size: 16px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.categoriesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.categoryCard {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.categoryCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.categoryHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.categoryIcon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.categoryName {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-color);
+    margin: 0;
+    flex: 1;
+}
+
+.pendingQuestions {
+    background-color: var(--highlight-bg);
+    color: var(--text-color);
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.buttonsContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.reviewButton {
+    flex: 1;
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reviewButton:hover {
+    background-color: var(--primary-dark);
+}
+
+.rejectButton {
+    flex: 1;
+    padding: 10px 15px;
+    background-color: var(--danger-color, #d9534f);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.rejectButton:hover {
+    background-color: var(--danger-dark, #c9302c);
+}
+
+.approveButton {
+    flex: 1;
+    padding: 10px 15px;
+    background-color: var(--success-color, #5cb85c);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.approveButton:hover {
+    background-color: var(--success-dark, #449d44);
+}
+
+.emptyState {
+    text-align: center;
+    margin-top: 50px;
+    padding: 30px;
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.emptyStateText {
+    color: var(--text-secondary);
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .categoriesList {
+        grid-template-columns: 1fr;
+    }
+
+    .categoryCard {
+        max-width: 100%;
+    }
+}

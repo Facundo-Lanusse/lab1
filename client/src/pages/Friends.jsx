@@ -25,7 +25,7 @@ function Friends() {
         const user = JSON.parse(localStorage.getItem('user'));
 
         if (!user) {
-            navigate('/login');
+            navigate('/Login');
             return;
         }
 
@@ -212,7 +212,7 @@ function Friends() {
     };
 
     const handleGoBack = () => {
-        navigate(-1); // Navega a la página anterior
+        navigate("/Home"); // Navega a la página anterior
     };
 
     return (
@@ -377,7 +377,7 @@ function Friends() {
                                             <button
                                                 className={styles.actionButton}
                                                 aria-label="Ver perfil"
-                                                onClick={() => navigate(`/profile/${friend.user_id}`)}
+                                                onClick={() => navigate(`/Profile/${friend.user_id}`)}
                                             >
                                                 👤
                                             </button>

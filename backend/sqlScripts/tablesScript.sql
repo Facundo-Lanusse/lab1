@@ -170,23 +170,23 @@ alter table profile_image
 
 -- Tabla para llevar el seguimiento de categorías por usuario en cada batalla
 CREATE TABLE IF NOT EXISTS battle_categories (battle_id INTEGER NOT NULL REFERENCES battle(battle_id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES users(user_id),
-    category_id INTEGER NOT NULL REFERENCES category(category_id),
-    completed BOOLEAN DEFAULT FALSE,
-    completed_at TIMESTAMP,
-    PRIMARY KEY (battle_id, user_id, category_id)
-    );
+                                              user_id INTEGER NOT NULL REFERENCES users(user_id),
+                                              category_id INTEGER NOT NULL REFERENCES category(category_id),
+                                              completed BOOLEAN DEFAULT FALSE,
+                                              completed_at TIMESTAMP,
+                                              PRIMARY KEY (battle_id, user_id, category_id)
+);
 
 CREATE TABLE IF NOT EXISTS battle_answer (
                                              battle_answer_id SERIAL PRIMARY KEY,
                                              battle_id INTEGER NOT NULL REFERENCES battle(battle_id),
-    user_id INTEGER NOT NULL REFERENCES users(user_id),
-    question_id INTEGER NOT NULL REFERENCES question(question_id),
-    answer_id INTEGER NOT NULL REFERENCES answer(answer_id),
-    is_correct BOOLEAN NOT NULL,
-    answer_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (battle_id, user_id, question_id)
-    );
+                                             user_id INTEGER NOT NULL REFERENCES users(user_id),
+                                             question_id INTEGER NOT NULL REFERENCES question(question_id),
+                                             answer_id INTEGER NOT NULL REFERENCES answer(answer_id),
+                                             is_correct BOOLEAN NOT NULL,
+                                             answer_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                             UNIQUE (battle_id, user_id, question_id)
+);
 
 CREATE TABLE community_category (
                                     community_category_id SERIAL PRIMARY KEY,
@@ -195,6 +195,13 @@ CREATE TABLE community_category (
 
 alter table community_category
     add COLUMN user_id int references users(user_id);
+
+-- Nueva columna de tabla, agregala faca virgo
+create type category_state as enum ('accepted', 'pending', 'inadequate');
+
+alter table community_category
+    add column publish_state category_state default 'pending' :: category_state not null;
+
 
 CREATE TABLE community_question (
                                     community_question_id SERIAL PRIMARY KEY,

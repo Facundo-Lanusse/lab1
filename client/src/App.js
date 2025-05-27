@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import Admin from "./pages/Admin";
 import Login from "./pages/LogIn";
@@ -19,32 +19,57 @@ import Roulette from "./pages/Roulette";
 import Community from "./pages/Community";
 import CreateCommunityCategory from "./pages/CreateCommunityCategory";
 import PlayCommunityCategories from "./pages/PlayCommunityCategories";
+import NavigationBar from "./components/NavigationBar";
+import CommunityCategoriesJudgement from "./pages/CommunityCategoriesJudgement";
+import ReviewCategory from "./pages/ReviewCategory";
+
+
+const AppContent = () => {
+  const location = useLocation();
+
+
+  const showNavBarRoutes = ["/Home", "/Play", "/Communities"];
+
+
+  const shouldShowNavBar = showNavBarRoutes.some(route =>
+      location.pathname === route || location.pathname.startsWith(route + "/")
+  );
+
+  return (
+      <>
+        {shouldShowNavBar && <NavigationBar />}
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/Admin" element={<Admin />} />
+          <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/LogIn" element={<Login />} />
+          <Route path="/Home" element={<Home />} />
+          <Route path="/UploadQuestion" element={<UploadQuestionForm />} />
+          <Route path="/Play" element={<PlayMenu />} />
+          <Route path="/Solitary" element={<Solitary />} />
+          <Route path="/Ranking" element={<Ranking />} />
+          <Route path="/SoloHistory" element={<SoloHistory />} />
+          <Route path="/CategoryManager" element={<CategoryManager />} />
+          <Route path="/Profile" element={<Profile />} />
+          <Route path="/Friends" element={<Friends />} />
+          <Route path="/Profile/:userId" element={<UserProfile />} />
+          <Route path="/Classic/:battleId" element={<ClassicMode />} />
+          <Route path="/Classic" element={<ClassicMode />} />
+          <Route path="/Roulette" element={<Roulette />} />
+          <Route path="/Communities" element={<Community />} />
+          <Route path="/Create-Category" element={<CreateCommunityCategory />} />
+          <Route path="/Play-Categories/:category_id" element={<PlayCommunityCategories />} />
+          <Route path="/Categories-Judgement" element={<CommunityCategoriesJudgement />} />
+          <Route path="/Review-Category/:category_id" element={<ReviewCategory />} />
+        </Routes>
+      </>
+  );
+};
 
 function App() {
   return (
       <Router>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/admin" element={<Admin />} />
-            <Route path="/signUp" element={<SignUp />} />
-            <Route path="/logIn" element={<Login />} />
-            <Route path="/Home" element={<Home />} />
-            <Route path="/UploadQuestion" element={<UploadQuestionForm />} />
-            <Route path="/Play" element={<PlayMenu />} />
-            <Route path="/solitary" element={<Solitary />} />
-            <Route path="/Ranking" element={<Ranking />} />
-            <Route path="/SoloHistory" element={<SoloHistory />} />
-            <Route path="/CategoryManager" element={<CategoryManager />} />
-            <Route path="/Profile" element={<Profile />} />
-            <Route path="/Friends" element={<Friends />} />
-          <Route path="/profile/:userId" element={<UserProfile />} />
-          <Route path="/classic/:battleId" element={<ClassicMode />} />
-          <Route path="/classic" element={<ClassicMode />} />
-          <Route path="/roulette" element={<Roulette />} />
-          <Route path="/Communities" element={<Community />} />
-          <Route path="/Create-Category" element={<CreateCommunityCategory />} />
-          <Route path="/Play-Categories/:category_id" element={<PlayCommunityCategories />} />
-        </Routes>
+        <AppContent />
       </Router>
   );
 }
