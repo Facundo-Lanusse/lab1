@@ -24,7 +24,7 @@ const Play = () => {
            if(res.data.allQuestionChecked){//Si ya se respondieron todas, vuelve al home y las deschequea
                handleQuestionUncheck()
                alert('Todas las preguntas respondidas bien')
-               navigate('/home')
+               navigate('/Home')
            }
            else{
                // Removemos las clases CSS de los botones
@@ -51,7 +51,7 @@ const Play = () => {
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) { //Si no lo está lo mando a su casa
-            navigate('/login');
+            navigate('/Login');
         }
         FetchQuestionAndAnswers();
     }, [FetchQuestionAndAnswers]);
@@ -68,7 +68,7 @@ const Play = () => {
     // Desmarco todas las preguntas para poder volver a jugar
     const handleQuestionUncheck = useCallback(async () => {
         await axios.post("http://localhost:3000/api/UncheckQuestion");
-        navigate('/home');
+        navigate('/Home');
     }, [navigate]);
 
     const isCorrect = async (answer, index) => {
@@ -104,7 +104,7 @@ const Play = () => {
 
     async function handleGoBackClick ()  {
         await handleQuestionUncheck()
-        navigate('/home');
+        navigate('/Home');
     }
 
     async function handleSoloHistoryUpload() {

@@ -41,12 +41,12 @@ function UploadQuestionForm(){
                 navigate("/");
             }
             if (!user.is_admin) {
-                navigate('/home');
+                navigate('/Home');
             }
         }
         catch (err){
             console.log(err);
-            navigate("/login");
+            navigate("/Login");
         }
 
 
@@ -97,6 +97,7 @@ function UploadQuestionForm(){
 
     return(
         <div className={styles.signUp}>
+            <button className={styles.signUpButton} style={{justifyContent: 'center', position: 'absolute', marginTop: '510px'}} onClick={() =>{navigate("/CategoryManager")}}> Modificar Categorias</button>
             <b className={styles.signUpPage}>Carga tus preguntas</b>
 
             <div className={styles.rectangleGroup}>
@@ -184,7 +185,7 @@ function UploadQuestionForm(){
                 className={styles.arrowLeftSolid1Icon}
                 alt="Back"
                 src="arrow-left-solid.svg"
-                onClick={() => navigate('/home')}
+                onClick={() => navigate('/Home')}
             />
 
 

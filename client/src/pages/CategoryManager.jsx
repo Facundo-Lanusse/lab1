@@ -11,7 +11,7 @@ const CreateCategory = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         fetchCategories().then();
         if (!user) {
-            navigate('/home');
+            navigate('/Home');
         }
     }, [navigate]);
 
@@ -33,7 +33,7 @@ const CreateCategory = () => {
         } catch (error) {
             setMessage(error.response?.data?.error || "Error en el registro");
         }
-    }, [form, navigate]);
+    }, [form]);
 
     const fetchCategories = async () => {
         try {

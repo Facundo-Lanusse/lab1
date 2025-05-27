@@ -63,21 +63,4 @@ router.post('/UncheckCommunityQuestion', async (req, res) =>{
 
 })
 
-router.get('/FetchCommunityCategoriesCategory', async (req, res) =>{
-    const {categoryId} = req.body;
-
-    try {
-        const categoryQuery = 'SELECT name FROM community_category WHERE community_category_id = $1';
-        const categoryQueryResult = await db.query(categoryQuery, [categoryId])
-        res.json({
-            category: categoryQueryResult.rows[0]
-        })
-    }
-    catch (error){
-        console.error('Error al traer categoria', error);
-        res.status(500).json({ error: 'Error en el servidor' });
-    }
-})
-
-
 module.exports = router;

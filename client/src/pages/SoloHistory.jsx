@@ -47,7 +47,7 @@ const SoloHistory = () => {
                 className={styles.arrow}
                 alt="Volver"
                 src="arrow-left-solid.svg"
-                onClick={() => navigate('/home')}
+                onClick={() => navigate('/Home')}
             />
             <h2 className={styles.historyTitle}>Solo history</h2>
             <div className={styles.gamesList}>

@@ -12,7 +12,7 @@ const LogIn = () => {
     useEffect(() => { //Igual a las líneas de home
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
-            navigate('/home');
+            navigate('/Home');
         }
     }, [navigate]);
 
@@ -32,7 +32,7 @@ const LogIn = () => {
             if (response.ok) {//Si no explotó response que haga lo siguiente, sino que tire error
                 localStorage.setItem('user', JSON.stringify(data.user));//Guardo en el storage la session del usuario, es nativo de node
                 localStorage.setItem('token', data.token);
-                navigate('/home')
+                navigate('/Home')
             } else {
                 setError(data.error || 'Login failed');
             }

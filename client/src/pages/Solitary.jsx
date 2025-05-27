@@ -23,7 +23,7 @@ const Solitary = () => {
                // Si ya se respondieron todas, vuelve al home y las deschequea
                handleQuestionUncheck()
                alert('Todas las preguntas respondidas bien')
-               navigate('/play')
+               navigate('/Play')
            }
            else{
                // Removemos las clases CSS de los botones
@@ -52,7 +52,7 @@ const Solitary = () => {
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
-            navigate('/login');
+            navigate('/Login');
             return;
         }
         FetchQuestionAndAnswers();
@@ -91,7 +91,7 @@ const Solitary = () => {
                 setIsAnswerCorrect(null);
                 await handleQuestionUncheck(); // Desmarco a todas las preguntas
                 await handleScoreUpload(); // Agrego el score al ranking del usuario
-                navigate('/play'); // Volver al menú de juego
+                navigate('/Play'); // Volver al menú de juego
             }, 1000);
         }
     };
@@ -105,7 +105,7 @@ const Solitary = () => {
 
     async function handleGoBackClick() {
         await handleQuestionUncheck();
-        navigate('/play');
+        navigate('/Play');
     }
 
     async function handleSoloHistoryUpload() {

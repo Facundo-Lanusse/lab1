@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
-import NavigationBar from "../components/NavigationBar";
 import {BurgerMenu} from "../components/BurgerMenu";
 
 const PlayMenu = () => {
@@ -17,7 +16,7 @@ const PlayMenu = () => {
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
-            navigate('/login');
+            navigate('/Login');
             return;
         }
 
@@ -48,7 +47,7 @@ const PlayMenu = () => {
 
         try {
             // Redireccionar a la página de ruleta pasando el ID del amigo seleccionado
-            navigate('/roulette', { state: { friendId: selectedFriend.user_id }});
+            navigate('/Roulette', { state: { friendId: selectedFriend.user_id }});
 
             /* Comentando el código original que iniciaba el modo clásico
             const user = JSON.parse(localStorage.getItem('user'));
@@ -101,7 +100,7 @@ const PlayMenu = () => {
                 <div className={styles.gameModeCards}>
                     <div
                         className={styles.gameModeCard}
-                        onClick={() => navigate('/solitary')}
+                        onClick={() => navigate('/Solitary')}
                     >
                         <div className={styles.cardIcon}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#16b3b9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -178,7 +177,7 @@ const PlayMenu = () => {
                 )}
             </div>
 
-            <NavigationBar/>
+
         </div>
     );
 };

@@ -158,11 +158,11 @@
 }
 
 .friendAvatar {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     background-color: var(--primary-color);
-    display: flex;
+    display: block;
     align-items: center;
     justify-content: center;
     color: var(--text-light);

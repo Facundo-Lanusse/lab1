@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import styles from "./css/FriendsMenu.module.css"; // Usando los estilos de FriendsMenu
+import styles from "./css/FriendsMenu.module.css";
 import styles2 from "./css/CommunitySearch.module.css";
-import NavigationBar from "../components/NavigationBar";
 import {BurgerMenu} from "../components/BurgerMenu";
 
 const Community = () => {
@@ -17,7 +16,7 @@ const Community = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         fetchCommunities().then();
         if (!user) {
-            navigate('/home');
+            navigate('/Home');
         }
     }, [navigate]);
 
@@ -32,7 +31,7 @@ const Community = () => {
 
     const fetchCommunities = async () => {
         try {
-            const res = await axios.get("http://localhost:3000/api/FetchCommunityCategories");
+            const res = await axios.get("http://localhost:3000/api/FetchCommunityCategoriesApproved");
             setCommunityCategories(res.data);
         } catch (error) {
             console.error("Error al cargar comunidades", error);
@@ -108,7 +107,7 @@ const Community = () => {
                     No se encontraron categorías que coincidan con tu búsqueda.
                 </div>
             )}
-            <NavigationBar />
+
         </div>
     );
 };

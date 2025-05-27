@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database');
 
-router.get('/FetchCommunityCategories', async (req, res) => {
+router.get('/FetchCommunityCategoriesApproved', async (req, res) => {
     try{
-        const categoriesQuery = 'Select name, community_category_id from community_category';
-        const categoryQueryResult = await db.query(categoriesQuery);
+        const categoriesQuery = 'Select name, community_category_id from community_category where publish_state = $1';
+        const categoryQueryResult = await db.query(categoriesQuery,['accepted']);
         res.json(categoryQueryResult.rows);
 
     }
@@ -14,6 +14,7 @@ router.get('/FetchCommunityCategories', async (req, res) => {
         res.status(500).json({ error: 'Fallo la consulta' });
     }
 });
+
 
 router.post('/CreateCommunityCategory', async (req, res) => {
     const {name, userId} = req.body;
