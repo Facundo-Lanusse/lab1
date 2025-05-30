@@ -138,6 +138,7 @@ function UserRanking() {
                     </button>
                 </div>
 
+
                 <div className={styles.rankingHeader}>
                     <div className={styles.rankNumber}>#</div>
                     <div className={styles.rankUsername}>Jugador</div>

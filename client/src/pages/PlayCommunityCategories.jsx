@@ -30,8 +30,9 @@ const PlayCommunityCategories = () => {
 
     const handleQuestionCheck = useCallback(async () => {
         try {
+            console.log("id",questionId);
             const res = await axios.post("http://localhost:3000/api/CheckCommunityQuestion", {
-                questionId: questionId,
+                question_id: questionId,
             });
             console.log(res.data.message);
         } catch (error) {
@@ -63,7 +64,7 @@ const PlayCommunityCategories = () => {
                 });
 
                 setMainQuestion(res.data.question.question_text);
-                setQuestionId(res.data.question.question_id);
+                setQuestionId(res.data.question.community_question_id);
                 const shuffledAnswers = res.data.answers.sort(() => Math.random() - 0.5);
                 setAnswers(shuffledAnswers);
                 setSelectedIndex(null);

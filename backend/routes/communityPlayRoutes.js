@@ -36,11 +36,12 @@ router.get('/PlayCommunityQuestions/:categoryId', async(req, res) =>{
 });
 
 router.post('/CheckCommunityQuestion', async (req, res) =>{
-    const {questionId} = req.body;
+    const {question_id} = req.body;
+
     try{
-        const updateQuestionQuery = 'Update community_question set alreadypicked = true where community_question_id = $1'
-        await db.query(updateQuestionQuery, [questionId])
-        res.json({message: 'Se actualizó la pregunta correctamente', id: questionId})
+        const updateQuestionQuery = 'Update community_question set alreadypicked = $1 where community_question_id = $2'
+        await db.query(updateQuestionQuery, [true ,question_id])
+        res.json({message: 'Se actualizó la pregunta correctamente', id: question_id})
     }
     catch (error){
         console.log('Falla el update de la pregunta', error)
