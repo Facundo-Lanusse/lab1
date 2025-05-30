@@ -22,6 +22,7 @@ import PlayCommunityCategories from "./pages/PlayCommunityCategories";
 import NavigationBar from "./components/NavigationBar";
 import CommunityCategoriesJudgement from "./pages/CommunityCategoriesJudgement";
 import ReviewCategory from "./pages/ReviewCategory";
+import BulletPlay from "./pages/BulletPlay";
 
 
 const AppContent = () => {
@@ -47,6 +48,7 @@ const AppContent = () => {
           <Route path="/UploadQuestion" element={<UploadQuestionForm />} />
           <Route path="/Play" element={<PlayMenu />} />
           <Route path="/Solitary" element={<Solitary />} />
+          <Route path="/BulletPlay" element={<BulletPlay />} />
           <Route path="/Ranking" element={<Ranking />} />
           <Route path="/SoloHistory" element={<SoloHistory />} />
           <Route path="/CategoryManager" element={<CategoryManager />} />

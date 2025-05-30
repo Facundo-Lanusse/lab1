@@ -28,6 +28,7 @@ app.use('/api', require('./routes/clsssicModeRoutes'));
 app.use('/api', require('./routes/communityRoutes'));
 app.use('/api', require('./routes/communityPlayRoutes'));
 app.use('/api', require('./routes/communityCategoriesJudgementRoutes'));
+app.use('/api', require('./routes/BulletRoutes'));
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

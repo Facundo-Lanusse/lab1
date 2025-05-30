@@ -12,7 +12,6 @@ const PlayMenu = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Cargar amigos al iniciar
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
@@ -49,16 +48,6 @@ const PlayMenu = () => {
             // Redireccionar a la página de ruleta pasando el ID del amigo seleccionado
             navigate('/Roulette', { state: { friendId: selectedFriend.user_id }});
 
-            /* Comentando el código original que iniciaba el modo clásico
-            const user = JSON.parse(localStorage.getItem('user'));
-            const response = await axios.post('http://localhost:3000/api/classic/start', {
-                userId: Number(user.user_id),
-                opponentId: Number(selectedFriend.user_id)
-            });
-            if (response.data.success) {
-                navigate(`/classic/${response.data.battleId}`);
-            }
-            */
         } catch (error) {
             console.error('Error al iniciar partida:', error);
             // Mostrar más detalles del error para debugging
@@ -110,6 +99,20 @@ const PlayMenu = () => {
                         </div>
                         <h3>Modo Solo</h3>
                         <p>Responde preguntas aleatorias y consigue puntos</p>
+                    </div>
+
+                    <div
+                        className={styles.gameModeCard}
+                        onClick={() => navigate('/BulletPLay')}
+                    >
+                        <div className={styles.cardIcon}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#16b3b9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 8v4l3 3"></path>
+                            </svg>
+                        </div>
+                        <h3>Modo Bala</h3>
+                        <p>Responde preguntas en poco tiempo y haz tu mejor marca</p>
                     </div>
 
                     <div

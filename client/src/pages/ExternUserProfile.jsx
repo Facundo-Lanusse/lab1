@@ -72,7 +72,7 @@ const ExternUserProfile = () => {
         <div className={styles.profileContainer}>
             <button
                 className={styles2.backButton}
-                onClick={() => navigate('/Friends')}
+                onClick={() => navigate(-1)}
                 aria-label="Volver"
             >
                 <img src="../arrow-left-solid.svg" alt="Volver" />

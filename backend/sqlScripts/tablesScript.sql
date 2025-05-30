@@ -196,12 +196,10 @@ CREATE TABLE community_category (
 alter table community_category
     add COLUMN user_id int references users(user_id);
 
--- Nueva columna de tabla, agregala faca virgo
 create type category_state as enum ('accepted', 'pending', 'inadequate');
 
 alter table community_category
     add column publish_state category_state default 'pending' :: category_state not null;
-
 
 CREATE TABLE community_question (
                                     community_question_id SERIAL PRIMARY KEY,
@@ -218,5 +216,16 @@ CREATE TABLE community_answer (
                                   is_correct BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+Create table bullet_questions
+(
+    bullet_question_id Serial Primary key,
+    bullet_text Text not null,
+    already_picked boolean default false
+);
 
-
+create table bullet_answers(
+                               bullet_answer_id serial primary key,
+                               bullet_question_id int not null references bullet_questions(bullet_question_id) on delete cascade,
+                               answer_text text not null,
+                               is_correct boolean not null default  false
+)

@@ -92,7 +92,7 @@ const Community = () => {
                                 navigate(`/Play-Categories/${category.community_category_id}`);
                             }}
                         >
-                            Ver Detalles
+                            Jugar
                         </button>
                     </div>
                 ))}
