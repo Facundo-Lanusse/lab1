@@ -125,7 +125,7 @@ router.post('/editProfile/upload-image', upload.single('profileImage'), async (r
         await db.query(query, params);
 
         // Devolver la URL relativa para el frontend
-        const clientPath = imagePath.replace('..\\client\\public', '');
+        const clientPath = imagePath.replace('../client/public', '');
 
         res.status(200).json({
             message: 'Imagen de perfil actualizada correctamente',
@@ -152,7 +152,7 @@ router.get('/profile-image/:userId', async (req, res) => {
         if (result.rows.length > 0) {
             const imagePath = result.rows[0].image_path;
 
-            const clientPath = imagePath.replace('..\\client\\public', '');
+            const clientPath = imagePath.replace('../client/public', '');
             res.status(200).json({
                 imagePath: clientPath,
                 success: true

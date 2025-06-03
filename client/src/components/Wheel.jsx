@@ -7,8 +7,8 @@ const Wheel = ({ segments, segColors, winningSegment, onFinished, primaryColor =
   const canvasRef = useRef(null);
   const timerRef = useRef(null);
   const timerDelay = 33; // ~30fps
-  const spinTime = 8000; // 8 segundos de giro
-  const spinTimeTotal = 8000;
+  const spinTime = 4000; // 3 segundos de giro
+  const spinTimeTotal = 4000;
   // Definir radius aquí para que esté disponible en todo el componente
   const radius = size / 2 - 10;
 
@@ -82,10 +82,14 @@ const Wheel = ({ segments, segColors, winningSegment, onFinished, primaryColor =
     setIsSpinning(true);
     setCurrentSegment(null);
 
+    // Generar un ángulo aleatorio entre 10 y 20 vueltas completas (3600-7200 grados)
+    // Esto hace que la ruleta gire un número aleatorio de veces antes de detenerse
+    const randomAngleDelta = Math.floor(Math.random() * 3600) + 3600;
+
     // Configurar la animación
     spinData.current = {
       startTime: new Date().getTime(),
-      angleDelta: 360,  // Angulo total que se moverá
+      angleDelta: randomAngleDelta,  // Ángulo aleatorio que se moverá
       spinTime: 0,
       spinTimeTotal: spinTimeTotal
     };
@@ -177,7 +181,7 @@ const Wheel = ({ segments, segColors, winningSegment, onFinished, primaryColor =
       {/* Indicador de la ruleta (flecha) */}
       <div
         style={{
-          position: 'absolute',
+          position: 'relative',
           top: 0,
           left: '50%',
           transform: 'translateX(-50%)',

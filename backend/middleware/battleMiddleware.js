@@ -63,7 +63,19 @@ const validateUserTurn = (req, res, next) => {
         });
     }
 
-    if (req.battle.whos_next != userId) {
+    // Convertir ambos valores a números enteros para asegurar una comparación correcta
+    const userIdNumber = parseInt(userId);
+    const whosNextNumber = parseInt(req.battle.whos_next);
+
+    console.log('Comparación de turnos:', {
+        userId: userIdNumber,
+        whosNext: whosNextNumber,
+        tipoUserId: typeof userIdNumber,
+        tipoWhosNext: typeof whosNextNumber,
+        sonIguales: userIdNumber === whosNextNumber
+    });
+
+    if (whosNextNumber !== userIdNumber) {
         return res.status(403).json({
             success: false,
             message: 'No es tu turno'

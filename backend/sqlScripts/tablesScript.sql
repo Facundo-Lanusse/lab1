@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS battle_answer (
                                              UNIQUE (battle_id, user_id, question_id)
 );
 
-CREATE TABLE community_category (
+CREATE TABLE if not exists community_category (
                                     community_category_id SERIAL PRIMARY KEY,
                                     name VARCHAR(100) NOT NULL UNIQUE
 );

@@ -70,6 +70,16 @@ router.get('/classic/battle/:battleId/state', validateBattleExists, async (req, 
         const battleId = req.params.battleId;
         const battle = req.battle; // Usamos la batalla que ya fue validada por el middleware
 
+        console.log('[DEBUG] Estado de batalla solicitado:', {
+            battleId,
+            user_id1: battle.user_id1,
+            tipoUser_id1: typeof battle.user_id1,
+            user_id2: battle.user_id2,
+            tipoUser_id2: typeof battle.user_id2,
+            whos_next: battle.whos_next,
+            tipoWhos_next: typeof battle.whos_next
+        });
+
         // Busco estado de las categorías
         const categoriesQuery = `
         select bc.user_id, bc.category_id, bc.completed, c.name
@@ -90,6 +100,14 @@ router.get('/classic/battle/:battleId/state', validateBattleExists, async (req, 
             } else {
                 user2Categories.push(row);
             }
+        });
+
+        console.log('[DEBUG] Enviando respuesta de estado de batalla:', {
+            currentTurn: battle.whos_next,
+            tipoDatoCurrTurn: typeof battle.whos_next,
+            categoriasTotales: categoriesResult.rowCount,
+            categoriasUser1: user1Categories.length,
+            categoriasUser2: user2Categories.length,
         });
 
         // Envio el resultado
@@ -179,13 +197,32 @@ router.post('/classic/battle/:battleId/answer', validateBattleExists, validateUs
        }
 
        const isCorrect = answerResult.rows[0].is_correct;
-       // Registro la respuesta
-       const recordAnswerQuery = `
-        insert into battle_answer (battle_id, question_id, answer_id, user_id, is_correct, answered_at)
-        values ($1, $2, $3, $4, $5, now())
-        returning *;
+
+       // Verificar primero si ya existe una respuesta para esta combinación batalla-usuario-pregunta
+       const checkExistingAnswerQuery = `
+         SELECT * FROM battle_answer 
+         WHERE battle_id = $1 AND user_id = $2 AND question_id = $3
+       `;
+       const existingAnswer = await db.query(checkExistingAnswerQuery, [battleId, userId, questionId]);
+
+       // Si ya existe una respuesta, actualizamos en lugar de insertar
+       if (existingAnswer.rows.length > 0) {
+         const updateAnswerQuery = `
+           UPDATE battle_answer
+           SET answer_id = $1, is_correct = $2, answer_time = now()
+           WHERE battle_id = $3 AND user_id = $4 AND question_id = $5
+           RETURNING *
          `;
-       await db.query(recordAnswerQuery, [battleId, questionId, answerId, userId, isCorrect]);
+         await db.query(updateAnswerQuery, [answerId, isCorrect, battleId, userId, questionId]);
+       } else {
+         // Si no existe, registramos la respuesta como antes
+         const recordAnswerQuery = `
+           INSERT INTO battle_answer (battle_id, question_id, answer_id, user_id, is_correct, answer_time)
+           VALUES ($1, $2, $3, $4, $5, now())
+           RETURNING *
+         `;
+         await db.query(recordAnswerQuery, [battleId, questionId, answerId, userId, isCorrect]);
+       }
 
        // Si respuesta es incorrecta, cambio el turno
        if (!isCorrect) {
@@ -211,14 +248,16 @@ router.post('/classic/battle/:battleId/answer', validateBattleExists, validateUs
         select count(*) as count
         from battle_answer
         where battle_id = $1 and user_id = $2 and is_correct = true
-        and answered_time > (
-            select coalesce(max(answered_time), date_trunc('minute', now()))
+        and answer_time > (
+            select coalesce(max(answer_time), date_trunc('minute', now()))
             from battle_answer
-            where battle_id = $1 and user_id = $2
+            where battle_id = $1 and user_id = $2 and is_correct = false
             )
         `;
        const correctResult = await db.query(correctAnswersQuery, [battleId, userId]);
-       const correctCount = correctResult.rows[0].count;
+       const correctCount = parseInt(correctResult.rows[0].count);
+
+       console.log(`Usuario ${userId} tiene ${correctCount} respuestas correctas consecutivas`);
 
        if (correctCount >= 3) {
            // El jugador puede elegir una categoría
@@ -293,9 +332,158 @@ router.post('/classic/battle/:battleId/select-category', validateBattleExists, v
     }
 });
 
+// Ruta para guardar el resultado de la partida
+router.post('/classic/battle/:battleId/result', validateBattleExists, async (req, res) => {
+    try {
+        const battleId = req.params.battleId;
+        const { userId, isWinner, history } = req.body;
+
+        // Actualizar el estado de la batalla
+        const updateBattleQuery = `
+            UPDATE battle
+            SET 
+                status = 'completed',
+                winner_id = $1,
+                completed_at = NOW()
+            WHERE battle_id = $2
+            RETURNING *
+        `;
+
+        await db.query(updateBattleQuery, [isWinner ? userId : (req.battle.user_id1 === parseInt(userId) ? req.battle.user_id2 : req.battle.user_id1), battleId]);
+
+        // Guardar el historial de la partida si existe
+        if (history && history.length > 0) {
+            // Crear un registro en la tabla de historial
+            const createHistoryQuery = `
+                INSERT INTO battle_history (battle_id, data)
+                VALUES ($1, $2)
+                RETURNING *
+            `;
+
+            await db.query(createHistoryQuery, [battleId, JSON.stringify(history)]);
+
+            // Actualizar las estadísticas del usuario
+            if (isWinner) {
+                // Si ganó, incrementar victorias
+                const updateStatsQuery = `
+                    UPDATE user_statistics
+                    SET 
+                        classic_games = classic_games + 1,
+                        classic_wins = classic_wins + 1,
+                        points = points + 10
+                    WHERE user_id = $1
+                `;
+                await db.query(updateStatsQuery, [userId]);
+            } else {
+                // Si perdió, sólo incrementar juegos jugados
+                const updateStatsQuery = `
+                    UPDATE user_statistics
+                    SET 
+                        classic_games = classic_games + 1,
+                        points = points + 2
+                    WHERE user_id = $1
+                `;
+                await db.query(updateStatsQuery, [userId]);
+            }
+        }
+
+        res.json({
+            success: true,
+            message: 'Resultado de la partida guardado correctamente'
+        });
+    } catch (error) {
+        console.error('Error al guardar resultado de la partida:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al guardar el resultado de la partida'
+        });
+    }
+});
+
+// Ruta para obtener las batallas activas de un usuario
+router.get('/classic/battles', async (req, res) => {
+    try {
+        const userId = req.query.userId;
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Se requiere el ID del usuario'
+            });
+        }
+
+        // Consulta para obtener todas las batallas activas donde participa el usuario
+        const battlesQuery = `
+            SELECT b.battle_id, b.user_id1, b.user_id2, b.status, b.whos_next, b.date,
+                   CASE WHEN b.user_id1 = $1 THEN u2.username ELSE u1.username END as opponent_name,
+                   (SELECT COUNT(*) FROM battle_categories 
+                    WHERE battle_id = b.battle_id AND user_id = $1 AND completed = true) as myCompletedCategories,
+                   (SELECT COUNT(*) FROM battle_categories 
+                    WHERE battle_id = b.battle_id AND user_id != $1 AND completed = true) as opponentCompletedCategories
+            FROM battle b
+            JOIN users u1 ON b.user_id1 = u1.user_id
+            JOIN users u2 ON b.user_id2 = u2.user_id
+            WHERE (b.user_id1 = $1 OR b.user_id2 = $1)
+            AND b.status = 'ongoing'
+            ORDER BY b.date DESC
+        `;
+
+        const result = await db.query(battlesQuery, [userId]);
+
+        // Formatear los datos para el frontend
+        const battles = result.rows.map(battle => ({
+            battle_id: battle.battle_id,
+            opponent_name: battle.opponent_name,
+            currentTurn: battle.whos_next,
+            date: battle.date,
+            myCompletedCategories: Number(battle.mycompletedcategories),
+            opponentCompletedCategories: Number(battle.opponentcompletedcategories)
+        }));
+
+        res.json({
+            success: true,
+            battles
+        });
+    } catch (error) {
+        console.error('Error al obtener batallas activas:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener las batallas activas'
+        });
+    }
+});
+
+// Endpoint para pasar el turno voluntariamente
+router.post('/classic/battle/:battleId/pass-turn', validateBattleExists, validateUserTurn, async (req, res) => {
+    try {
+        const { battleId } = req.params;
+        const { userId } = req.body;
+        const battle = req.battle; // Obtenido desde el middleware
+
+        // Determina quién es el siguiente jugador
+        const nextPlayer = battle.user_id1 === userId ? battle.user_id2 : battle.user_id1;
+
+        // Actualiza el turno en la base de datos
+        const updateTurnQuery = `
+            update battle
+            set whos_next = $1
+            where battle_id = $2
+            returning *
+        `;
+        await db.query(updateTurnQuery, [nextPlayer, battleId]);
+
+        res.json({
+            success: true,
+            message: 'Turno pasado al oponente exitosamente'
+        });
+    } catch (error) {
+        console.error('Error al pasar el turno:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al pasar el turno'
+        });
+    }
+});
+
 module.exports = router;
-
-
-
-
 

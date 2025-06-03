@@ -45,9 +45,21 @@ const PlayMenu = () => {
         if (!selectedFriend) return;
 
         try {
-            // Redireccionar a la página de ruleta pasando el ID del amigo seleccionado
-            navigate('/Roulette', { state: { friendId: selectedFriend.user_id }});
+            // Iniciar una batalla en el modo clásico
+            const user = JSON.parse(localStorage.getItem('user'));
+            const userId = user.user_id;
 
+            const response = await axios.post('http://localhost:3000/api/classic/start', {
+                userId: userId,
+                opponentId: selectedFriend.user_id
+            });
+
+            if (response.data.success) {
+                // Redireccionar directamente al modo clásico con el ID de la batalla
+                navigate(`/Classic/${response.data.battleId}`);
+            } else {
+                throw new Error(response.data.message || 'No se pudo iniciar la batalla');
+            }
         } catch (error) {
             console.error('Error al iniciar partida:', error);
             // Mostrar más detalles del error para debugging

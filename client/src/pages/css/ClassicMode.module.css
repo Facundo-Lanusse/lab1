@@ -1,0 +1,644 @@
+/* ClassicMode.module.css */
+
+/* Contenedor principal */
+.classicModeContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Inter, sans-serif;
+    overflow: auto;
+    padding: 80px 20px 30px;
+}
+
+/* Header */
+.classicModeContainer h2 {
+    color: var(--text-color);
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Mensaje de estado */
+.messageBox {
+    background-color: rgba(22, 179, 185, 0.1);
+    border-left: 4px solid var(--primary-color);
+    padding: 12px 20px;
+    margin-bottom: 24px;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 800px;
+    color: var(--text-color);
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estado de batalla */
+.battleStatus {
+    background-color: var(--panel-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 24px;
+}
+
+.playerStatus {
+    margin-bottom: 16px;
+}
+
+.playerStatus h4 {
+    font-size: 16px;
+    color: var(--text-color);
+    margin: 0 0 8px;
+}
+
+.progressBar {
+    width: 100%;
+    height: 10px;
+    background-color: #eeeeee;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 20px;
+    transition: width 0.5s ease;
+}
+
+.progress.opponent {
+    background-color: var(--tertiary-color);
+}
+
+/* Contenedor de ruleta */
+.wheelContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--panel-color);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.4s ease;
+}
+
+.wheelContainer h3 {
+    font-size: 20px;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.cancelWheelButton {
+    background-color: #f0f0f0;
+    color: var(--text-color);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s ease;
+}
+
+.cancelWheelButton:hover {
+    background-color: #e0e0e0;
+}
+
+/* Selección de categorías */
+.categorySelection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--panel-color);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.4s ease;
+}
+
+.categorySelection h3 {
+    font-size: 20px;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.categoriesContainer {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.categoriesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    width: 100%;
+}
+
+.categoryCard {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+}
+
+.categoryCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-color);
+}
+
+.categoryCard.completed {
+    background-color: rgba(108, 197, 81, 0.1);
+    border-color: var(--success-color);
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.checkMark {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--success-color);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.wheelButton {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(245, 186, 38, 0.3);
+}
+
+.wheelButton:hover {
+    background-color: #e6ac1e;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(245, 186, 38, 0.4);
+}
+
+.wheelButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Preguntas */
+.questionContainer {
+    background-color: var(--panel-color);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.4s ease;
+}
+
+.questionContainer h3 {
+    font-size: 20px;
+    color: var(--text-color);
+    margin-bottom: 16px;
+}
+
+.questionText {
+    font-size: 18px;
+    color: var(--text-color);
+    margin-bottom: 30px;
+    line-height: 1.5;
+    text-align: center;
+    font-weight: 500;
+}
+
+.answersList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.answerButton {
+    background-color: white;
+    border: 2px solid var(--primary-light);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.answerButton:hover {
+    background-color: rgba(22, 179, 185, 0.05);
+    transform: translateY(-2px);
+}
+
+/* Mensaje de espera */
+.waitingMessage {
+    background-color: var(--panel-color);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
+.waitingMessage h3 {
+    color: var(--text-secondary);
+    font-size: 20px;
+    margin-bottom: 0;
+}
+
+/* Contador de respuestas correctas */
+.correctCounter {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--success-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    box-shadow: var(--shadow-soft);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(108, 197, 81, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(108, 197, 81, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(108, 197, 81, 0); }
+}
+
+/* Opciones después de respuesta correcta */
+.continueOptions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.continueButton {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(108, 197, 81, 0.3);
+}
+
+.continueButton:hover {
+    background-color: #5bb444;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(108, 197, 81, 0.4);
+}
+
+.passTurnButton {
+    background-color: var(--tertiary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+}
+
+.passTurnButton:hover {
+    background-color: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+}
+
+/* Estado final de la partida */
+.battleResult {
+    background-color: var(--panel-color);
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    margin: 20px 0;
+    animation: fadeIn 0.5s ease;
+}
+
+.battleResult h2 {
+    margin-bottom: 30px;
+}
+
+.battleResult.winner {
+    border: 2px solid var(--success-color);
+}
+
+.battleResult.loser {
+    border: 2px solid var(--tertiary-color);
+}
+
+.backButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 32px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(22, 179, 185, 0.3);
+}
+
+.backButton:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(22, 179, 185, 0.4);
+}
+
+/* Pantalla inicial del modo clásico */
+.classicModeHome {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.activeBattlesSection,
+.startBattleSection {
+    background-color: var(--panel-color);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+}
+
+.activeBattlesSection h3,
+.startBattleSection h3 {
+    font-size: 22px;
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.activeBattlesList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.battleItem {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--secondary-color);
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.battleItem:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.battleOpponent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.opponentName {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.turnIndicator {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    background-color: #e0e0e0;
+    color: var(--text-secondary);
+}
+
+.turnIndicator.yourTurn {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.statusDate {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.noBattles {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 20px 0;
+}
+
+.friendsSelector {
+    margin-bottom: 30px;
+}
+
+.friendsSelector p {
+    margin: 0 0 15px 0;
+    color: var(--text-color);
+}
+
+.friendsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.friendsList::-webkit-scrollbar {
+    display: none;
+}
+
+.friendItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.friendItem:hover {
+    background-color: rgba(22, 179, 185, 0.05);
+}
+
+.friendItem.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(22, 179, 185, 0.1);
+}
+
+.friendAvatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.friendName {
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.startBattleButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 0;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+    box-shadow: 0 4px 10px rgba(22, 179, 185, 0.3);
+}
+
+.startBattleButton:hover:not(:disabled) {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(22, 179, 185, 0.4);
+}
+
+.startBattleButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.noFriends {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 20px 0;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    color: var(--text-secondary);
+    font-size: 18px;
+    animation: fadeIn 0.5s ease;
+}
+
+.errorMessage {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin: 20px 0;
+    animation: fadeIn 0.5s ease;
+}
+
+/* Media queries para responsive */
+@media (max-width: 768px) {
+    .classicModeContainer {
+        padding: 60px 15px 20px;
+    }
+
+    .classicModeContainer h2 {
+        font-size: 28px;
+    }
+
+    .continueOptions {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        margin: 20px auto 0;
+    }
+
+    .categoriesGrid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    .friendsList {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .classicModeContainer h2 {
+        font-size: 24px;
+    }
+
+    .questionText {
+        font-size: 16px;
+    }
+
+    .answerButton {
+        padding: 12px 16px;
+        font-size: 15px;
+    }
+
+    .categoriesGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
