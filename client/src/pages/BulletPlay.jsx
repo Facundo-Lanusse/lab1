@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import styles from "./css/GamePlay.module.css";
-import NavigationBar from "../components/NavigationBar";
 
 const BulletPlay = () => {
     const navigate = useNavigate();
@@ -15,6 +14,9 @@ const BulletPlay = () => {
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
     const [timeRemaining, setTimeRemaining] = useState(60);
     const [timerActive, setTimerActive] = useState(false);
+    const [timePenalty, setTimePenalty] = useState(null); // Para mostrar la penalización
+    const [showScoreModal, setShowScoreModal] = useState(false); // Para mostrar el modal del score
+    const [finalScore, setFinalScore] = useState(0); // Score final para mostrar en el modal
     const maxTime = 60; // Tiempo máximo en segundos
 
     const FetchQuestionAndAnswers = useCallback(async () => {
@@ -64,7 +66,7 @@ const BulletPlay = () => {
             timerId = setInterval(() => {
                 setTimeRemaining(prevTime => prevTime - 1);
             }, 1000);
-        } else if (timeRemaining === 0) {
+        } else if (timeRemaining <= 0) {
             handleTimeUp();
         }
 
@@ -75,8 +77,10 @@ const BulletPlay = () => {
 
     const handleTimeUp = async () => {
         setTimerActive(false);
+        setFinalScore(score);
         await handleScoreUpload();
-        navigate('/Home');
+        await handleQuestionUncheck();
+        setShowScoreModal(true);
     };
 
     const handleQuestionCheck = useCallback(async () => {
@@ -89,8 +93,7 @@ const BulletPlay = () => {
 
     const handleQuestionUncheck = useCallback(async () => {
         await axios.post("http://localhost:3000/api/UncheckBulletQuestion");
-        navigate('/Home');
-    }, [navigate]);
+    }, []);
 
     const isCorrect = async (answer, index) => {
         setSelectedIndex(index);
@@ -103,15 +106,31 @@ const BulletPlay = () => {
                 setIsAnswerCorrect(null);
                 await handleQuestionCheck();
                 await FetchQuestionAndAnswers();
-            }, 1000);
+            }, 300);
         } else {
-            setTimeout(async () => {
-                setSelectedIndex(null);
-                setIsAnswerCorrect(null);
-                setTimeRemaining(currentTime => currentTime - 10);
-                await handleQuestionCheck();
-                await FetchQuestionAndAnswers();
-            }, 1000);
+            // Restar 10 segundos por respuesta incorrecta
+            const newTime = Math.max(0, timeRemaining - 10);
+            setTimeRemaining(newTime);
+
+            // Mostrar penalización en la UI
+            setTimePenalty(-10);
+            setTimeout(() => {
+                setTimePenalty(null);
+            }, 2000);
+
+            // Si el tiempo llega a 0 o menos después de la penalización, terminar el juego
+            if (newTime <= 0) {
+                setTimeout(async () => {
+                    await handleTimeUp();
+                }, 300);
+            } else {
+                setTimeout(async () => {
+                    setSelectedIndex(null);
+                    setIsAnswerCorrect(null);
+                    await handleQuestionCheck();
+                    await FetchQuestionAndAnswers();
+                }, 300);
+            }
         }
     };
 
@@ -119,7 +138,6 @@ const BulletPlay = () => {
         const userId = JSON.parse(localStorage.getItem('user')).user_id
         const scoreMessage = await axios.post("http://localhost:3000/api/UploadUserBulletBestScore", {score, userId});
         console.log(scoreMessage.data.message);
-
     }
 
     async function handleGoBackClick() {
@@ -127,6 +145,11 @@ const BulletPlay = () => {
         await handleQuestionUncheck();
         navigate('/Play');
     }
+
+    const handleCloseModal = () => {
+        setShowScoreModal(false);
+        navigate('/Home');
+    };
 
     const timePercentage = (timeRemaining / maxTime) * 100;
 
@@ -141,12 +164,23 @@ const BulletPlay = () => {
                 />
                 <p className={styles.score}>Score: {score}</p>
 
-                {/* Barra de tiempo en vez del temporizador numérico */}
+                {/* Barra de tiempo con indicador de penalización */}
                 <div className={styles.timerBarContainer}>
                     <div
                         className={timeRemaining <= 10 ? styles.timerBarWarning : styles.timerBar}
                         style={{ width: `${timePercentage}%` }}
                     />
+                    {/* Mostrar penalización de tiempo */}
+                    {timePenalty && (
+                        <div className={styles.timePenaltyIndicator}>
+                            {timePenalty} seg
+                        </div>
+                    )}
+                </div>
+
+                {/* Mostrar tiempo restante numéricamente */}
+                <div className={styles.timeDisplay}>
+                    {timeRemaining}s
                 </div>
             </div>
             <div className={styles.questionContainer}>
@@ -172,6 +206,27 @@ const BulletPlay = () => {
                     );
                 })}
             </div>
+
+            {/* Modal de score final */}
+            {showScoreModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.scoreModal}>
+                        <div className={styles.modalContent}>
+                            <h2 className={styles.modalTitle}>¡Tiempo Agotado!</h2>
+                            <div className={styles.scoreDisplay}>
+                                <span className={styles.scoreLabel}>Tu puntuación final:</span>
+                                <span className={styles.finalScore}>{finalScore}</span>
+                            </div>
+                            <button
+                                className={styles.modalButton}
+                                onClick={handleCloseModal}
+                            >
+                                Continuar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

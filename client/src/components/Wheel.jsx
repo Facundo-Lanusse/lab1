@@ -9,7 +9,6 @@ const Wheel = ({ segments, segColors, winningSegment, onFinished, primaryColor =
   const timerDelay = 33; // ~30fps
   const spinTime = 4000; // 3 segundos de giro
   const spinTimeTotal = 4000;
-  // Definir radius aquí para que esté disponible en todo el componente
   const radius = size / 2 - 10;
 
   // Variables para la animación
