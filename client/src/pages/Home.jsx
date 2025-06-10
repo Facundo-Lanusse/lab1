@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 
 const Home = () => {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
     const [activeBattles, setActiveBattles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);

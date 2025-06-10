@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "database.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:verbose": "jest --verbose",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +27,8 @@
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "pg": "^8.14.1"
+    "jest": "^30.0.0",
+    "pg": "^8.14.1",
+    "supertest": "^7.1.1"
   }
 }
