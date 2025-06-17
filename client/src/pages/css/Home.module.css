@@ -489,6 +489,63 @@
     line-height: 1.5;
 }
 
+/* Estilos para las batallas completadas */
+.completedBattlesSection {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.sectionSubtitle {
+    font-size: 18px;
+    color: var(--text-color);
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.completedBattle {
+    background-color: rgba(245, 245, 245, 0.7);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid #a0a0a0;
+}
+
+.disabledBattle {
+    cursor: not-allowed;
+    opacity: 0.75;
+    pointer-events: none; /* Deshabilita interacciones */
+}
+
+.disabledBattle:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-soft) !important;
+    background-color: var(--panel-color) !important;
+}
+
+.battleResult {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.winResult {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.loseResult {
+    background-color: var(--tertiary-color);
+    color: white;
+}
+
+.completedLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: #a0a0a0; /* Gris para indicar finalización */
+    display: flex;
+    align-items: center;
+}
+
 /* Media queries para responsividad */
 @media (max-width: 900px) {
     .dashboardLayout {
@@ -534,4 +591,3 @@
         padding: 12px;
     }
 }
-
