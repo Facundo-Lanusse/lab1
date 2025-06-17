@@ -94,7 +94,7 @@ const Home = () => {
                                         key={battle.battle_id}
                                         className={styles.battleCard}
                                         onClick={() => navigate(`/Classic/${battle.battle_id}`)}
-                                        whileHover={{ scale: 1.02 }}
+                                        whileHover={{ scale: 1.01 }}
                                         whileTap={{ scale: 0.98 }}
                                     >
                                         <div className={styles.battleHeader}>
