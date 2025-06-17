@@ -320,10 +320,6 @@ const ClassicMode = () => {
   };
 
   const handleContinueAnswering = () => {
-    if (history.winner != null) {
-        setMessage('La partida ha terminado. No puedes continuar respondiendo.');
-        return;
-    }
     if (selectedCategory) {
       loadQuestion(selectedCategory);
     }
