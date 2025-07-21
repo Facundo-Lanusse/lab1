@@ -338,53 +338,14 @@ router.post('/classic/battle/:battleId/result', validateBattleExists, async (req
         const battleId = req.params.battleId;
         const { userId, isWinner, history } = req.body;
 
-        // Actualizar el estado de la batalla
-        const updateBattleQuery = `
-            UPDATE battle
-            SET 
-                status = 'completed',
-                winner_id = $1,
-                completed_at = NOW()
-            WHERE battle_id = $2
-            RETURNING *
-        `;
-
-        await db.query(updateBattleQuery, [isWinner ? userId : (req.battle.user_id1 === parseInt(userId) ? req.battle.user_id2 : req.battle.user_id1), battleId]);
-
-        // Guardar el historial de la partida si existe
-        if (history && history.length > 0) {
-            // Crear un registro en la tabla de historial
-            const createHistoryQuery = `
-                INSERT INTO battle_history (battle_id, data)
-                VALUES ($1, $2)
-                RETURNING *
-            `;
-
-            await db.query(createHistoryQuery, [battleId, JSON.stringify(history)]);
-
-            // Actualizar las estadísticas del usuario
             if (isWinner) {
-                // Si ganó, incrementar victorias
-                const updateStatsQuery = `
-                    UPDATE user_statistics
-                    SET 
-                        classic_games = classic_games + 1,
-                        classic_wins = classic_wins + 1,
-                        points = points + 10
-                    WHERE user_id = $1
+                const createHistoryQuery = `
+                INSERT INTO history (battle_id, result, winner_user_id)
+                VALUES ($1, $2, $3)
+                RETURNING *
                 `;
-                await db.query(updateStatsQuery, [userId]);
-            } else {
-                // Si perdió, sólo incrementar juegos jugados
-                const updateStatsQuery = `
-                    UPDATE user_statistics
-                    SET 
-                        classic_games = classic_games + 1,
-                        points = points + 2
-                    WHERE user_id = $1
-                `;
-                await db.query(updateStatsQuery, [userId]);
-            }
+
+            await db.query(createHistoryQuery, [battleId, JSON.stringify(history), userId]);
         }
 
         res.json({

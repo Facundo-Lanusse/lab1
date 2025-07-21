@@ -13,7 +13,7 @@ const Home = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Cargar partidas en curso si el usuario está autenticado
+
         if (user) {
             fetchActiveBattles();
         }

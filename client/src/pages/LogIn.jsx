@@ -25,7 +25,7 @@ const LogIn = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            //Llamo el method post de mi backend
+
 
             const data = await response.json();//Await es para llamada a base de datos asincrónica
 

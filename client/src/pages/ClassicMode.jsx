@@ -344,7 +344,7 @@ const ClassicMode = () => {
       await axios.post(`http://localhost:3000/api/classic/battle/${battleId}/result`, {
         userId,
         isWinner,
-        history: gameHistory
+        history: JSON.stringify(battle.user2Categories) + JSON.stringify(battle.user1Categories)
       });
     } catch (err) {
       console.error('Error al guardar resultado de la partida:', err);
@@ -475,6 +475,7 @@ const ClassicMode = () => {
           winner: userId,
           timestamp: new Date().toISOString()
         }]);
+        setShowWheel(false)
       }
 
       return (
@@ -495,6 +496,7 @@ const ClassicMode = () => {
           winner: battle.user_id1 === userId ? battle.user_id2 : battle.user_id1,
           timestamp: new Date().toISOString()
         }]);
+        setShowWheel(false)
       }
 
       return (
