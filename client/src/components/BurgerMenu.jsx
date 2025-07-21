@@ -12,7 +12,7 @@ export const BurgerMenu = () => {
     const userIsAdmin = user.is_admin;
     const [profileImage, setProfileImage] = useState(null);
 
-    // Cerrar menú al hacer clic fuera del mismo
+
     useEffect(() => {
         if (isOpen) {
             const handleClickOutside = (event) => {
@@ -58,7 +58,7 @@ export const BurgerMenu = () => {
     }
 
 
-    // Iconos planos en formato SVG inline
+
     const menuItems = [
         {
             label: 'Profile',

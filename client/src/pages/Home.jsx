@@ -14,7 +14,6 @@ const Home = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Cargar partidas si el usuario está autenticado
         if (user) {
             fetchBattles();
         }
