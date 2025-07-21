@@ -336,17 +336,46 @@ router.post('/classic/battle/:battleId/select-category', validateBattleExists, v
 router.post('/classic/battle/:battleId/result', validateBattleExists, async (req, res) => {
     try {
         const battleId = req.params.battleId;
-        const { userId, isWinner, history } = req.body;
+        const { userId, isWinner } = req.body;
 
-            if (isWinner) {
-                const createHistoryQuery = `
-                INSERT INTO history (battle_id, result, winner_user_id)
-                VALUES ($1, $2, $3)
-                RETURNING *
-                `;
-
-            await db.query(createHistoryQuery, [battleId, JSON.stringify(history), userId]);
+        let winnerId = null;
+        if (isWinner) {
+            winnerId = userId;
+        } else {
+            winnerId = req.battle.user_id1 === parseInt(userId) ? req.battle.user_id2 : req.battle.user_id1;
         }
+        // Actualizar el estado de la batalla
+        const updateBattleQuery = `
+            UPDATE battle
+            SET status = 'completed'
+            WHERE battle_id = $1
+            RETURNING *
+        `;
+
+        await db.query(updateBattleQuery, [battleId]);
+
+        // Guardar en la tabla history
+        const createHistoryQuery = `
+            INSERT INTO history (battle_id, result, winner_user_id)
+            VALUES ($1, $2, $3)
+            RETURNING *
+        `;
+
+        await db.query(createHistoryQuery, [
+            battleId,
+            isWinner ? 'win' : 'loss',
+            winnerId
+        ]);
+
+        // Actualizar los puntos del usuario
+        const updatePointsQuery = `
+            UPDATE users
+            SET rank_points = rank_points + $1
+            WHERE user_id = $2
+        `;
+
+        // Si ganó, le damos más puntos
+        await db.query(updatePointsQuery, [isWinner ? 10 : 2, userId]);
 
         res.json({
             success: true,
@@ -361,7 +390,7 @@ router.post('/classic/battle/:battleId/result', validateBattleExists, async (req
     }
 });
 
-// Ruta para obtener las batallas activas de un usuario
+// Ruta para obtener las batallas de un usuario (activas y completadas)
 router.get('/classic/battles', async (req, res) => {
     try {
         const userId = req.query.userId;
@@ -373,9 +402,10 @@ router.get('/classic/battles', async (req, res) => {
             });
         }
 
-        // Consulta para obtener todas las batallas activas donde participa el usuario
+        // Consulta para obtener todas las batallas donde participa el usuario
         const battlesQuery = `
-            SELECT b.battle_id, b.user_id1, b.user_id2, b.status, b.whos_next, b.date,
+            SELECT b.battle_id, b.user_id1, b.user_id2, b.status, b.whos_next, b.date, 
+                   h.winner_user_id as winner_id,
                    CASE WHEN b.user_id1 = $1 THEN u2.username ELSE u1.username END as opponent_name,
                    (SELECT COUNT(*) FROM battle_categories 
                     WHERE battle_id = b.battle_id AND user_id = $1 AND completed = true) as myCompletedCategories,
@@ -384,9 +414,9 @@ router.get('/classic/battles', async (req, res) => {
             FROM battle b
             JOIN users u1 ON b.user_id1 = u1.user_id
             JOIN users u2 ON b.user_id2 = u2.user_id
+            LEFT JOIN history h ON b.battle_id = h.battle_id
             WHERE (b.user_id1 = $1 OR b.user_id2 = $1)
-            AND b.status = 'ongoing'
-            ORDER BY b.date DESC
+            ORDER BY b.status = 'ongoing' DESC, b.date DESC
         `;
 
         const result = await db.query(battlesQuery, [userId]);
@@ -398,7 +428,11 @@ router.get('/classic/battles', async (req, res) => {
             currentTurn: battle.whos_next,
             date: battle.date,
             myCompletedCategories: Number(battle.mycompletedcategories),
-            opponentCompletedCategories: Number(battle.opponentcompletedcategories)
+            opponentCompletedCategories: Number(battle.opponentcompletedcategories),
+            status: battle.status,
+            winner_id: battle.winner_id,
+            isWinner: battle.winner_id === Number(userId),
+            isCompleted: battle.status === 'completed'
         }));
 
         res.json({
@@ -406,10 +440,10 @@ router.get('/classic/battles', async (req, res) => {
             battles
         });
     } catch (error) {
-        console.error('Error al obtener batallas activas:', error);
+        console.error('Error al obtener batallas:', error);
         res.status(500).json({
             success: false,
-            message: 'Error al obtener las batallas activas'
+            message: 'Error al obtener las batallas'
         });
     }
 });
@@ -447,4 +481,3 @@ router.post('/classic/battle/:battleId/pass-turn', validateBattleExists, validat
 });
 
 module.exports = router;
-

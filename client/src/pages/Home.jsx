@@ -8,30 +8,56 @@ import axios from 'axios';
 const Home = () => {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     const [activeBattles, setActiveBattles] = useState([]);
+    const [completedBattles, setCompletedBattles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-
         if (user) {
-            fetchActiveBattles();
+            fetchBattles();
         }
     }, []);
 
-    // Función para cargar las partidas activas
-    const fetchActiveBattles = async () => {
+    // Función para cargar todas las batallas (activas y completadas)
+    const fetchBattles = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`http://localhost:3000/api/classic/battles`, {
                 params: { userId: user.user_id }
             });
-            setActiveBattles(response.data.battles || []);
+
+            // Separar batallas activas y completadas
+            const active = [];
+            const completed = [];
+
+            if (response.data.battles && response.data.battles.length > 0) {
+                response.data.battles.forEach(battle => {
+                    if (battle.status === 'completed' || battle.isCompleted) {
+                        completed.push(battle);
+                    } else {
+                        active.push(battle);
+                    }
+                });
+            }
+
+            setActiveBattles(active);
+            setCompletedBattles(completed);
             setLoading(false);
         } catch (err) {
-            console.error('Error al obtener batallas activas:', err);
-            setError('No se pudieron cargar las partidas activas');
+            console.error('Error al obtener batallas:', err);
+            setError('No se pudieron cargar las partidas');
             setLoading(false);
+        }
+    };
+
+    // Solo navegar a las batallas activas
+    const handleBattleClick = (battle) => {
+        if (battle.status !== 'completed' && !battle.isCompleted) {
+            navigate(`/Classic/${battle.battle_id}`);
+        } else {
+            // No hacemos nada si la batalla está completada
+            console.log('Esta batalla ya ha finalizado');
         }
     };
 
@@ -68,7 +94,7 @@ const Home = () => {
                         transition={{ delay: 0.2, duration: 0.5 }}
                     >
                         <div className={styles.panelHeader}>
-                            <h2 className={styles.sectionTitle}>Tus partidas en curso</h2>
+                            <h2 className={styles.sectionTitle}>Tus partidas</h2>
                             <Link to="/Play" className={styles.newGameButton}>
                                 Nueva partida +
                             </Link>
@@ -83,74 +109,135 @@ const Home = () => {
                             <div className={styles.errorMessage}>
                                 <span className={styles.errorIcon}>⚠️</span>
                                 <p>{error}</p>
-                                <button onClick={fetchActiveBattles} className={styles.retryButton}>
+                                <button onClick={fetchBattles} className={styles.retryButton}>
                                     Reintentar
                                 </button>
                             </div>
-                        ) : activeBattles.length > 0 ? (
-                            <div className={styles.battlesList}>
-                                {activeBattles.map(battle => (
-                                    <motion.div
-                                        key={battle.battle_id}
-                                        className={styles.battleCard}
-                                        onClick={() => navigate(`/Classic/${battle.battle_id}`)}
-                                        whileHover={{ scale: 1.01 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        <div className={styles.battleHeader}>
-                                            <span className={styles.opponentName}>VS {battle.opponent_name}</span>
-                                            <span className={`${styles.turnIndicator} ${battle.currentTurn === user.user_id ? styles.yourTurn : styles.opponentTurn}`}>
-                                                {battle.currentTurn === user.user_id ? '¡Tu turno!' : 'Turno del oponente'}
-                                            </span>
-                                        </div>
-
-                                        <div className={styles.battleProgress}>
-                                            <div className={styles.progressRow}>
-                                                <span className={styles.playerName}>Tú:</span>
-                                                <div className={styles.progressBar}>
-                                                    <div
-                                                        className={styles.progressFill}
-                                                        style={{width: `${(battle.myCompletedCategories / 4) * 100}%`}}
-                                                    ></div>
-                                                </div>
-                                                <span className={styles.categoryCount}>{battle.myCompletedCategories}/4</span>
-                                            </div>
-
-                                            <div className={styles.progressRow}>
-                                                <span className={styles.playerName}>Rival:</span>
-                                                <div className={styles.progressBar}>
-                                                    <div
-                                                        className={`${styles.progressFill} ${styles.opponentFill}`}
-                                                        style={{width: `${(battle.opponentCompletedCategories / 4) * 100}%`}}
-                                                    ></div>
-                                                </div>
-                                                <span className={styles.categoryCount}>{battle.opponentCompletedCategories}/4</span>
-                                            </div>
-                                        </div>
-
-                                        <div className={styles.battleFooter}>
-                                            <span className={styles.battleDate}>
-                                                Iniciada: {new Date(battle.date).toLocaleDateString()}
-                                            </span>
-                                            <div className={styles.continueButton}>
-                                                Continuar
-                                                <span className={styles.arrowIcon}>→</span>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
                         ) : (
-                            <div className={styles.emptyStateContainer}>
-                                <div className={styles.emptyState}>
-                                    <div className={styles.emptyStateIcon}>🎮</div>
-                                    <h3>No tienes partidas activas</h3>
-                                    <p>Desafía a tus amigos para empezar a jugar</p>
-                                    <Link to="/Play" className={styles.startGameButton}>
-                                        Iniciar una partida
-                                    </Link>
-                                </div>
-                            </div>
+                            <>
+                                {/* Partidas activas */}
+                                <h3 className={styles.sectionSubtitle}>Partidas en curso</h3>
+                                {activeBattles.length > 0 ? (
+                                    <div className={styles.battlesList}>
+                                        {activeBattles.map(battle => (
+                                            <motion.div
+                                                key={battle.battle_id}
+                                                className={styles.battleCard}
+                                                onClick={() => handleBattleClick(battle)}
+                                                whileHover={{ scale: 1.01 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                <div className={styles.battleHeader}>
+                                                    <span className={styles.opponentName}>VS {battle.opponent_name}</span>
+                                                    <span className={`${styles.turnIndicator} ${battle.currentTurn === user.user_id ? styles.yourTurn : styles.opponentTurn}`}>
+                                                        {battle.currentTurn === user.user_id ? '¡Tu turno!' : 'Turno del oponente'}
+                                                    </span>
+                                                </div>
+
+                                                <div className={styles.battleProgress}>
+                                                    <div className={styles.progressRow}>
+                                                        <span className={styles.playerName}>Tú:</span>
+                                                        <div className={styles.progressBar}>
+                                                            <div
+                                                                className={styles.progressFill}
+                                                                style={{width: `${(battle.myCompletedCategories / 4) * 100}%`}}
+                                                            ></div>
+                                                        </div>
+                                                        <span className={styles.categoryCount}>{battle.myCompletedCategories}/4</span>
+                                                    </div>
+
+                                                    <div className={styles.progressRow}>
+                                                        <span className={styles.playerName}>Rival:</span>
+                                                        <div className={styles.progressBar}>
+                                                            <div
+                                                                className={`${styles.progressFill} ${styles.opponentFill}`}
+                                                                style={{width: `${(battle.opponentCompletedCategories / 4) * 100}%`}}
+                                                            ></div>
+                                                        </div>
+                                                        <span className={styles.categoryCount}>{battle.opponentCompletedCategories}/4</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className={styles.battleFooter}>
+                                                    <span className={styles.battleDate}>
+                                                        Iniciada: {new Date(battle.date).toLocaleDateString()}
+                                                    </span>
+                                                    <div className={styles.continueButton}>
+                                                        Continuar
+                                                        <span className={styles.arrowIcon}>→</span>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.emptyStateContainer}>
+                                        <div className={styles.emptyState}>
+                                            <div className={styles.emptyStateIcon}>🎮</div>
+                                            <h3>No tienes partidas activas</h3>
+                                            <p>Desafía a tus amigos para empezar a jugar</p>
+                                            <Link to="/Play" className={styles.startGameButton}>
+                                                Iniciar una partida
+                                            </Link>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Partidas completadas */}
+                                {completedBattles.length > 0 && (
+                                    <div className={styles.completedBattlesSection} style={{marginTop: '2rem'}}>
+                                        <h3 className={styles.sectionSubtitle}>Partidas completadas</h3>
+                                        <div className={styles.battlesList}>
+                                            {completedBattles.map(battle => (
+                                                <div
+                                                    key={battle.battle_id}
+                                                    className={`${styles.battleCard} ${styles.completedBattle} ${styles.disabledBattle}`}
+                                                >
+                                                    <div className={styles.battleHeader}>
+                                                        <span className={styles.opponentName}>VS {battle.opponent_name}</span>
+                                                        <span className={`${styles.battleResult} ${battle.isWinner ? styles.winResult : styles.loseResult}`}>
+                                                            {battle.isWinner ? '¡Victoria!' : 'Derrota'}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className={styles.battleProgress}>
+                                                        <div className={styles.progressRow}>
+                                                            <span className={styles.playerName}>Tú:</span>
+                                                            <div className={styles.progressBar}>
+                                                                <div
+                                                                    className={styles.progressFill}
+                                                                    style={{width: `${(battle.myCompletedCategories / 4) * 100}%`}}
+                                                                ></div>
+                                                            </div>
+                                                            <span className={styles.categoryCount}>{battle.myCompletedCategories}/4</span>
+                                                        </div>
+
+                                                        <div className={styles.progressRow}>
+                                                            <span className={styles.playerName}>Rival:</span>
+                                                            <div className={styles.progressBar}>
+                                                                <div
+                                                                    className={`${styles.progressFill} ${styles.opponentFill}`}
+                                                                    style={{width: `${(battle.opponentCompletedCategories / 4) * 100}%`}}
+                                                                ></div>
+                                                            </div>
+                                                            <span className={styles.categoryCount}>{battle.opponentCompletedCategories}/4</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className={styles.battleFooter}>
+                                                        <span className={styles.battleDate}>
+                                                            Finalizada: {new Date(battle.date).toLocaleDateString()}
+                                                        </span>
+                                                        <div className={styles.completedLabel}>
+                                                            Partida finalizada
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </motion.div>
 
@@ -216,4 +303,3 @@ const Home = () => {
 };
 
 export default Home;
-
