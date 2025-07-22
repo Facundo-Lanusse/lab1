@@ -23,6 +23,10 @@ const SignUp = () => {
 
     const handleSubmit = useCallback(async () => {
         try {
+            if(form.username.includes('Guest')) {
+                setMessage("Word: 'Guest' is not allowed in username.");
+                return;
+            }
             const res = await axios.post("http://localhost:3000/api/register", form);
             setMessage(`Usuario ${res.data.username} registrado con éxito.`);
             navigate('/login');
