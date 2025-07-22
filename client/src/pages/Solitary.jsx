@@ -98,6 +98,10 @@ const Solitary = () => {
 
     async function handleScoreUpload(){
         const userId = JSON.parse(localStorage.getItem('user')).user_id
+        const username = JSON.parse(localStorage.getItem('user')).username;
+        if (username.includes('Guest')) {
+            return;
+        }
         const scoreMessage = await axios.post("http://localhost:3000/api/uploadUserScore", {score, userId});
         console.log(scoreMessage.data.message);
         await handleSoloHistoryUpload();

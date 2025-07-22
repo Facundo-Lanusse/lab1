@@ -17,17 +17,47 @@ const LogIn = () => {
     }, [navigate]);
 
 
-    const handleLogin = async () => {
+    function randomString(length = 5) {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result + '@example.com';
+    }
+
+    function randomNumberString(length = 4) {
+        const digits = '0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        return result;
+    }
+
+    const handleLogin = async (isGuest) => {
         setError('');
         try {
+            if(isGuest){
+                const guestEmail = randomString();
+                const user = {
+                    email: guestEmail,
+                    password: 'guest123',
+                    username: 'Guest'+ randomNumberString(),
+                    user_id: Math.floor(Math.random() * 61) + 100000 //Genera un ID de usuario aleatorio entre 100000 y 100030
+                }
+                localStorage.setItem('user', JSON.stringify(user));
+                navigate('/Home')
+            }
+
+
             const response = await fetch('http://localhost:3000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
 
-
-            const data = await response.json();//Await es para llamada a base de datos asincrónica
+            const data = await response.json();
 
             if (response.ok) {//Si no explotó response que haga lo siguiente, sino que tire error
                 localStorage.setItem('user', JSON.stringify(data.user));//Guardo en el storage la session del usuario, es nativo de node
@@ -77,8 +107,13 @@ const LogIn = () => {
 
             <div className={styles.forgotPassword}>Forgot password?</div>
 
-            <button className={styles.logInButton} onClick={handleLogin}>Log in</button>
+            <button className={styles.logInButton} onClick={() => handleLogin(false)}>Log in</button>
 
+            <div>
+                <button className={styles.logInButton} onClick={() => handleLogin(true)}>
+                    Log in as Guest
+                </button>
+            </div>
         </div>
     );
 };

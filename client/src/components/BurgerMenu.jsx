@@ -11,7 +11,13 @@ export const BurgerMenu = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const userIsAdmin = user.is_admin;
     const [profileImage, setProfileImage] = useState(null);
+    const [isGuest, setIsGuest] = useState(false);
 
+    useEffect(() => {
+        if (user.username.includes('Guest')) {
+            setIsGuest(true);
+        }
+    }, []);
 
     useEffect(() => {
         if (isOpen) {
@@ -119,6 +125,11 @@ export const BurgerMenu = () => {
         );
     }
 
+    // Mostrar solo el botón de logout si es guest
+    const visibleMenuItems = isGuest
+        ? menuItems.filter(item => item.label === 'Log Out')
+        : menuItems;
+
     const menuVariants = {
         hidden: { x: '-100%', opacity: 0 },
         visible: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
@@ -148,7 +159,7 @@ export const BurgerMenu = () => {
             </div>
 
             <AnimatePresence>
-                {isOpen && (
+                {isOpen &&(
                     <motion.div
                         className={styles.menuContainer}
                         variants={menuVariants}
@@ -178,7 +189,7 @@ export const BurgerMenu = () => {
                         <div className={styles.menuDivider}></div>
 
                         <div className={styles.menuItems}>
-                            {menuItems.map((item, index) => (
+                            {visibleMenuItems.map((item, index) => (
                                 <motion.button
                                     key={index}
                                     className={`${styles.buttonForDesplegableMenu} ${item.className || ''}`}
