@@ -32,6 +32,7 @@ const ClassicMode = () => {
 
   let userId;
   const userStr = localStorage.getItem('user');
+  console.log("Esto es lo que se guarda en localstorage" + userStr);
   if (userStr) {
     try {
       const userObj = JSON.parse(userStr);
@@ -300,9 +301,13 @@ const ClassicMode = () => {
             setQuestion(null);
           }
         } else {
+          // Respuesta incorrecta: cambiar turno automáticamente
           setCorrectCounter(0);
           setMessage('Respuesta incorrecta. Turno del oponente.');
           setQuestion(null);
+          setSelectedCategory(null); // Limpiar la categoría seleccionada
+
+          // Actualizar el estado de la batalla para reflejar cambio de turno
           fetchBattleState();
         }
       }
@@ -315,6 +320,10 @@ const ClassicMode = () => {
   };
 
   const handleContinueAnswering = () => {
+    if (history.winner != null) {
+        setMessage('La partida ha terminado. No puedes continuar respondiendo.');
+        return;
+    }
     if (selectedCategory) {
       loadQuestion(selectedCategory);
     }

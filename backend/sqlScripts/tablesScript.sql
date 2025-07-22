@@ -229,3 +229,16 @@ create table bullet_answers(
                                answer_text text not null,
                                is_correct boolean not null default  false
 )
+
+create table bullet_ranking
+(
+    bullet_ranking_id serial
+        primary key,
+    bullet_user_id    integer           not null
+        references users
+            on delete cascade,
+    best_bullet_score integer default 0 not null
+);
+
+alter table bullet_ranking
+    owner to postgres;
