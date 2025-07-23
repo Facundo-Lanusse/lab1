@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import styles from './css/LogIn.module.css';
+import axios from "axios";
 
 const LogIn = () => {
     const [email, setEmail] = useState(''); //useState se usa para guardar estados de las variables
@@ -39,18 +40,11 @@ const LogIn = () => {
         setError('');
         try {
             if(isGuest){
-                const guestEmail = randomString();
-                const user = {
-                    email: guestEmail,
-                    password: 'guest123',
-                    username: 'Guest'+ randomNumberString(),
-                    user_id: Math.floor(Math.random() * 61) + 100000 //Genera un ID de usuario aleatorio entre 100000 y 100030
-                }
-                localStorage.setItem('user', JSON.stringify(user));
-                navigate('/Home')
+                await createGuestUser();
+                return;
             }
 
-
+            // Resto del código para login normal...
             const response = await fetch('http://localhost:3000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -59,8 +53,8 @@ const LogIn = () => {
 
             const data = await response.json();
 
-            if (response.ok) {//Si no explotó response que haga lo siguiente, sino que tire error
-                localStorage.setItem('user', JSON.stringify(data.user));//Guardo en el storage la session del usuario, es nativo de node
+            if (response.ok) {
+                localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('token', data.token);
                 navigate('/Home')
             } else {
@@ -69,6 +63,37 @@ const LogIn = () => {
         } catch (error) {
             setError('Error connecting to the server');
             console.error('Fetch error:', error);
+        }
+    };
+
+
+    const createGuestUser = async () => {
+        try {
+            const guestId = Math.floor(Math.random() * 900000) + 100000;
+            const guestUsername = `Guest_${guestId}`;
+
+            // Insertar guest en la base de datos
+            const response = await axios.post('http://localhost:3000/api/create-guest', {
+                user_id: guestId,
+                username: guestUsername,
+                password: 'guest_password'
+            });
+
+            if (response.data.success) {
+                const guestData = {
+                    user_id: guestId,
+                    username: guestUsername,
+                    email: null,
+                    is_admin: false,
+                    isGuest: true
+                };
+
+                localStorage.setItem('user', JSON.stringify(guestData));
+                navigate('/Home');
+            }
+        } catch (error) {
+            console.error('Error creando usuario guest:', error);
+            setError('Error al crear usuario invitado');
         }
     };
 

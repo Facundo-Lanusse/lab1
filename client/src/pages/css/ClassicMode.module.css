@@ -383,23 +383,35 @@
     border: 2px solid var(--tertiary-color);
 }
 
+/* Botón para volver atrás */
 .backButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
     background-color: var(--primary-color);
-    color: white;
+    color: var(--text-light);
     border: none;
-    border-radius: 30px;
-    padding: 14px 32px;
-    font-size: 18px;
-    font-weight: 600;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(22, 179, 185, 0.3);
+    box-shadow: var(--shadow);
+    padding: 0; /* Eliminar padding para que la imagen se ajuste mejor */
 }
 
 .backButton:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(22, 179, 185, 0.4);
+    background-color: var(--hover-color);
+    transform: scale(1.05);
+}
+
+.backButton img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1); /* Hace que el SVG sea blanco */
 }
 
 /* Pantalla inicial del modo clásico */

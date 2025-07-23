@@ -23,6 +23,7 @@ import NavigationBar from "./components/NavigationBar";
 import CommunityCategoriesJudgement from "./pages/CommunityCategoriesJudgement";
 import ReviewCategory from "./pages/ReviewCategory";
 import BulletPlay from "./pages/BulletPlay";
+import InviteHandler from "./components/InviteHandler";
 
 
 const AppContent = () => {
@@ -63,6 +64,7 @@ const AppContent = () => {
           <Route path="/Play-Categories/:category_id" element={<PlayCommunityCategories />} />
           <Route path="/Categories-Judgement" element={<CommunityCategoriesJudgement />} />
           <Route path="/Review-Category/:category_id" element={<ReviewCategory />} />
+          <Route path="/invite/:inviteCode" element={<InviteHandler />} />
         </Routes>
       </>
   );

@@ -109,4 +109,67 @@ router.post('/google-auth', async (req, res) => {
     }
 });
 
+router.post('/create-guest', async (req, res) => {
+    try {
+        const { user_id, username, password } = req.body;
+
+        // Verificar que el ID no exista
+        const existingUser = await db.query('SELECT user_id FROM users WHERE user_id = $1', [user_id]);
+        if (existingUser.rows.length > 0) {
+            // Si existe, generar nuevo ID
+            const newId = Math.floor(Math.random() * 900000) + 100000;
+            return res.status(400).json({
+                success: false,
+                error: 'ID ya existe',
+                newId: newId
+            });
+        }
+
+        // Insertar usuario guest (solo con campos existentes)
+        await db.query(
+            'INSERT INTO users (user_id, username, password, email) VALUES ($1, $2, $3, NULL)',
+            [user_id, username, password]
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error creando guest:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error interno del servidor'
+        });
+    }
+});
+
+// Función para limpiar guests antiguos
+const cleanOldGuests = async () => {
+    try {
+        // Eliminar guests creados hace más de 24 horas
+        // que no tengan batallas activas
+        const cleanupQuery = `
+            DELETE FROM users
+            WHERE username LIKE 'Guest_%'
+            AND user_id NOT IN (
+                SELECT DISTINCT user_id1 FROM battle WHERE status = 'ongoing'
+                UNION
+                SELECT DISTINCT user_id2 FROM battle WHERE status = 'ongoing'
+            )
+            AND user_id NOT IN (
+                SELECT DISTINCT user_id FROM solo_history 
+                WHERE game_date > NOW() - INTERVAL '24 hours'
+            )
+        `;
+
+        const result = await db.query(cleanupQuery);
+        console.log(`Usuarios guest limpiados: ${result.rowCount}`);
+    } catch (error) {
+        console.error('Error limpiando usuarios guest:', error);
+    }
+};
+
+// borra guests cada 10 mins
+setInterval(cleanOldGuests,   10 *  60 * 1000);
+
+
+
 module.exports = router;

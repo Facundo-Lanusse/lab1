@@ -320,9 +320,9 @@ const ClassicMode = () => {
   };
 
   const handleContinueAnswering = () => {
-    if (history.winner != null) {
-        setMessage('La partida ha terminado. No puedes continuar respondiendo.');
-        return;
+    if (battle?.winner != null) {
+      setMessage('The game has ended. You cannot continue answering.');
+      return;
     }
     if (selectedCategory) {
       loadQuestion(selectedCategory);
@@ -542,7 +542,9 @@ const ClassicMode = () => {
   const renderClassicModeHome = () => {
     return (
       <div className={styles.classicModeHome}>
+
         <h2>Modo Clásico</h2>
+
 
         <div className={styles.activeBattlesSection}>
           <h3>Tus partidas activas</h3>
@@ -572,7 +574,6 @@ const ClassicMode = () => {
             <p className={styles.noBattles}>No tienes partidas activas</p>
           )}
         </div>
-
         <div className={styles.startBattleSection}>
           <h3>Iniciar una nueva batalla</h3>
           <div className={styles.friendsSelector}>
@@ -635,9 +636,16 @@ const ClassicMode = () => {
 
   return (
     <div className={styles.classicModeContainer}>
+
       <h2>Modo Clásico</h2>
 
       {message && <div className={styles.messageBox}>{message}</div>}
+      <button
+          className={styles.backButton}
+          onClick={() => navigate('/Play')}
+          aria-label="Volver atrás">
+        <img src="../arrow-left-solid.svg" alt="Volver" />
+      </button>
 
       {renderBattleStatus()}
 

@@ -1,12 +1,3 @@
-create sequence users_id_seq
-    as integer;
-
-alter sequence users_id_seq owner to postgres;
-
-create type friendship_state as enum ('accepted', 'pending', 'rejected');
-
-alter type friendship_state owner to postgres;
-
 create table users
 (
     user_id     integer default nextval('users_id_seq'::regclass) not null
@@ -21,8 +12,6 @@ create table users
 
 alter table users
     owner to postgres;
-
-alter sequence users_id_seq owned by users.user_id;
 
 create table category
 (
@@ -168,67 +157,109 @@ create table profile_image
 alter table profile_image
     owner to postgres;
 
--- Tabla para llevar el seguimiento de categorías por usuario en cada batalla
-CREATE TABLE IF NOT EXISTS battle_categories (battle_id INTEGER NOT NULL REFERENCES battle(battle_id) ON DELETE CASCADE,
-                                              user_id INTEGER NOT NULL REFERENCES users(user_id),
-                                              category_id INTEGER NOT NULL REFERENCES category(category_id),
-                                              completed BOOLEAN DEFAULT FALSE,
-                                              completed_at TIMESTAMP,
-                                              PRIMARY KEY (battle_id, user_id, category_id)
-);
-
-CREATE TABLE IF NOT EXISTS battle_answer (
-                                             battle_answer_id SERIAL PRIMARY KEY,
-                                             battle_id INTEGER NOT NULL REFERENCES battle(battle_id),
-                                             user_id INTEGER NOT NULL REFERENCES users(user_id),
-                                             question_id INTEGER NOT NULL REFERENCES question(question_id),
-                                             answer_id INTEGER NOT NULL REFERENCES answer(answer_id),
-                                             is_correct BOOLEAN NOT NULL,
-                                             answer_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                             UNIQUE (battle_id, user_id, question_id)
-);
-
-CREATE TABLE if not exists community_category (
-                                    community_category_id SERIAL PRIMARY KEY,
-                                    name VARCHAR(100) NOT NULL UNIQUE
-);
-
-alter table community_category
-    add COLUMN user_id int references users(user_id);
-
-create type category_state as enum ('accepted', 'pending', 'inadequate');
-
-alter table community_category
-    add column publish_state category_state default 'pending' :: category_state not null;
-
-CREATE TABLE community_question (
-                                    community_question_id SERIAL PRIMARY KEY,
-                                    question_text TEXT NOT NULL,
-                                    community_category_id INT REFERENCES community_category(community_category_id) ON DELETE SET NULL,
-                                    alreadyPicked BOOLEAN DEFAULT FALSE
-);
-
-
-CREATE TABLE community_answer (
-                                  community_answer_id SERIAL PRIMARY KEY,
-                                  community_question_id INT NOT NULL REFERENCES community_question(community_question_id) ON DELETE CASCADE,
-                                  answer_text TEXT NOT NULL,
-                                  is_correct BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-Create table bullet_questions
+create table battle_categories
 (
-    bullet_question_id Serial Primary key,
-    bullet_text Text not null,
-    already_picked boolean default false
+    battle_id    integer not null
+        references battle
+            on delete cascade,
+    user_id      integer not null
+        references users,
+    category_id  integer not null
+        references category,
+    completed    boolean default false,
+    completed_at timestamp,
+    primary key (battle_id, user_id, category_id)
 );
 
-create table bullet_answers(
-                               bullet_answer_id serial primary key,
-                               bullet_question_id int not null references bullet_questions(bullet_question_id) on delete cascade,
-                               answer_text text not null,
-                               is_correct boolean not null default  false
-)
+alter table battle_categories
+    owner to postgres;
+
+create table battle_answer
+(
+    battle_answer_id serial
+        primary key,
+    battle_id        integer not null
+        references battle,
+    user_id          integer not null
+        references users,
+    question_id      integer not null
+        references question,
+    answer_id        integer not null
+        references answer,
+    is_correct       boolean not null,
+    answer_time      timestamp default CURRENT_TIMESTAMP,
+    unique (battle_id, user_id, question_id)
+);
+
+alter table battle_answer
+    owner to postgres;
+
+create table community_category
+(
+    community_category_id serial
+        primary key,
+    name                  varchar(100)                                     not null
+        unique,
+    user_id               integer
+        references users,
+    publish_state         category_state default 'pending'::category_state not null
+);
+
+alter table community_category
+    owner to postgres;
+
+create table community_question
+(
+    community_question_id serial
+        primary key,
+    question_text         text not null,
+    community_category_id integer
+                               references community_category
+                                   on delete set null,
+    alreadypicked         boolean default false
+);
+
+alter table community_question
+    owner to postgres;
+
+create table community_answer
+(
+    community_answer_id   serial
+        primary key,
+    community_question_id integer               not null
+        references community_question
+            on delete cascade,
+    answer_text           text                  not null,
+    is_correct            boolean default false not null
+);
+
+alter table community_answer
+    owner to postgres;
+
+create table bullet_questions
+(
+    bullet_question_id serial
+        primary key,
+    bullet_text        text not null,
+    already_picked     boolean default false
+);
+
+alter table bullet_questions
+    owner to postgres;
+
+create table bullet_answers
+(
+    bullet_answer_id   serial
+        primary key,
+    bullet_question_id integer               not null
+        references bullet_questions
+            on delete cascade,
+    answer_text        text                  not null,
+    is_correct         boolean default false not null
+);
+
+alter table bullet_answers
+    owner to postgres;
 
 create table bullet_ranking
 (
@@ -242,3 +273,25 @@ create table bullet_ranking
 
 alter table bullet_ranking
     owner to postgres;
+
+create table invitations
+(
+    id          serial
+        primary key,
+    invite_code varchar(10) not null
+        unique,
+    creator_id  integer     not null
+        references users,
+    battle_id   integer
+        references battle,
+    status      varchar(20) default 'pending'::character varying
+        constraint invitations_status_check
+            check ((status)::text = ANY
+                   ((ARRAY ['pending'::character varying, 'used'::character varying, 'expired'::character varying])::text[])),
+    created_at  timestamp   default CURRENT_TIMESTAMP,
+    expires_at  timestamp   default (CURRENT_TIMESTAMP + '01:00:00'::interval)
+);
+
+alter table invitations
+    owner to postgres;
+
