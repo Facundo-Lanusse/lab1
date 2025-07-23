@@ -218,7 +218,7 @@ function Friends() {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.friendsContainer}>
-                {/* Botón para volver atrás */}
+
                 <button
                     className={styles.backButton}
                     onClick={handleGoBack}
