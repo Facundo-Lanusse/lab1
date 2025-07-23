@@ -3,6 +3,7 @@ import axios from "axios";
 import styles from "./css/SignUp.module.css";
 import { useNavigate } from 'react-router-dom';
 
+
 const SignUp = () => {
     const navigate = useNavigate();
 
@@ -22,6 +23,10 @@ const SignUp = () => {
 
     const handleSubmit = useCallback(async () => {
         try {
+            if(form.username.includes('Guest')) {
+                setMessage("Word: 'Guest' is not allowed in username.");
+                return;
+            }
             const res = await axios.post("http://localhost:3000/api/register", form);
             setMessage(`Usuario ${res.data.username} registrado con éxito.`);
             navigate('/login');
@@ -31,65 +36,66 @@ const SignUp = () => {
     }, [form, navigate]);
 
     return (
-        <div className={styles.signUp}>
-            <img
-                className={styles.undrawAccessAccountAydp1Icon}
-                alt="Illustration"
-                src="undraw_access-account_aydp.svg"
-            />
-
-            <b className={styles.signUpPage}>Sign up page</b>
-
-            <div className={styles.rectangleGroup}>
-                <input
-                    className={styles.frameChild}
-                    type="text"
-                    name="username"
-                    placeholder="Enter username..."
-                    value={form.username}
-                    onChange={handleChange}
-                    required
+            <div className={styles.signUp}>
+                <img
+                    className={styles.undrawAccessAccountAydp1Icon}
+                    alt="Illustration"
+                    src="undraw_access-account_aydp.svg"
                 />
-            </div>
 
-            <div className={styles.rectangleGroup}>
-                <input
-                    className={styles.frameChild}
-                    type="email"
-                    name="email"
-                    placeholder="Enter email..."
-                    value={form.email}
-                    onChange={handleChange}
-                    required
+                <b className={styles.signUpPage}>Sign up page</b>
+                <div className={styles.rectangleGroup}>
+                    <input
+                        className={styles.frameChild}
+                        type="text"
+                        name="username"
+                        placeholder="Enter username..."
+                        value={form.username}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className={styles.rectangleGroup}>
+                    <input
+                        className={styles.frameChild}
+                        type="email"
+                        name="email"
+                        placeholder="Enter email..."
+                        value={form.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className={styles.rectangleGroup}>
+                    <input
+                        className={styles.frameChild}
+                        type="password"
+                        name="password"
+                        placeholder="Enter password..."
+                        value={form.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+
+                <img
+                    className={styles.arrowLeftSolid1Icon}
+                    alt="Back"
+                    src="arrow-left-solid.svg"
+                    onClick={() => window.history.back()}
                 />
+
+
+                {message && <p className={styles.message}>{message}</p>}
+
+                <button className={styles.signUpButton} onClick={handleSubmit}>Sign Up</button>
+
             </div>
-
-            <div className={styles.rectangleGroup}>
-                <input
-                    className={styles.frameChild}
-                    type="password"
-                    name="password"
-                    placeholder="Enter password..."
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-
-
-            <img
-                className={styles.arrowLeftSolid1Icon}
-                alt="Back"
-                src="arrow-left-solid.svg"
-                onClick={() => window.history.back()}
-            />
-
-
-            {message && <p className={styles.message}>{message}</p>}
-
-            <button className={styles.signUpButton} onClick={handleSubmit}>Sign Up</button>
-        </div>
     );
 };
 
 export default SignUp;
+

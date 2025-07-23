@@ -1,0 +1,146 @@
+.inviteSection {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.inviteRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.inviteInput {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.joinButton, .generateButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.joinButton:hover, .generateButton:hover {
+  background-color: #0056b3;
+}
+
+.generateButton {
+  width: 100%;
+}
+
+.inviteDisplay {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #e7f3ff;
+  border-radius: 4px;
+}
+
+.codeContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.inviteCodeDisplay {
+  flex: 1;
+  padding: 8px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.copyButton {
+  padding: 8px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copyButton:hover {
+  background-color: #218838;
+}
+.battleNotification {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.notificationContent {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+}
+
+.notificationContent h3 {
+  color: #16b3b9;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.notificationContent p {
+  margin-bottom: 25px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.notificationButtons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.joinBattleButton {
+  background: #16b3b9;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.joinBattleButton:hover {
+  background: #138a92;
+}
+
+.dismissButton {
+  background: #ccc;
+  color: #333;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dismissButton:hover {
+  background: #bbb;
+}

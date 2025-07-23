@@ -344,7 +344,6 @@ router.post('/classic/battle/:battleId/result', validateBattleExists, async (req
         } else {
             winnerId = req.battle.user_id1 === parseInt(userId) ? req.battle.user_id2 : req.battle.user_id1;
         }
-
         // Actualizar el estado de la batalla
         const updateBattleQuery = `
             UPDATE battle

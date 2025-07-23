@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import styles from './css/LogIn.module.css';
+import axios from "axios";
 
 const LogIn = () => {
     const [email, setEmail] = useState(''); //useState se usa para guardar estados de las variables
@@ -17,20 +18,43 @@ const LogIn = () => {
     }, [navigate]);
 
 
-    const handleLogin = async () => {
+    function randomString(length = 5) {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result + '@example.com';
+    }
+
+    function randomNumberString(length = 4) {
+        const digits = '0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        return result;
+    }
+
+    const handleLogin = async (isGuest) => {
         setError('');
         try {
+            if(isGuest){
+                await createGuestUser();
+                return;
+            }
+
+            // Resto del código para login normal...
             const response = await fetch('http://localhost:3000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            //Llamo el method post de mi backend
 
-            const data = await response.json();//Await es para llamada a base de datos asincrónica
+            const data = await response.json();
 
-            if (response.ok) {//Si no explotó response que haga lo siguiente, sino que tire error
-                localStorage.setItem('user', JSON.stringify(data.user));//Guardo en el storage la session del usuario, es nativo de node
+            if (response.ok) {
+                localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('token', data.token);
                 navigate('/Home')
             } else {
@@ -39,6 +63,37 @@ const LogIn = () => {
         } catch (error) {
             setError('Error connecting to the server');
             console.error('Fetch error:', error);
+        }
+    };
+
+
+    const createGuestUser = async () => {
+        try {
+            const guestId = Math.floor(Math.random() * 900000) + 100000;
+            const guestUsername = `Guest_${guestId}`;
+
+            // Insertar guest en la base de datos
+            const response = await axios.post('http://localhost:3000/api/create-guest', {
+                user_id: guestId,
+                username: guestUsername,
+                password: 'guest_password'
+            });
+
+            if (response.data.success) {
+                const guestData = {
+                    user_id: guestId,
+                    username: guestUsername,
+                    email: null,
+                    is_admin: false,
+                    isGuest: true
+                };
+
+                localStorage.setItem('user', JSON.stringify(guestData));
+                navigate('/Home');
+            }
+        } catch (error) {
+            console.error('Error creando usuario guest:', error);
+            setError('Error al crear usuario invitado');
         }
     };
 
@@ -77,8 +132,13 @@ const LogIn = () => {
 
             <div className={styles.forgotPassword}>Forgot password?</div>
 
-            <button className={styles.logInButton} onClick={handleLogin}>Log in</button>
+            <button className={styles.logInButton} onClick={() => handleLogin(false)}>Log in</button>
 
+            <div>
+                <button className={styles.logInButton} onClick={() => handleLogin(true)}>
+                    Log in as Guest
+                </button>
+            </div>
         </div>
     );
 };
