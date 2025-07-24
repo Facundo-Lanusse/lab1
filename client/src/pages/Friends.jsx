@@ -11,6 +11,10 @@ function Friends() {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Estados para paginación
+    const [currentPage, setCurrentPage] = useState(1);
+    const friendsPerPage = 5; // Número de amigos por página
+
     const [pendingRequests, setPendingRequests] = useState([]);
     const [showRequestsMenu, setShowRequestsMenu] = useState(false);
     const [requestsLoading, setRequestsLoading] = useState(false);
@@ -192,6 +196,33 @@ function Friends() {
         friend.username.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Lógica de paginación
+    const totalPages = Math.ceil(filteredFriends.length / friendsPerPage);
+    const indexOfLastFriend = currentPage * friendsPerPage;
+    const indexOfFirstFriend = indexOfLastFriend - friendsPerPage;
+    const currentFriends = filteredFriends.slice(indexOfFirstFriend, indexOfLastFriend);
+
+    // Resetear página cuando se busca
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     const deleteFriend = async (friend) => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
@@ -362,7 +393,7 @@ function Friends() {
                     <>
                         {filteredFriends.length > 0 ? (
                             <ul className={styles.friendsList}>
-                                {filteredFriends.map(friend => (
+                                {currentFriends.map(friend => (
                                     <li key={friend.user_id} className={styles.friendItem}>
                                         <div className={styles.friendAvatar}>
                                             <img className={styles.friendAvatar} src={friend.profileImage || '/defaultProfileImage.png'} alt={`${friend.username} avatar`} />
@@ -400,6 +431,38 @@ function Friends() {
                                 )}
                             </div>
                         )}
+
+                        {/* Controles de paginación */}
+                        {totalPages > 1 && (
+                            <div className={styles.pagination}>
+                                <button
+                                    className={styles.pageButton}
+                                    onClick={handlePrevPage}
+                                    disabled={currentPage === 1}
+                                >
+                                    Anterior
+                                </button>
+
+                                {/* Números de página */}
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <button
+                                        key={index + 1}
+                                        className={`${styles.pageButton} ${currentPage === index + 1 ? styles.activePage : ''}`}
+                                        onClick={() => handlePageChange(index + 1)}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
+
+                                <button
+                                    className={styles.pageButton}
+                                    onClick={handleNextPage}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    Siguiente
+                                </button>
+                            </div>
+                        )}
                     </>
                 )}
             </div>
@@ -408,4 +471,3 @@ function Friends() {
 }
 
 export default Friends;
-
