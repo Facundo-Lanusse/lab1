@@ -10,6 +10,16 @@ const COLORS = [
   '#FF9F40', '#32CD32', '#FF69B4', '#BA55D3', '#20B2AA'
 ];
 
+// mezclar orden de las respuestas
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 const ClassicMode = () => {
   const { battleId } = useParams();
   const navigate = useNavigate();
@@ -176,7 +186,9 @@ const ClassicMode = () => {
       const { data } = await axios.get(`http://localhost:3000/api/classic/battle/${battleId}/questions`, { params: { categoryId } });
       if (data.success) {
         setQuestion(data.question);
-        setAnswers(data.answers);
+        // Shuffle answers before setting state
+        const shuffledAnswers = shuffleArray(data.answers);
+        setAnswers(shuffledAnswers);
         setSelectedCategory(categoryId);
       }
     } catch { setError('No se pudo cargar la pregunta'); }
