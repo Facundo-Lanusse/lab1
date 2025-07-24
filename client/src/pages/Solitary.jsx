@@ -114,8 +114,15 @@ const Solitary = () => {
 
     async function handleSoloHistoryUpload() {
         const userId = JSON.parse(localStorage.getItem('user')).user_id
-        await axios.post("http://localhost:3000/api/SetSoloHistory", {score, userId});
-        console.log('Solo history uploaded', userId);
+        console.log('Attempting to save solo history:', { score, userId });
+
+        try {
+            const response = await axios.post("http://localhost:3000/api/SetSoloHistory", {score, userId});
+            console.log('Solo history uploaded successfully:', response.data);
+        } catch (error) {
+            console.error('Error uploading solo history:', error);
+            console.error('Error response:', error.response?.data);
+        }
     }
 
     if (loading) {
