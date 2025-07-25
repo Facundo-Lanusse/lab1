@@ -35,6 +35,17 @@ function UserRanking() {
     const fetchUsers = useCallback(async (page = 1, search = '', sort = 'desc') => {
         try {
             setLoading(true);
+            const token = localStorage.getItem('token');
+
+            // Verificar si existe el token
+            if (!token) {
+                console.error('No hay token disponible');
+                navigate('/login');
+                return;
+            }
+
+            console.log('Token enviado:', token.substring(0, 20) + '...'); // Debug log
+
             const params = new URLSearchParams({
                 page: page.toString(),
                 limit: usersPerPage.toString(),
@@ -44,7 +55,7 @@ function UserRanking() {
 
             const res = await axios.get(`http://localhost:3000/api/users?${params}`, {
                 headers: {
-                    authorization: 'Bearer ' + localStorage.getItem('token')
+                    authorization: 'Bearer ' + token
                 }
             });
 
@@ -60,10 +71,23 @@ function UserRanking() {
             setLoading(false);
         } catch (error) {
             console.error("Error al cargar usuarios", error);
-            setError("No se pudieron cargar los datos del ranking. Por favor, intenta de nuevo más tarde.");
+
+            // Manejar diferentes tipos de errores de autenticación
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                console.error('Error de autenticación:', error.response.data?.error || 'Token inválido o expirado');
+                // Limpiar datos de autenticación y redirigir al login
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                setError("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+                setTimeout(() => {
+                    navigate('/login');
+                }, 2000);
+            } else {
+                setError("No se pudieron cargar los datos del ranking. Por favor, intenta de nuevo más tarde.");
+            }
             setLoading(false);
         }
-    }, [usersPerPage]);
+    }, [usersPerPage, navigate]);
 
     // Efecto para cargar usuarios cuando cambian los parámetros
     useEffect(() => {
