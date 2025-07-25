@@ -63,11 +63,11 @@ router.get('/FetchCommunityCategoriesApproved', async (req, res) => {
 });
 
 router.post('/CreateCommunityCategory', async (req, res) => {
-    const {name, userId} = req.body;
+    const {name, userId, gameMode} = req.body;
     try {
-        const createCategoryQuery = 'insert into community_category(name, user_id) values($1, $2) ';
-        await db.query(createCategoryQuery, [name, userId]);
-        res.json({ success: 'Categoria de comunidad creada exitosamente'});
+        const createCategoryQuery = 'insert into community_category(name, user_id, game_mode) values($1, $2, $3) ';
+        await db.query(createCategoryQuery, [name, userId, gameMode]);
+        res.json({ success: `Categoria de comunidad creada con nombre ${name} y modo de juego ${gameMode}}`} );
     }
     catch (err) {
         console.error("Error al crear categoria", err);

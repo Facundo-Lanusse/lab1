@@ -1,3 +1,19 @@
+/*Si corres esto deberías poder tener todas las tablas, HACELO faca asi funca bien todo*/
+
+/*Tipos especificos para las tablas*/
+create type friendship_state as enum ('accepted', 'pending', 'rejected');
+
+alter type friendship_state owner to postgres;
+
+create type category_state as enum ('accepted', 'pending', 'inadequate');
+
+alter type category_state owner to postgres;
+
+create type game_mode as enum ('Bullet', 'Solitary', 'Online');
+
+alter type game_mode owner to postgres;
+
+/* Tablas */
 create table users
 (
     user_id     integer default nextval('users_id_seq'::regclass) not null
@@ -202,7 +218,8 @@ create table community_category
         unique,
     user_id               integer
         references users,
-    publish_state         category_state default 'pending'::category_state not null
+    publish_state         category_state default 'pending'::category_state not null,
+    game_mode             game_mode      default 'Solitary'::game_mode
 );
 
 alter table community_category
