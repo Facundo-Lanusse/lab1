@@ -8,6 +8,15 @@ router.get('/PlayCommunityQuestions/:categoryId', async(req, res) =>{
     try{
         const categoryId = req.params.categoryId;
 
+        const categoryQuery = 'SELECT game_mode FROM community_category WHERE community_category_id = $1';
+        const categoryResult = await db.query(categoryQuery, [categoryId]);
+
+        if(!categoryResult.rows[0]) {
+            return res.status(404).json({ error: 'Categoría no encontrada' });
+        }
+
+        const gameMode = categoryResult.rows[0].game_mode;
+
         const randomQuestionQuery = 'SELECT * FROM community_question where alreadypicked = $1 and community_category_id = $2 ORDER BY RANDOM() LIMIT 1';
         const queryQuestionResult = await db.query(randomQuestionQuery, [false ,categoryId])
 
@@ -23,6 +32,7 @@ router.get('/PlayCommunityQuestions/:categoryId', async(req, res) =>{
             res.json({
                     question: queryQuestionResult.rows[0],
                     answers: queryAnswerResult.rows,
+                    gameMode: gameMode,
                     allQuestionChecked: false
                 }
             );

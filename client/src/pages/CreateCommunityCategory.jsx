@@ -246,7 +246,6 @@ const CreateCommunityCategory = () => {
 
             // Resetear todo
             setCategoryName("");
-            setGameMode("Solitary"); // Resetear el modo de juego al valor por defecto
             setQuestions(Array(QUESTION_COUNT).fill().map(() => ({
                 questionText: "",
                 answerCorrect: "",

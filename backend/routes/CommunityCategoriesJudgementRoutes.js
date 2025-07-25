@@ -5,7 +5,7 @@ const db = require('../database');
 
 router.get('/FetchCommunityCategoriesPending', async (req, res) => {
     try{
-        const categoriesQuery = 'Select name, community_category_id from community_category where publish_state = $1';
+        const categoriesQuery = 'Select name, community_category_id, user_id from community_category where publish_state = $1';
         const categoryQueryResult = await db.query(categoriesQuery,['pending']);
         res.json(categoryQueryResult.rows);
 

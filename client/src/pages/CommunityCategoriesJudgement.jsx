@@ -9,10 +9,12 @@ const CommunityCategoriesJudgement = () => {
     const [communityCategories, setCommunityCategories] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredCategories, setFilteredCategories] = useState([]);
+    const [categoryUserMap, setCategoryUserMap] = useState(new Map());
+
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-        fetchCommunities().then();
+        fetchCommunities()
         if (!user || !user.is_admin) {
             navigate('/Home');
         }
@@ -33,6 +35,39 @@ const CommunityCategoriesJudgement = () => {
             console.error("Error al cargar comunidades", error);
         }
     };
+
+    const fetchUser = async (userId) => {
+        try{
+            const response = await axios.get(`http://localhost:3000/api/users/${userId}`);
+            console.log(response.data);
+            return response.data.username;
+        }
+        catch (error) {
+            console.error("Error al cargar usuario", error);
+
+        }
+    }
+
+    useEffect(() => {
+        const fetchAndMap = async () => {
+            const res = await axios.get("http://localhost:3000/api/FetchCommunityCategoriesPending");
+            setCommunityCategories(res.data);
+            const map = await createCategoryUserMap(res.data, fetchUser);
+            setCategoryUserMap(map);
+        };
+        fetchAndMap();
+    }, []);
+
+    async function createCategoryUserMap(categories, fetchUser) {
+        const map = new Map();
+        for (const category of categories) {
+            const username = await fetchUser(category.user_id);
+            map.set(category.community_category_id, username);
+        }
+        return map;
+    }
+
+
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
@@ -72,7 +107,7 @@ const CommunityCategoriesJudgement = () => {
                             </h3>
                         </div>
                         <div className={styles.pendingQuestions}>
-                            <strong>Creada por:</strong> {category.creator_username || 'Usuario anónimo'}
+                            <strong>Creada por:</strong> {categoryUserMap.get(category.community_category_id) || 'Usuario anónimo'}
                         </div>
                         <div className={styles.pendingQuestions}>
                             <strong>Preguntas propuestas:</strong> {category.question_count || 0}
