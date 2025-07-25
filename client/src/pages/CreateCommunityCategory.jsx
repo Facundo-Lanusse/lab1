@@ -13,6 +13,9 @@ const CreateCommunityCategory = () => {
     // Estado para el nombre de la categoría
     const [categoryName, setCategoryName] = useState("");
 
+    // Estado para el modo de juego
+    const [gameMode, setGameMode] = useState("Solitary");
+
     // Estado para las preguntas (array de 10 preguntas con sus respectivas respuestas)
     const [questions, setQuestions] = useState(Array(QUESTION_COUNT).fill().map(() => ({
         questionText: "",
@@ -110,6 +113,10 @@ const CreateCommunityCategory = () => {
             // Si todo está bien, establecer los datos
             setCategoryName(jsonData.categoryName);
             setQuestions(jsonData.questions);
+            // Establecer el gameMode desde el JSON si existe, sino usar el valor por defecto
+            if (jsonData.gameMode && ['Bullet', 'Solitary', 'Online'].includes(jsonData.gameMode)) {
+                setGameMode(jsonData.gameMode);
+            }
             setJsonPreview(jsonData);
             setMessage("Archivo JSON cargado correctamente");
             setStatus("success");
@@ -126,6 +133,7 @@ const CreateCommunityCategory = () => {
     const downloadExampleJson = () => {
         const exampleData = {
             categoryName: "Ejemplo de Categoría",
+            gameMode: "Solitary",
             questions: Array(QUESTION_COUNT).fill().map((_, index) => ({
                 questionText: `¿Cuál es la pregunta número ${index + 1}?`,
                 answerCorrect: `Respuesta correcta ${index + 1}`,
@@ -204,6 +212,7 @@ const CreateCommunityCategory = () => {
             if (!categoryExists) {
                 await axios.post("http://localhost:3000/api/CreateCommunityCategory", {
                     name: categoryName,
+                    gameMode: gameMode,
                     userId: JSON.parse(localStorage.getItem('user')).user_id
                 });
 
@@ -237,6 +246,7 @@ const CreateCommunityCategory = () => {
 
             // Resetear todo
             setCategoryName("");
+            setGameMode("Solitary"); // Resetear el modo de juego al valor por defecto
             setQuestions(Array(QUESTION_COUNT).fill().map(() => ({
                 questionText: "",
                 answerCorrect: "",
@@ -376,6 +386,7 @@ const CreateCommunityCategory = () => {
                             <pre className={styles.codeBlock}>
 {`{
   "categoryName": "Nombre de la categoría",
+  "gameMode": "Solitary",
   "questions": [
     {
       "questionText": "¿Pregunta 1?",
@@ -388,6 +399,7 @@ const CreateCommunityCategory = () => {
   ]
 }`}
                             </pre>
+                            <p><strong>Nota:</strong> El campo "gameMode" es opcional. Valores válidos: "Solitary", "Online", "Bullet"</p>
                         </div>
 
                         <button
@@ -436,6 +448,21 @@ const CreateCommunityCategory = () => {
                             onChange={handleCategoryChange}
                             required
                         />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label className={styles.inputLabel}>Modo de juego</label>
+                        <select
+                            className={styles.formInput}
+                            name="gameMode"
+                            value={gameMode}
+                            onChange={(e) => setGameMode(e.target.value)}
+                            required
+                        >
+                            <option value="Solitary">Solitario</option>
+                            <option value="Online">En línea</option>
+                            <option value="Bullet">Bullet</option>
+                        </select>
                     </div>
                 </div>
 
@@ -573,3 +600,4 @@ const CreateCommunityCategory = () => {
 };
 
 export default CreateCommunityCategory;
+
