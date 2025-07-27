@@ -2,27 +2,72 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database');
 
+// Ruta con paginado para categorías de comunidad
 router.get('/FetchCommunityCategoriesApproved', async (req, res) => {
-    try{
-        const categoriesQuery = 'Select name, community_category_id from community_category where publish_state = $1';
-        const categoryQueryResult = await db.query(categoriesQuery,['accepted']);
-        res.json(categoryQueryResult.rows);
+    try {
+        // Parámetros de paginado con valores por defecto
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 8; // 8 categorías por página para las tarjetas
+        const search = req.query.search || '';
 
-    }
-    catch(err){
+        // Calcular offset
+        const offset = (page - 1) * limit;
+
+        // Query base
+        let baseQuery = 'FROM community_category WHERE publish_state = $1';
+        let whereClause = '';
+        let queryParams = ['accepted'];
+
+        // Agregar filtro de búsqueda si existe
+        if (search.trim()) {
+            whereClause = ' AND name ILIKE $2';
+            queryParams.push(`%${search}%`);
+        }
+
+        // Query para contar total de registros
+        const countQuery = `SELECT COUNT(*) as total ${baseQuery}${whereClause}`;
+        const countResult = await db.query(countQuery, queryParams);
+        const totalCategories = parseInt(countResult.rows[0].total);
+
+        // Query para obtener las categorías paginadas
+        const categoriesQuery = `
+            SELECT name, community_category_id 
+            ${baseQuery}${whereClause}
+            ORDER BY name ASC
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
+        `;
+
+        queryParams.push(limit, offset);
+        const categoriesResult = await db.query(categoriesQuery, queryParams);
+
+        // Calcular información de paginado
+        const totalPages = Math.ceil(totalCategories / limit);
+        const hasNextPage = page < totalPages;
+        const hasPrevPage = page > 1;
+
+        res.json({
+            categories: categoriesResult.rows,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalCategories,
+                limit,
+                hasNextPage,
+                hasPrevPage
+            }
+        });
+    } catch (err) {
         console.error("Al traer categorias", err);
         res.status(500).json({ error: 'Fallo la consulta' });
     }
 });
 
-
 router.post('/CreateCommunityCategory', async (req, res) => {
-    const {name, userId} = req.body;
+    const {name, userId, gameMode} = req.body;
     try {
-
-        const createCategoryQuery = 'insert into community_category(name, user_id) values($1, $2) ';
-        await db.query(createCategoryQuery, [name, userId]);
-        res.json({ success: 'Categoria de comunidad creada exitosamente'});
+        const createCategoryQuery = 'insert into community_category(name, user_id, game_mode) values($1, $2, $3) ';
+        await db.query(createCategoryQuery, [name, userId, gameMode]);
+        res.json({ success: `Categoria de comunidad creada con nombre ${name} y modo de juego ${gameMode}}`} );
     }
     catch (err) {
         console.error("Error al crear categoria", err);
@@ -64,7 +109,6 @@ router.post('/uploadCommunityAnswers', async (req, res) => {
     }
 
     try {
-
         const queryForQuestion = 'SELECT * FROM community_question WHERE question_text = $1';
         const resultForQuestion = await db.query(queryForQuestion, [questionText]);
 
@@ -97,7 +141,5 @@ router.post('/uploadCommunityAnswers', async (req, res) => {
         res.status(500).json({ error: 'Error en el servidor' });
     }
 });
-
-
 
 module.exports = router;

@@ -180,6 +180,7 @@ router.post('/classic/battle/:battleId/answer', validateBattleExists, validateUs
        const battleId = req.params.battleId;
        const { questionId, answerId, userId } = req.body;
        const battle = req.battle; // Usamos la batalla que ya fue validada por el middleware
+       const io = req.app.get('io'); // Obtener instancia de io
 
        // Verifico si la respuesta es correcta
        const answerQuery = `
@@ -235,6 +236,9 @@ router.post('/classic/battle/:battleId/answer', validateBattleExists, validateUs
 
            await db.query(updateTurnQuery, [nextPlayer, battleId]);
 
+           // Emitir evento de actualización de batalla
+           io.to(`battle_${battleId}`).emit('battleUpdated', { battleId });
+
            return res.json({
                success: true,
                correct: false,
@@ -261,6 +265,8 @@ router.post('/classic/battle/:battleId/answer', validateBattleExists, validateUs
 
        if (correctCount >= 3) {
            // El jugador puede elegir una categoría
+           // Emitir evento de actualización de batalla
+           io.to(`battle_${battleId}`).emit('battleUpdated', { battleId });
            return res.json({
                success: true,
                correct: true,
@@ -269,6 +275,8 @@ router.post('/classic/battle/:battleId/answer', validateBattleExists, validateUs
            });
        } else {
            // El jugador puede continuar respondiendo
+           // Emitir evento de actualización de batalla
+           io.to(`battle_${battleId}`).emit('battleUpdated', { battleId });
            return res.json({
                success: true,
                correct: true,
@@ -292,6 +300,7 @@ router.post('/classic/battle/:battleId/select-category', validateBattleExists, v
         const battleId = req.params.battleId;
         const { categoryId, userId } = req.body;
         const battle = req.battle; // Usamos la batalla que ya fue validada por el middleware
+        const io = req.app.get('io'); // Obtener instancia de io
 
         // Actualizo la categoria seleccionada
         const selectCategoryQuery = `
@@ -318,6 +327,9 @@ router.post('/classic/battle/:battleId/select-category', validateBattleExists, v
         `;
         await db.query(updateTurnQuery, [nextPlayer, battleId]);
 
+        // Emitir evento de actualización de batalla
+        io.to(`battle_${battleId}`).emit('battleUpdated', { battleId });
+
         res.json({
             success: true,
             message: 'Categoría seleccionada correctamente',
@@ -337,6 +349,7 @@ router.post('/classic/battle/:battleId/result', validateBattleExists, async (req
     try {
         const battleId = req.params.battleId;
         const { userId, isWinner } = req.body;
+        const io = req.app.get('io'); // Obtener instancia de io
 
         let winnerId = null;
         if (isWinner) {
@@ -376,6 +389,9 @@ router.post('/classic/battle/:battleId/result', validateBattleExists, async (req
 
         // Si ganó, le damos más puntos
         await db.query(updatePointsQuery, [isWinner ? 10 : 2, userId]);
+
+        // Emitir evento de actualización de batalla (fin de partida)
+        io.to(`battle_${battleId}`).emit('battleUpdated', { battleId });
 
         res.json({
             success: true,
@@ -454,6 +470,7 @@ router.post('/classic/battle/:battleId/pass-turn', validateBattleExists, validat
         const { battleId } = req.params;
         const { userId } = req.body;
         const battle = req.battle; // Obtenido desde el middleware
+        const io = req.app.get('io'); // Obtener instancia de io
 
         // Determina quién es el siguiente jugador
         const nextPlayer = battle.user_id1 === userId ? battle.user_id2 : battle.user_id1;
@@ -467,6 +484,9 @@ router.post('/classic/battle/:battleId/pass-turn', validateBattleExists, validat
         `;
         await db.query(updateTurnQuery, [nextPlayer, battleId]);
 
+        // Emitir evento de actualización de batalla
+        io.to(`battle_${battleId}`).emit('battleUpdated', { battleId });
+
         res.json({
             success: true,
             message: 'Turno pasado al oponente exitosamente'
@@ -478,6 +498,21 @@ router.post('/classic/battle/:battleId/pass-turn', validateBattleExists, validat
             message: 'Error al pasar el turno'
         });
     }
+});
+
+// Socket.io: unir a la sala de la batalla
+router.post('/classic/battle/:battleId/join', (req, res) => {
+    const io = req.app.get('io');
+    const { battleId } = req.params;
+    const { socketId } = req.body;
+    if (io && socketId && battleId) {
+        const socket = io.sockets.sockets.get(socketId);
+        if (socket) {
+            socket.join(`battle_${battleId}`);
+            return res.json({ success: true });
+        }
+    }
+    res.status(400).json({ success: false, message: 'No se pudo unir a la sala' });
 });
 
 module.exports = router;
