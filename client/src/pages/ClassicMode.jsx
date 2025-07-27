@@ -752,21 +752,59 @@ const ClassicMode = () => {
             size={350}
           />
         </div>
-      ) : canSelectCategory ? (
-        <div className={styles.categorySelection}>
-          <h3>¡Respuestas correctas! Selecciona una categoría para marcar:</h3>
-          {renderCategories()}
-        </div>
       ) : (
         <>
-          {renderQuestion()}
-          {!isMyTurn && (
-            <div className={styles.waitingMessage}>
+          {canSelectCategory ? (
+            <div className={styles.categorySelection}>
               <h3>
-                Esperando a que {opponentInfo?.username || "el oponente"} juegue
-                su turno...
+                ¡Respuestas correctas! Selecciona una categoría para marcar:
               </h3>
+              {renderCategories()}
+              <button
+                className={styles.wheelButton}
+                onClick={handleStartWheel}
+                disabled={availableCategories.length === 0}
+              >
+                Usar ruleta para elegir categoría
+              </button>
             </div>
+          ) : (
+            <>
+              {isMyTurn && !question && (
+                <div className={styles.categorySelection}>
+                  <h3>Es tu turno. Selecciona una categoría para jugar:</h3>
+                  {renderCategories()}
+                </div>
+              )}
+
+              {renderQuestion()}
+
+              {!isMyTurn && (
+                <div className={styles.waitingMessage}>
+                  <h3>
+                    Esperando a que {opponentInfo?.username || "el oponente"}{" "}
+                    juegue su turno...
+                  </h3>
+                </div>
+              )}
+
+              {correctCounter > 0 && question === null && (
+                <div className={styles.continueOptions}>
+                  <button
+                    className={styles.continueButton}
+                    onClick={handleContinueAnswering}
+                  >
+                    Continuar respondiendo
+                  </button>
+                  <button
+                    className={styles.passTurnButton}
+                    onClick={handlePassTurn}
+                  >
+                    Pasar turno
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
