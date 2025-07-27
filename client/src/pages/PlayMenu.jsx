@@ -1,373 +1,527 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import styles from "./css/GamePlay.module.css";
-import inviteStyle from  './css/inviteSection.module.css'
-import {BurgerMenu} from "../components/BurgerMenu";
+import inviteStyle from "./css/inviteSection.module.css";
+import { BurgerMenu } from "../components/BurgerMenu";
 
 const PlayMenu = () => {
-    const navigate = useNavigate();
-    const [friends, setFriends] = useState([]);
-    const [selectedFriend, setSelectedFriend] = useState(null);
-    const [showFriendSelector, setShowFriendSelector] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-    //estados para las invites
-    const [inviteCode, setInviteCode] = useState('');
-    const [generatedInviteCode, setGeneratedInviteCode] = useState('');
-    const [showInviteSection, setShowInviteSection] = useState(false);
+  // Estados para amigos y selector
+  const [friends, setFriends] = useState([]);
+  const [selectedFriend, setSelectedFriend] = useState(null);
+  const [showFriendSelector, setShowFriendSelector] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const [pendingBattle, setPendingBattle] = useState(null);
-    const [showBattleNotification, setShowBattleNotification] = useState(false)
-    const [notifiedBattles, setNotifiedBattles] = useState(new Set());
+  // Estados para invitaciones
+  const [inviteCode, setInviteCode] = useState("");
+  const [generatedInviteCode, setGeneratedInviteCode] = useState("");
+  const [showInviteSection, setShowInviteSection] = useState(false);
 
-    useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) {
-            navigate('/Login');
-            return;
-        }
+  // Estados para notificaciones de batalla
+  const [pendingBattle, setPendingBattle] = useState(null);
+  const [showBattleNotification, setShowBattleNotification] = useState(false);
+  const [notifiedBattles, setNotifiedBattles] = useState(new Set());
 
-        const fetchFriends = async () => {
-            try {
-                setLoading(true);
-                const userId = Number(user.user_id);
+  // Efecto para cargar amigos al montar el componente
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      navigate("/Login");
+      return;
+    }
 
-                const response = await axios.get('http://localhost:3000/api/friends', {
-                    params: { userId }
-                });
+    const fetchFriends = async () => {
+      try {
+        setLoading(true);
+        const userId = Number(user.user_id);
 
-                setFriends(response.data.friends);
-                setLoading(false);
-            } catch (err) {
-                console.error('Error al obtener amigos:', err);
-                setError('No se pudieron cargar tus amigos. Por favor, intenta de nuevo más tarde.');
-                setLoading(false);
-            }
-        };
+        const response = await axios.get("http://localhost:3000/api/friends", {
+          params: { userId },
+        });
 
-        fetchFriends();
-    }, [navigate]);
-
-
-    //chequea invitaciones
-    // Reemplazar el useEffect completo de checkUsedInvitations
-    useEffect(() => {
-        const checkUsedInvitations = async () => {
-            try {
-                const user = JSON.parse(localStorage.getItem('user'));
-                if (!user) return;
-
-                const response = await axios.get('http://localhost:3000/api/check-used-invitations', {
-                    params: { userId: user.user_id }
-                });
-
-                if (response.data.success && response.data.newBattles.length > 0) {
-                    // Filtrar solo las batallas que NO han sido notificadas
-                    const unnotifiedBattles = response.data.newBattles.filter(
-                        battle => !notifiedBattles.has(battle.battleId)
-                    );
-
-                    if (unnotifiedBattles.length > 0) {
-                        const newBattle = unnotifiedBattles[0];
-                        setPendingBattle(newBattle);
-                        setShowBattleNotification(true);
-
-                        // Marcar esta batalla como notificada
-                        setNotifiedBattles(prev => new Set([...prev, newBattle.battleId]));
-                    }
-                }
-            } catch (error) {
-                console.error('Error verificando invitaciones:', error);
-            }
-        };
-
-        // Verificar cada 3 segundos
-        const interval = setInterval(checkUsedInvitations, 3000);
-
-        return () => clearInterval(interval);
-    }, [notifiedBattles]);
-
-    const joinPendingBattle = () => {
-        if (pendingBattle) {
-            navigate(`/Classic/${pendingBattle.battleId}`);
-            setShowBattleNotification(false);
-            setPendingBattle(null);
-        }
+        setFriends(response.data.friends);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error al obtener amigos:", err);
+        setError(
+          "No se pudieron cargar tus amigos. Por favor, intenta de nuevo más tarde."
+        );
+        setLoading(false);
+      }
     };
 
-    const dismissBattleNotification = () => {
-        setShowBattleNotification(false);
-        setPendingBattle(null);
-    };
+    fetchFriends();
+  }, [navigate]);
 
-    // Función para iniciar una partida clásica
-    const startClassicGame = useCallback(async () => {
-        if (!selectedFriend) return;
+  // Efecto para verificar invitaciones usadas
+  useEffect(() => {
+    const checkUsedInvitations = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) return;
 
-        try {
-            // Iniciar una batalla en el modo clásico
-            const user = JSON.parse(localStorage.getItem('user'));
-            const userId = user.user_id;
+        const response = await axios.get(
+          "http://localhost:3000/api/check-used-invitations",
+          {
+            params: { userId: user.user_id },
+          }
+        );
 
-            const response = await axios.post('http://localhost:3000/api/classic/start', {
-                userId: userId,
-                opponentId: selectedFriend.user_id
-            });
+        if (response.data.success && response.data.newBattles.length > 0) {
+          const unnotifiedBattles = response.data.newBattles.filter(
+            (battle) => !notifiedBattles.has(battle.battleId)
+          );
 
-            if (response.data.success) {
-                // Redireccionar directamente al modo clásico con el ID de la batalla
-                navigate(`/Classic/${response.data.battleId}`);
-            } else {
-                throw new Error(response.data.message || 'No se pudo iniciar la batalla');
-            }
-        } catch (error) {
-            console.error('Error al iniciar partida:', error);
-            // Mostrar más detalles del error para debugging
-            console.log('Estructura completa del error:', JSON.stringify(error, null, 2));
-
-            if (error.response) {
-                console.log('Response data:', error.response.data);
-                console.log('Response status:', error.response.status);
-                console.log('Response headers:', error.response.headers);
-
-                // Verificar si el mensaje existe en cualquier nivel de la respuesta
-                const errorMessage = error.response.data?.message ||
-                                    error.response.data?.error ||
-                                    'Error desconocido';
-
-                alert(`No se pudo iniciar la partida: ${errorMessage}`);
-            } else if (error.request) {
-                // La solicitud se realizó pero no se recibió respuesta
-                console.log('Request data:', error.request);
-                alert('No se pudo iniciar la partida: No se recibió respuesta del servidor');
-            } else {
-                // Error al configurar la solicitud
-                alert(`No se pudo iniciar la partida: ${error.message}`);
-            }
+          if (unnotifiedBattles.length > 0) {
+            const newBattle = unnotifiedBattles[0];
+            setPendingBattle(newBattle);
+            setShowBattleNotification(true);
+            setNotifiedBattles(
+              (prev) => new Set([...prev, newBattle.battleId])
+            );
+          }
         }
-    }, [selectedFriend, navigate]);
+      } catch (error) {
+        console.error("Error verificando invitaciones:", error);
+      }
+    };
 
-    // Func para generar un código
-    const generateInviteCode = async () => {
-        try {
-            const userStr = localStorage.getItem('user');
-            if (!userStr) {
-                setError('Debes estar logueado para generar invitaciones');
-                return;
-            }
+    const interval = setInterval(checkUsedInvitations, 3000);
+    return () => clearInterval(interval);
+  }, [notifiedBattles]);
 
-            const userObj = JSON.parse(userStr);
-            const userId = parseInt(userObj.user_id);
+  // Función para unirse a una batalla pendiente
+  const joinPendingBattle = () => {
+    if (pendingBattle) {
+      navigate(`/Classic/${pendingBattle.battleId}`);
+      setShowBattleNotification(false);
+      setPendingBattle(null);
+    }
+  };
 
-            const response = await fetch('http://localhost:3000/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId })
-            });
+  // Función para descartar notificación de batalla
+  const dismissBattleNotification = () => {
+    setShowBattleNotification(false);
+    setPendingBattle(null);
+  };
 
-            const data = await response.json();
+  // Función para iniciar una partida clásica con un amigo
+  const startClassicGame = useCallback(async () => {
+    if (!selectedFriend) return;
 
-            if (response.ok && data.success) {
-                setGeneratedInviteCode(data.inviteCode);
-                setShowInviteSection(true);
-            } else {
-                setError('No se pudo generar el código de invitación');
-            }
-        } catch (err) {
-            console.error('Error al generar código:', err);
-            setError('Error al generar código de invitación');
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user.user_id;
+
+      const response = await axios.post(
+        "http://localhost:3000/api/classic/start",
+        {
+          userId: userId,
+          opponentId: selectedFriend.user_id,
         }
-    };
+      );
 
-// con esto me uno
-    const joinWithInviteCode = async () => {
-        if (!inviteCode.trim()) {
-            setError('Ingresa un código de invitación válido');
-            return;
-        }
+      if (response.data.success) {
+        navigate(`/Classic/${response.data.battleId}`);
+      } else {
+        throw new Error(
+          response.data.message || "No se pudo iniciar la batalla"
+        );
+      }
+    } catch (error) {
+      console.error("Error al iniciar partida:", error);
 
-        navigate(`/invite/${inviteCode.trim()}`);
-    };
+      let errorMessage = "Error desconocido";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
 
-// Copia al portapapeles la invitación
-    const copyInviteCode = () => {
-        navigator.clipboard.writeText(generatedInviteCode);
-        alert('Código copiado al portapapeles');
-    };
+      alert(`No se pudo iniciar la partida: ${errorMessage}`);
+    }
+  }, [selectedFriend, navigate]);
 
-    return (
-        <div className={styles.playMenuContainer}>
+  // Función para generar un código de invitación
+  const generateInviteCode = async () => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        setError("Debes estar logueado para generar invitaciones");
+        return;
+      }
 
-            <div className={styles.burgerMenuWrapper}>
-                <BurgerMenu />
-            </div>
+      const userObj = JSON.parse(userStr);
+      const userId = parseInt(userObj.user_id);
 
-            <div className={styles.playMenuContent}>
-                <div className={styles.menuHeader}>
-                    <h2>Selecciona un modo de juego</h2>
-                </div>
+      const response = await fetch("http://localhost:3000/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
 
-                <div className={styles.gameModeCards}>
-                    {showBattleNotification && pendingBattle && (
-                        <div className={inviteStyle.battleNotification}>
-                            <div className={inviteStyle.notificationContent}>
-                                <h3>¡Alguien se unió a tu partida!</h3>
-                                <p>Un jugador usó tu código de invitación</p>
-                                <div className={inviteStyle.notificationButtons}>
-                                    <button
-                                        onClick={joinPendingBattle}
-                                        className={inviteStyle.joinBattleButton}
-                                    >
-                                        Unirse a la partida
-                                    </button>
-                                    <button
-                                        onClick={dismissBattleNotification}
-                                        className={inviteStyle.dismissButton}
-                                    >
-                                        Más tarde
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <div
-                        className={styles.gameModeCard}
-                        onClick={() => navigate('/Solitary')}
-                    >
-                        <div className={styles.cardIcon}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#16b3b9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M12 8v4l3 3"></path>
-                            </svg>
-                        </div>
-                        <h3>Modo Solo</h3>
-                        <p>Responde preguntas aleatorias y consigue puntos</p>
-                    </div>
+      const data = await response.json();
 
-                    <div
-                        className={styles.gameModeCard}
-                        onClick={() => navigate('/BulletPLay')}
-                    >
-                        <div className={styles.cardIcon}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#16b3b9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M12 8v4l3 3"></path>
-                            </svg>
-                        </div>
-                        <h3>Modo Bala</h3>
-                        <p>Responde preguntas en poco tiempo y haz tu mejor marca</p>
-                    </div>
+      if (response.ok && data.success) {
+        setGeneratedInviteCode(data.inviteCode);
+        setShowInviteSection(true);
+      } else {
+        setError("No se pudo generar el código de invitación");
+      }
+    } catch (err) {
+      console.error("Error al generar código:", err);
+      setError("Error al generar código de invitación");
+    }
+  };
 
-                    <div
-                        className={styles.gameModeCard}
-                        onClick={() => setShowFriendSelector(true)}
-                    >
-                        <div className={styles.cardIcon}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#16b3b9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                        </div>
-                        <h3>Modo Clásico</h3>
-                        <p>Compite con un amigo para ver quién completa primero las categorías</p>
-                    </div>
-                </div>
+  // Función para unirse con código de invitación
+  const joinWithInviteCode = async () => {
+    if (!inviteCode.trim()) {
+      setError("Ingresa un código de invitación válido");
+      return;
+    }
+    navigate(`/invite/${inviteCode.trim()}`);
+  };
 
-                {showFriendSelector && (
-                    <div className={styles.friendSelectorOverlay}>
-                        <div className={styles.friendSelector}>
-                            <h3>Desafía a un amigo</h3>
-                            {friends.length > 0 ? (
-                                <div className={styles.friendsList}>
-                                    {friends.map(friend => (
-                                        <div
-                                            key={friend.user_id}
-                                            className={`${styles.friendCard} ${selectedFriend && selectedFriend.user_id === friend.user_id ? styles.selectedFriend : ''}`}
-                                            onClick={() => setSelectedFriend(friend)}
-                                        >
-                                            <img
-                                                src={friend.profile_picture || "defaultProfileImage.png"}
-                                                alt={friend.username}
-                                                className={styles.friendAvatar}
-                                            />
-                                            <span>{friend.username}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className={styles.noFriends}>No tienes amigos para jugar. ¡Agrega algunos amigos primero!</p>
-                            )}
+  // Función para copiar código al portapapeles
+  const copyInviteCode = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedInviteCode);
+      // Aquí podrías mostrar una notificación más elegante en lugar del alert
+      alert("¡Código copiado al portapapeles! 📋");
+    } catch (err) {
+      console.error("Error al copiar al portapapeles:", err);
+      // Fallback para navegadores que no soportan clipboard API
+      const textArea = document.createElement("textarea");
+      textArea.value = generatedInviteCode;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      alert("¡Código copiado al portapapeles! 📋");
+    }
+  };
 
-                            <div className={styles.actionButtons}>
-                                <button
-                                    className={styles.cancelButton}
-                                    onClick={() => {
-                                        setShowFriendSelector(false);
-                                        setSelectedFriend(null);
-                                    }}
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    className={styles.startButton}
-                                    disabled={!selectedFriend}
-                                    onClick={startClassicGame}
-                                >
-                                    Desafiar y Comenzar
-                                </button>
-                            </div>
-                        </div>
-                        <div className={styles.modeSection}>
+  // Función para cerrar el selector de amigos
+  const closeFriendSelector = () => {
+    setShowFriendSelector(false);
+    setSelectedFriend(null);
+    setInviteCode("");
+    setGeneratedInviteCode("");
+    setShowInviteSection(false);
+    setError(null);
+  };
 
-                            {/* Sección de invitaciones */}
-                            <div className={inviteStyle.inviteSection}>
-                                <div className={inviteStyle.inviteRow}>
-                                    <input
-                                        type="text"
-                                        placeholder="Código de invitación"
-                                        value={inviteCode}
-                                        onChange={(e) => setInviteCode(e.target.value)}
-                                        className={inviteStyle.inviteInput}
-                                    />
-                                    <button
-                                        onClick={joinWithInviteCode}
-                                        className={inviteStyle.joinButton}
-                                    >
-                                        Unirse
-                                    </button>
-                                </div>
+  return (
+    <div className={styles.playMenuContainer}>
+      {/* Menú hamburguesa */}
+      <div className={styles.burgerMenuWrapper}>
+        <BurgerMenu />
+      </div>
 
-                                <button
-                                    onClick={generateInviteCode}
-                                    className={inviteStyle.generateButton}
-                                >
-                                    Generar código de invitación
-                                </button>
+      {/* Notificación de batalla pendiente */}
+      {showBattleNotification && pendingBattle && (
+        <BattleNotification
+          onJoin={joinPendingBattle}
+          onDismiss={dismissBattleNotification}
+        />
+      )}
 
-                                {showInviteSection && generatedInviteCode && (
-                                    <div className={inviteStyle.inviteDisplay}>
-                                        <p>Comparte este código:</p>
-                                        <div className={inviteStyle.codeContainer}>
-                                            <code className={inviteStyle.inviteCodeDisplay}>{generatedInviteCode}</code>
-                                            <button onClick={copyInviteCode} className={inviteStyle.copyButton}>
-                                                Copiar
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-
+      {/* Contenido principal */}
+      <div className={styles.playMenuContent}>
+        <div className={styles.menuHeader}>
+          <h2>Selecciona un modo de juego</h2>
         </div>
-    );
+
+        {/* Tarjetas de modos de juego */}
+        <div className={styles.gameModeCards}>
+          <GameModeCard
+            icon={<SolitaryIcon />}
+            title="Modo Solo"
+            description="Responde preguntas aleatorias y consigue puntos"
+            onClick={() => navigate("/Solitary")}
+          />
+
+          <GameModeCard
+            icon={<BulletIcon />}
+            title="Modo Bala"
+            description="Responde preguntas en poco tiempo y haz tu mejor marca"
+            onClick={() => navigate("/BulletPLay")}
+          />
+
+          <GameModeCard
+            icon={<ClassicIcon />}
+            title="Modo Clásico"
+            description="Compite con un amigo para ver quién completa primero las categorías"
+            onClick={() => setShowFriendSelector(true)}
+          />
+        </div>
+      </div>
+
+      {/* Modal selector de amigos */}
+      {showFriendSelector && (
+        <FriendSelectorModal
+          friends={friends}
+          selectedFriend={selectedFriend}
+          onSelectFriend={setSelectedFriend}
+          onStartGame={startClassicGame}
+          onClose={closeFriendSelector}
+          loading={loading}
+          error={error}
+          inviteCode={inviteCode}
+          onInviteCodeChange={setInviteCode}
+          onJoinWithCode={joinWithInviteCode}
+          onGenerateCode={generateInviteCode}
+          generatedInviteCode={generatedInviteCode}
+          showInviteSection={showInviteSection}
+          onCopyCode={copyInviteCode}
+        />
+      )}
+    </div>
+  );
 };
 
+// Componente para la notificación de batalla
+const BattleNotification = ({ onJoin, onDismiss }) => (
+  <div className={inviteStyle.battleNotification}>
+    <div className={inviteStyle.notificationContent}>
+      <h3>¡Alguien se unió a tu partida!</h3>
+      <p>Un jugador usó tu código de invitación</p>
+      <div className={inviteStyle.notificationButtons}>
+        <button onClick={onJoin} className={inviteStyle.joinBattleButton}>
+          Unirse a la partida
+        </button>
+        <button onClick={onDismiss} className={inviteStyle.dismissButton}>
+          Más tarde
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Componente para las tarjetas de modo de juego
+const GameModeCard = ({ icon, title, description, onClick }) => (
+  <div
+    className={styles.gameModeCard}
+    onClick={onClick}
+    role="button"
+    tabIndex={0}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick();
+      }
+    }}
+    aria-label={`Seleccionar ${title}: ${description}`}
+  >
+    <div className={styles.cardIcon} aria-hidden="true">
+      {icon}
+    </div>
+    <h3>{title}</h3>
+    <p>{description}</p>
+  </div>
+);
+
+// Íconos SVG como componentes
+const SolitaryIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="48"
+    height="48"
+    fill="none"
+    stroke="#16b3b9"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 12l2 2 4-4"></path>
+    <circle cx="12" cy="12" r="10"></circle>
+  </svg>
+);
+
+const BulletIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="48"
+    height="48"
+    fill="none"
+    stroke="#16b3b9"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+  </svg>
+);
+
+const ClassicIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="48"
+    height="48"
+    fill="none"
+    stroke="#16b3b9"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="9" cy="7" r="4"></circle>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+  </svg>
+);
+
+// Componente para el modal de selector de amigos
+const FriendSelectorModal = ({
+  friends,
+  selectedFriend,
+  onSelectFriend,
+  onStartGame,
+  onClose,
+  loading,
+  error,
+  inviteCode,
+  onInviteCodeChange,
+  onJoinWithCode,
+  onGenerateCode,
+  generatedInviteCode,
+  showInviteSection,
+  onCopyCode,
+}) => (
+  <div className={styles.friendSelectorOverlay}>
+    <div className={styles.friendSelector}>
+      <h3>Desafía a un amigo</h3>
+
+      {error && <div className={styles.errorMessage}>{error}</div>}
+
+      {/* Lista de amigos */}
+      {loading ? (
+        <div className={styles.loadingMessage}>Cargando amigos...</div>
+      ) : friends.length > 0 ? (
+        <FriendsList
+          friends={friends}
+          selectedFriend={selectedFriend}
+          onSelectFriend={onSelectFriend}
+        />
+      ) : (
+        <p className={styles.noFriends}>
+          No tienes amigos para jugar. ¡Agrega algunos amigos primero!
+        </p>
+      )}
+
+      {/* Botones de acción */}
+      <div className={styles.actionButtons}>
+        <button className={styles.cancelButton} onClick={onClose}>
+          Cancelar
+        </button>
+        <button
+          className={styles.startButton}
+          disabled={!selectedFriend}
+          onClick={onStartGame}
+        >
+          Desafiar y Comenzar
+        </button>
+      </div>
+
+      {/* Sección de invitaciones */}
+      <InviteSection
+        inviteCode={inviteCode}
+        onInviteCodeChange={onInviteCodeChange}
+        onJoinWithCode={onJoinWithCode}
+        onGenerateCode={onGenerateCode}
+        generatedInviteCode={generatedInviteCode}
+        showInviteSection={showInviteSection}
+        onCopyCode={onCopyCode}
+      />
+    </div>
+  </div>
+);
+
+// Componente para la lista de amigos
+const FriendsList = ({ friends, selectedFriend, onSelectFriend }) => (
+  <div className={styles.friendsList}>
+    {friends.map((friend) => (
+      <div
+        key={friend.user_id}
+        className={`${styles.friendCard} ${
+          selectedFriend && selectedFriend.user_id === friend.user_id
+            ? styles.selectedFriend
+            : ""
+        }`}
+        onClick={() => onSelectFriend(friend)}
+      >
+        <img
+          src={friend.profile_picture || "defaultProfileImage.png"}
+          alt={friend.username}
+          className={styles.friendAvatar}
+        />
+        <span>{friend.username}</span>
+      </div>
+    ))}
+  </div>
+);
+
+// Componente para la sección de invitaciones
+const InviteSection = ({
+  inviteCode,
+  onInviteCodeChange,
+  onJoinWithCode,
+  onGenerateCode,
+  generatedInviteCode,
+  showInviteSection,
+  onCopyCode,
+}) => (
+  <div className={inviteStyle.inviteSection}>
+    <div className={inviteStyle.inviteRow}>
+      <input
+        type="text"
+        placeholder="Ingresa el código de invitación"
+        value={inviteCode}
+        onChange={(e) => onInviteCodeChange(e.target.value)}
+        className={inviteStyle.inviteInput}
+        aria-label="Código de invitación"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onJoinWithCode();
+          }
+        }}
+      />
+      <button
+        onClick={onJoinWithCode}
+        className={inviteStyle.joinButton}
+        disabled={!inviteCode.trim()}
+        aria-label="Unirse con código de invitación"
+      >
+        Unirse
+      </button>
+    </div>
+
+    <button onClick={onGenerateCode} className={inviteStyle.generateButton}>
+      Generar código de invitación
+    </button>
+
+    {showInviteSection && generatedInviteCode && (
+      <div className={inviteStyle.inviteDisplay}>
+        <p>Comparte este código:</p>
+        <div className={inviteStyle.codeContainer}>
+          <code className={inviteStyle.inviteCodeDisplay}>
+            {generatedInviteCode}
+          </code>
+          <button onClick={onCopyCode} className={inviteStyle.copyButton}>
+            Copiar
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+);
 export default PlayMenu;

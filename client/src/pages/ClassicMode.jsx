@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
 import styles from "./css/ClassicMode.module.css";
+import gameStyles from "./css/GamePlay.module.css"; // Estilos para las preguntas
 import Wheel from "../components/Wheel";
 
 const COLORS = [
@@ -44,11 +45,15 @@ const ClassicMode = () => {
   const [gameHistory, setGameHistory] = useState([]);
   const [showWheel, setShowWheel] = useState(false);
   const [availableCategories, setAvailableCategories] = useState([]);
+  const [allCategories, setAllCategories] = useState([]); // Todas las categorías para mostrar en la ruleta
   const [activeBattles, setActiveBattles] = useState([]);
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [resultMessage, setResultMessage] = useState("");
+  const [showQuestionView, setShowQuestionView] = useState(false); // Nueva vista para preguntas
+  const [selectedIndex, setSelectedIndex] = useState(null); // Para el feedback visual de respuestas
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // Para mostrar respuesta correcta/incorrecta
   const timeoutRef = useRef(null);
 
   // Obtener userId desde localStorage
@@ -191,6 +196,9 @@ const ClassicMode = () => {
             data.battle.user_id1 === userId
               ? data.battle.user1Categories
               : data.battle.user2Categories;
+          // Guardar todas las categorías para mostrar en la ruleta
+          setAllCategories(userCategories);
+          // Guardar solo las disponibles (no completadas) para la lógica del juego
           setAvailableCategories(
             userCategories.filter((cat) => !cat.completed)
           );
@@ -246,6 +254,9 @@ const ClassicMode = () => {
         const shuffledAnswers = shuffleArray(data.answers);
         setAnswers(shuffledAnswers);
         setSelectedCategory(categoryId);
+        setShowQuestionView(true); // Cambiar a vista de preguntas
+        setSelectedIndex(null); // Reset del estado visual
+        setIsAnswerCorrect(null); // Reset del estado visual
       }
     } catch {
       setError("No se pudo cargar la pregunta");
@@ -273,6 +284,7 @@ const ClassicMode = () => {
           ]);
           setMessage("¡Categoría completada! Has ganado un punto.");
           fetchBattleState();
+          setShowQuestionView(false); // Volver a la vista principal
         }
       } catch {
         setError("No se pudo seleccionar la categoría");
@@ -281,7 +293,12 @@ const ClassicMode = () => {
       loadQuestion(categoryId);
     }
   };
-  const handleAnswerQuestion = async (answerId) => {
+  const handleAnswerQuestion = async (answerId, answerIndex) => {
+    // Mostrar feedback visual inmediato
+    setSelectedIndex(answerIndex);
+    const selectedAnswer = answers[answerIndex];
+    setIsAnswerCorrect(selectedAnswer.is_correct);
+
     try {
       setLoading(true);
       const { data } = await axios.post(
@@ -301,47 +318,60 @@ const ClassicMode = () => {
             timestamp: new Date().toISOString(),
           },
         ]);
-        if (data.correct) {
-          const newCorrectCount = correctCounter + 1;
-          setCorrectCounter(newCorrectCount);
-          localStorage.setItem(
-            `correctCounter_${battleId}_${userId}`,
-            newCorrectCount
-          );
-          if (newCorrectCount >= 3) {
-            setCanSelectCategory(true);
-            setMessage(
-              "¡Tres respuestas correctas consecutivas! Selecciona una categoría para marcar."
+
+        // Esperar un poco para mostrar el feedback visual
+        setTimeout(() => {
+          if (data.correct) {
+            const newCorrectCount = correctCounter + 1;
+            setCorrectCounter(newCorrectCount);
+            localStorage.setItem(
+              `correctCounter_${battleId}_${userId}`,
+              newCorrectCount
             );
+            if (newCorrectCount >= 3) {
+              setCanSelectCategory(true);
+              setMessage(
+                "¡Tres respuestas correctas consecutivas! Selecciona una categoría para marcar."
+              );
+              setCorrectCounter(0);
+              localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
+              setShowWheel(false);
+              setQuestion(null);
+              setShowQuestionView(false); // Volver a la vista principal
+            } else {
+              setMessage(
+                `¡Respuesta correcta! ${newCorrectCount}/3 respuestas correctas consecutivas.`
+              );
+              setQuestion(null);
+              setShowQuestionView(false); // Volver a la vista principal
+            }
+          } else {
             setCorrectCounter(0);
             localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
-            setShowWheel(false);
+            setMessage("Respuesta incorrecta. Turno del oponente.");
             setQuestion(null);
-          } else {
-            setMessage(
-              `¡Respuesta correcta! ${newCorrectCount}/3 respuestas correctas consecutivas.`
-            );
-            setQuestion(null);
+            setSelectedCategory(null);
+            setShowQuestionView(false); // Volver a la vista principal
+            fetchBattleState(); // Forzar actualización inmediata del estado
           }
-        } else {
-          setCorrectCounter(0);
-          localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
-          setMessage("Respuesta incorrecta. Turno del oponente.");
-          setQuestion(null);
-          setSelectedCategory(null);
-          fetchBattleState(); // <-- Forzar actualización inmediata del estado para que el render muestre "no es tu turno"
-        }
+        }, 1500); // Esperar 1.5 segundos para mostrar el feedback
       }
     } catch {
       setError("No se pudo procesar la respuesta");
+      setShowQuestionView(false); // Volver a la vista principal en caso de error
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     }
   };
   const handleContinueAnswering = () => {
     if (battle?.winner != null)
       return setMessage("The game has ended. You cannot continue answering.");
-    if (selectedCategory) loadQuestion(selectedCategory);
+
+    // Mostrar la ruleta en lugar de cargar directamente la pregunta
+    setShowWheel(true);
+    setShowQuestionView(false);
   };
   const handlePassTurn = async () => {
     try {
@@ -372,42 +402,234 @@ const ClassicMode = () => {
     } catch {}
   };
   const handleStartWheel = () => {
-    if (isMyTurn && !question) setShowWheel(true);
+    if (isMyTurn && !question) {
+      setShowWheel(true);
+      setShowQuestionView(false); // Asegurar que estamos en la vista de ruleta
+    }
   };
   const handleFinishSpin = (segment) => {
     setShowWheel(false);
-    const selectedCat = availableCategories.find(
+
+    // Buscar la categoría seleccionada en todas las categorías
+    const selectedCat = allCategories.find(
       (cat) => cat.name.toLowerCase().trim() === segment.toLowerCase().trim()
     );
+
     if (selectedCat) {
-      canSelectCategory
-        ? handleCategorySelect(selectedCat.category_id)
-        : loadQuestion(selectedCat.category_id);
+      // Verificar si la categoría está disponible (no completada)
+      const isAvailable = availableCategories.find(
+        (cat) => cat.category_id === selectedCat.category_id
+      );
+
+      if (isAvailable) {
+        // Si puede seleccionar categoría (3 respuestas correctas), marcar la categoría
+        // Si no, cargar pregunta de esa categoría
+        if (canSelectCategory) {
+          handleCategorySelect(selectedCat.category_id);
+        } else {
+          loadQuestion(selectedCat.category_id);
+        }
+      } else {
+        // Si la categoría ya está completada, elegir una aleatoria de las disponibles
+        if (availableCategories.length > 0) {
+          const randomCategory =
+            availableCategories[
+              Math.floor(Math.random() * availableCategories.length)
+            ];
+          if (canSelectCategory) {
+            handleCategorySelect(randomCategory.category_id);
+          } else {
+            loadQuestion(randomCategory.category_id);
+          }
+        }
+      }
     } else if (availableCategories.length > 0) {
-      canSelectCategory
-        ? handleCategorySelect(availableCategories[0].category_id)
-        : loadQuestion(availableCategories[0].category_id);
+      // Fallback: elegir una categoría aleatoria de las disponibles
+      const randomCategory =
+        availableCategories[
+          Math.floor(Math.random() * availableCategories.length)
+        ];
+      if (canSelectCategory) {
+        handleCategorySelect(randomCategory.category_id);
+      } else {
+        loadQuestion(randomCategory.category_id);
+      }
     }
   };
 
   // Render helpers
-  const getCategoryNames = () => availableCategories.map((cat) => cat.name);
-  const getRandomWinningSegment = () =>
-    availableCategories.length === 0
-      ? ""
-      : availableCategories[
-          Math.floor(Math.random() * availableCategories.length)
-        ].name;
+  const getCategoryNames = () => allCategories.map((cat) => cat.name); // Mostrar todas las categorías
+  const getRandomWinningSegment = () => {
+    // Solo seleccionar de las categorías disponibles (no completadas)
+    if (availableCategories.length === 0) return "";
+    return availableCategories[
+      Math.floor(Math.random() * availableCategories.length)
+    ].name;
+  };
 
+  // Nueva función para renderizar la vista de preguntas estilo bullet/solitario
+  const renderQuestionView = () => {
+    if (!question || !showQuestionView) return null;
+
+    const myCategories =
+      battle.user_id1 === userId
+        ? battle.user1Categories
+        : battle.user2Categories;
+    const opponentCategories =
+      battle.user_id1 === userId
+        ? battle.user2Categories
+        : battle.user1Categories;
+    const myCompletedCount = myCategories.filter((c) => c.completed).length;
+    const opponentCompletedCount = opponentCategories.filter(
+      (c) => c.completed
+    ).length;
+
+    // Encontrar la información de la categoría actual para mostrar en la pregunta
+    const currentQuestionCategory = allCategories.find(
+      (cat) => cat.category_id === selectedCategory
+    );
+
+    return (
+      <div className={gameStyles.gameContainer}>
+        <div className={gameStyles.header}>
+          <img
+            className={gameStyles.arrowLeftSolid1Icon}
+            alt="Volver"
+            src="../arrow-left-solid.svg"
+            onClick={() => {
+              setShowQuestionView(false);
+              setQuestion(null);
+              setSelectedIndex(null);
+              setIsAnswerCorrect(null);
+            }}
+          />
+
+          <div className={styles.classicModeProgress}>
+            <div className={styles.progressItem}>
+              <span className={styles.playerLabel}>
+                Tú: {myCompletedCount}/4
+              </span>
+            </div>
+            <div className={styles.vsIndicatorSmall}>VS</div>
+            <div className={styles.progressItem}>
+              <span className={styles.playerLabel}>
+                {opponentInfo?.username || "Oponente"}: {opponentCompletedCount}
+                /4
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.correctCounterSmall}>
+            <span>{correctCounter}/3</span>
+          </div>
+        </div>
+
+        {/* Indicador de categoría - posicionado debajo del header */}
+        {currentQuestionCategory && (
+          <div className={gameStyles.categoryIndicator}>
+            <span className={gameStyles.categoryLabel}>Categoría:</span>
+            <span className={gameStyles.categoryName}>
+              {currentQuestionCategory.name}
+            </span>
+          </div>
+        )}
+
+        <div className={gameStyles.questionContainer}>
+          <h1 className={gameStyles.titleDePrueba}>{question.questiontext}</h1>
+        </div>
+
+        <div className={gameStyles.answersContainer} key={question.question_id}>
+          {answers.map((answer, index) => {
+            let buttonClass = gameStyles.buttonAnswers;
+
+            // Aplicar estilos de feedback visual
+            if (selectedIndex === index) {
+              buttonClass += isAnswerCorrect
+                ? ` ${gameStyles.correct}`
+                : ` ${gameStyles.incorrect}`;
+            }
+
+            return (
+              <button
+                key={answer.answer_id}
+                className={buttonClass}
+                onClick={() => handleAnswerQuestion(answer.answer_id, index)}
+                disabled={selectedIndex !== null || loading}
+              >
+                {answer.text}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  // Nueva función para renderizar solo la ruleta
+  const renderWheelView = () => {
+    if (!showWheel || showQuestionView) return null;
+
+    return (
+      <div className={styles.wheelContainer}>
+        <h3>
+          {canSelectCategory
+            ? "Gira la ruleta para marcar una categoría"
+            : "Gira la ruleta para obtener una categoría aleatoria"}
+        </h3>
+
+        {/* Indicador de categorías completadas */}
+        {allCategories.length > 0 && (
+          <div className={styles.categoriesStatus}>
+            <p>Estado de categorías:</p>
+            <div className={styles.categoryIndicators}>
+              {allCategories.map((category) => (
+                <div
+                  key={category.category_id}
+                  className={`${styles.categoryIndicator} ${
+                    category.completed ? styles.completed : styles.available
+                  }`}
+                >
+                  {category.name}
+                  {category.completed && (
+                    <span className={styles.checkMark}>✓</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Wheel
+          segments={getCategoryNames()}
+          segColors={COLORS}
+          winningSegment={getRandomWinningSegment()}
+          onFinished={handleFinishSpin}
+          primaryColor="#30609b"
+          contrastColor="#ffffff"
+          buttonText="Girar"
+          size={350}
+        />
+        <button
+          className={styles.cancelWheelButton}
+          onClick={() => {
+            setShowWheel(false);
+            setShowQuestionView(false);
+          }}
+        >
+          Cancelar
+        </button>
+      </div>
+    );
+  };
   const renderCategories = () => {
-    if (!battle) return null;
+    if (!battle || !canSelectCategory) return null;
     const categories =
       battle.user_id1 === userId
         ? battle.user1Categories
         : battle.user2Categories;
     return (
       <div className={styles.categoriesContainer}>
-        <h3>Categorías</h3>
+        <h3>Elige una categoría para marcar</h3>
         <div className={styles.categoriesGrid}>
           {categories.map((category) => (
             <div
@@ -420,6 +642,10 @@ const ClassicMode = () => {
                 isMyTurn &&
                 handleCategorySelect(category.category_id)
               }
+              style={{
+                cursor:
+                  !category.completed && isMyTurn ? "pointer" : "not-allowed",
+              }}
             >
               <span>{category.name}</span>
               {category.completed && (
@@ -428,43 +654,13 @@ const ClassicMode = () => {
             </div>
           ))}
         </div>
-        {isMyTurn && !question && !canSelectCategory && (
-          <button
-            className={styles.wheelButton}
-            onClick={handleStartWheel}
-            disabled={availableCategories.length === 0}
-          >
-            Usar ruleta para elegir categoría
-          </button>
-        )}
-      </div>
-    );
-  };
-
-  const renderQuestion = () => {
-    if (!question || !isMyTurn) return null;
-    const opponentCategories =
-      battle?.user_id1 === userId
-        ? battle?.user2Categories
-        : battle?.user1Categories;
-    const opponentCompletedCount =
-      opponentCategories?.filter((c) => c.completed).length || 0;
-    if (opponentCompletedCount >= 4) return null;
-    return (
-      <div className={styles.questionContainer}>
-        <h3>Pregunta:</h3>
-        <p className={styles.questionText}>{question.questiontext}</p>
-        <div className={styles.answersList}>
-          {answers.map((answer) => (
-            <button
-              key={answer.answer_id}
-              className={styles.answerButton}
-              onClick={() => handleAnswerQuestion(answer.answer_id)}
-            >
-              {answer.text}
-            </button>
-          ))}
-        </div>
+        <button
+          className={styles.wheelButton}
+          onClick={handleStartWheel}
+          disabled={availableCategories.length === 0}
+        >
+          Usar ruleta para elegir categoría
+        </button>
       </div>
     );
   };
@@ -718,6 +914,28 @@ const ClassicMode = () => {
     return <div className={styles.loading}>Cargando...</div>;
   if (error) return <div className={styles.errorMessage}>{error}</div>;
 
+  // Si estamos en la vista de preguntas, mostrar solo esa vista
+  if (showQuestionView && question) {
+    return renderQuestionView();
+  }
+
+  // Si estamos mostrando la ruleta, mostrar solo esa vista
+  if (showWheel && !showQuestionView) {
+    return (
+      <div className={styles.classicModeContainer}>
+        {showResultModal && (
+          <div className={styles.resultModal}>
+            <div className={styles.resultModalContent}>
+              <h2>{resultMessage}</h2>
+              <p>Serás redirigido al menú principal...</p>
+            </div>
+          </div>
+        )}
+        {renderWheelView()}
+      </div>
+    );
+  }
+
   return (
     <div className={styles.classicModeContainer}>
       {showResultModal && (
@@ -738,74 +956,62 @@ const ClassicMode = () => {
         <img src="../arrow-left-solid.svg" alt="Volver" />
       </button>
       {renderBattleStatus()}
-      {showWheel || (isMyTurn && !question && !canSelectCategory) ? (
-        <div className={styles.wheelContainer}>
-          <h3>Gira la ruleta para seleccionar una categoría</h3>
-          <Wheel
-            segments={getCategoryNames()}
-            segColors={COLORS}
-            winningSegment={getRandomWinningSegment()}
-            onFinished={handleFinishSpin}
-            primaryColor="#30609b"
-            contrastColor="#ffffff"
-            buttonText="Girar"
-            size={350}
-          />
+      {/* Mostrar contenido basado en el estado del juego */}
+      {canSelectCategory ? (
+        <div className={styles.categorySelection}>
+          <h3>
+            ¡3 respuestas correctas consecutivas! Puedes elegir una categoría
+            para marcar:
+          </h3>
+          {renderCategories()}
         </div>
       ) : (
         <>
-          {canSelectCategory ? (
-            <div className={styles.categorySelection}>
-              <h3>
-                ¡Respuestas correctas! Selecciona una categoría para marcar:
-              </h3>
-              {renderCategories()}
+          {isMyTurn && !question && !showWheel && correctCounter === 0 && (
+            <div className={styles.turnStartContainer}>
+              <h3>Es tu turno</h3>
+              <p>
+                Presiona continuar para girar la ruleta y obtener una categoría
+                aleatoria
+              </p>
               <button
-                className={styles.wheelButton}
+                className={styles.continueButton}
                 onClick={handleStartWheel}
                 disabled={availableCategories.length === 0}
               >
-                Usar ruleta para elegir categoría
+                Continuar
               </button>
             </div>
-          ) : (
-            <>
-              {isMyTurn && !question && (
-                <div className={styles.categorySelection}>
-                  <h3>Es tu turno. Selecciona una categoría para jugar:</h3>
-                  {renderCategories()}
-                </div>
-              )}
-
-              {renderQuestion()}
-
-              {!isMyTurn && (
-                <div className={styles.waitingMessage}>
-                  <h3>
-                    Esperando a que {opponentInfo?.username || "el oponente"}{" "}
-                    juegue su turno...
-                  </h3>
-                </div>
-              )}
-
-              {correctCounter > 0 && question === null && (
-                <div className={styles.continueOptions}>
-                  <button
-                    className={styles.continueButton}
-                    onClick={handleContinueAnswering}
-                  >
-                    Continuar respondiendo
-                  </button>
-                  <button
-                    className={styles.passTurnButton}
-                    onClick={handlePassTurn}
-                  >
-                    Pasar turno
-                  </button>
-                </div>
-              )}
-            </>
           )}
+
+          {!isMyTurn && (
+            <div className={styles.waitingMessage}>
+              <h3>
+                Esperando a que {opponentInfo?.username || "el oponente"} juegue
+                su turno...
+              </h3>
+            </div>
+          )}
+
+          {correctCounter > 0 &&
+            question === null &&
+            isMyTurn &&
+            !showWheel && (
+              <div className={styles.continueOptions}>
+                <button
+                  className={styles.continueButton}
+                  onClick={handleContinueAnswering}
+                >
+                  Continuar respondiendo
+                </button>
+                <button
+                  className={styles.passTurnButton}
+                  onClick={handlePassTurn}
+                >
+                  Pasar turno
+                </button>
+              </div>
+            )}
         </>
       )}
       {correctCounter > 0 && (

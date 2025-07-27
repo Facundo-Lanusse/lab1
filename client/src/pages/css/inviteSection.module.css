@@ -1,37 +1,53 @@
 .inviteSection {
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  margin-top: 30px;
+  padding: 25px;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #f8fdfd 0%, #f0fafa 100%);
+  box-shadow: 0 2px 10px rgba(22, 179, 185, 0.05);
 }
 
 .inviteRow {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .inviteInput {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background-color: white;
 }
 
-.joinButton, .generateButton {
-  padding: 10px 20px;
-  background-color: #007bff;
+.inviteInput:focus {
+  outline: none;
+  border-color: #16b3b9;
+  box-shadow: 0 0 0 3px rgba(22, 179, 185, 0.1);
+}
+
+.joinButton,
+.generateButton {
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #16b3b9 0%, #129ba0 100%);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(22, 179, 185, 0.2);
 }
 
-.joinButton:hover, .generateButton:hover {
-  background-color: #0056b3;
+.joinButton:hover,
+.generateButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(22, 179, 185, 0.3);
+  background: linear-gradient(135deg, #129ba0 0%, #0e888c 100%);
 }
 
 .generateButton {
@@ -39,40 +55,57 @@
 }
 
 .inviteDisplay {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #e7f3ff;
-  border-radius: 4px;
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e7f9fa 0%, #d1f2f4 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(22, 179, 185, 0.2);
+}
+
+.inviteDisplay p {
+  margin: 0 0 15px 0;
+  color: #16b3b9;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .codeContainer {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .inviteCodeDisplay {
   flex: 1;
-  padding: 8px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 16px;
+  padding: 12px 16px;
+  background-color: white;
+  border: 2px solid #16b3b9;
+  border-radius: 8px;
+  font-family: "Courier New", monospace;
+  font-size: 18px;
+  font-weight: bold;
+  color: #16b3b9;
+  text-align: center;
+  letter-spacing: 2px;
 }
 
 .copyButton {
-  padding: 8px 15px;
-  background-color: #28a745;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
 }
 
 .copyButton:hover {
-  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  background: linear-gradient(135deg, #45a049 0%, #3e8e41 100%);
 }
 .battleNotification {
   position: fixed;
@@ -80,67 +113,172 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
 }
 
 .notificationContent {
   background: white;
-  padding: 30px;
-  border-radius: 15px;
+  padding: 40px 35px;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  max-width: 400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 450px;
   width: 90%;
+  animation: slideUp 0.4s ease;
+  border: 3px solid #16b3b9;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .notificationContent h3 {
   color: #16b3b9;
   margin-bottom: 15px;
-  font-size: 1.5rem;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .notificationContent p {
-  margin-bottom: 25px;
+  margin-bottom: 30px;
   color: #666;
-  font-size: 1.1rem;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .notificationButtons {
   display: flex;
   gap: 15px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .joinBattleButton {
-  background: #16b3b9;
+  background: linear-gradient(135deg, #16b3b9 0%, #129ba0 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(22, 179, 185, 0.3);
+  min-width: 150px;
 }
 
 .joinBattleButton:hover {
-  background: #138a92;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(22, 179, 185, 0.4);
+  background: linear-gradient(135deg, #129ba0 0%, #0e888c 100%);
 }
 
 .dismissButton {
-  background: #ccc;
-  color: #333;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  color: #666;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
 }
 
 .dismissButton:hover {
-  background: #bbb;
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsividad para dispositivos móviles */
+@media screen and (max-width: 768px) {
+  .inviteSection {
+    padding: 20px;
+    margin-top: 25px;
+  }
+
+  .inviteRow {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .inviteInput {
+    padding: 16px;
+    font-size: 16px;
+  }
+
+  .joinButton,
+  .generateButton {
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+
+  .notificationContent {
+    padding: 30px 25px;
+    margin: 20px;
+  }
+
+  .notificationButtons {
+    gap: 12px;
+  }
+
+  .joinBattleButton,
+  .dismissButton {
+    padding: 14px 24px;
+    font-size: 15px;
+    min-width: 130px;
+  }
+
+  .codeContainer {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .copyButton {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .inviteCodeDisplay {
+    font-size: 16px;
+    padding: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .notificationButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .joinBattleButton,
+  .dismissButton {
+    width: 100%;
+    max-width: 250px;
+  }
 }
