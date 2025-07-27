@@ -2,10 +2,23 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const http = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 const app = express();
 const PORT = 3000;
+
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
+});
+
+// Hacer io accesible en las rutas
+app.set('io', io);
 
 app.use(cors());
 app.use(cookieParser());
@@ -31,9 +44,6 @@ app.use('/api', require('./routes/communityCategoriesJudgementRoutes'));
 app.use('/api', require('./routes/BulletRoutes'));
 app.use('/api', require('./routes/invitationRoutes'));
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
-
-
-
