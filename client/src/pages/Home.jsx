@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { BurgerMenu } from "../components/BurgerMenu";
 import styles from "./css/Home.module.css";
+import pageStyles from "./css/inviteSection.module.css";
 import { motion } from "framer-motion";
 import axios from "axios";
 
@@ -23,27 +24,40 @@ const Home = () => {
   const fetchBattles = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:3000/api/classic/battles`,
-        {
+      // Pedir batallas clásicas y bullet en paralelo
+      const [classicRes, bulletRes] = await Promise.all([
+        axios.get(`http://localhost:3000/api/classic/battles`, {
           params: { userId: user.user_id },
-        }
-      );
+        }),
+        axios.get(`http://localhost:3000/api/bullet-online/user/${user.user_id}`)
+      ]);
 
-      // Separar batallas activas y completadas
+      // Procesar batallas clásicas
+      const classicBattles = (classicRes.data.battles || []).map(battle => ({
+        ...battle,
+        type: 'classic',
+      }));
+      // Procesar batallas bullet online
+      const bulletBattles = (bulletRes.data.battles || []).map(battle => ({
+        ...battle,
+        type: 'bullet',
+        // opponent_name ya viene del backend como el nombre del usuario rival
+      }));
+
+
+
+      // Unir ambas listas
+      const allBattles = [...classicBattles, ...bulletBattles];
+      // Separar activas y completadas
       const active = [];
       const completed = [];
-
-      if (response.data.battles && response.data.battles.length > 0) {
-        response.data.battles.forEach((battle) => {
-          if (battle.status === "completed" || battle.isCompleted) {
-            completed.push(battle);
-          } else {
-            active.push(battle);
-          }
-        });
-      }
-
+      allBattles.forEach((battle) => {
+        if (battle.status === "completed" || battle.isCompleted) {
+          completed.push(battle);
+        } else {
+          active.push(battle);
+        }
+      });
       setActiveBattles(active);
       setCompletedBattles(completed);
       setLoading(false);
@@ -63,6 +77,23 @@ const Home = () => {
       console.log("Esta batalla ya ha finalizado");
     }
   };
+
+  // PAGINADO
+  const BATTLES_PER_PAGE = 2; // Número de batallas por página
+  const [activePage, setActivePage] = useState(1);
+  const [completedPage, setCompletedPage] = useState(1);
+
+  // Calcular batallas a mostrar por página
+  const paginatedActiveBattles = activeBattles.slice(
+    (activePage - 1) * BATTLES_PER_PAGE,
+    activePage * BATTLES_PER_PAGE
+  );
+  const paginatedCompletedBattles = completedBattles.slice(
+    (completedPage - 1) * BATTLES_PER_PAGE,
+    completedPage * BATTLES_PER_PAGE
+  );
+  const totalActivePages = Math.ceil(activeBattles.length / BATTLES_PER_PAGE);
+  const totalCompletedPages = Math.ceil(completedBattles.length / BATTLES_PER_PAGE);
 
   if (!user) {
     return <Navigate to="/login" />;
@@ -119,13 +150,24 @@ const Home = () => {
                 <>
                   {/* Partidas activas */}
                   <h3 className={styles.sectionSubtitle}>Partidas en curso</h3>
-                  {activeBattles.length > 0 ? (
+                  {paginatedActiveBattles.length > 0 ? (
                     <div className={styles.battlesList}>
-                      {activeBattles.map((battle) => (
+                      {paginatedActiveBattles.map((battle) => (
                         <motion.div
                           key={battle.battle_id}
                           className={styles.battleCard}
-                          onClick={() => handleBattleClick(battle)}
+                          onClick={() => {
+                            if (battle.status !== "completed" && !battle.isCompleted) {
+                              if (battle.type === 'bullet') {
+                                navigate(`/BulletOnline/${battle.battle_id}`);
+                              } else {
+                                navigate(`/Classic/${battle.battle_id}`);
+                              }
+                            } else {
+                              // No hacemos nada si la batalla está completada
+                              console.log("Esta batalla ya ha finalizado");
+                            }
+                          }}
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
                         >
@@ -146,42 +188,54 @@ const Home = () => {
                             </span>
                           </div>
 
-                          <div className={styles.battleProgress}>
-                            <div className={styles.progressRow}>
-                              <span className={styles.playerName}>Tú:</span>
-                              <div className={styles.progressBar}>
-                                <div
-                                  className={styles.progressFill}
-                                  style={{
-                                    width: `${
-                                      (battle.myCompletedCategories / 4) * 100
-                                    }%`,
-                                  }}
-                                ></div>
-                              </div>
-                              <span className={styles.categoryCount}>
-                                {battle.myCompletedCategories}/4
-                              </span>
+                          {/* Mostrar puntaje simple si es bullet, barra si es classic */}
+                          {battle.type === 'bullet' ? (
+                            <div className={styles.bulletScoreRow}>
+                              <span className={styles.playerName}>Tú: </span>
+                              <span className={styles.bulletScore}>{battle.myScore ?? 0}</span>
+                              <span style={{margin: '0 8px'}}>-</span>
+                              <span className={styles.playerName}>Rival:  </span>
+                              <span className={styles.bulletScore}>{battle.opponentScore ?? 0}</span>
                             </div>
+                          ) : (
+                            <div className={styles.battleProgress}>
+                              <div className={styles.progressRow}>
+                                <span className={styles.playerName}>Tú:  </span>
+                                <div className={styles.progressBar}>
+                                  <div
+                                    className={styles.progressFill}
+                                    style={{
+                                      width: `${
+                                        (battle.myCompletedCategories / 4) * 100
+                                      }%`,
+                                    }}
+                                  ></div>
+                                </div>
+                                <span className={styles.categoryCount}>
+                                  {battle.myCompletedCategories}/4
+                                </span>
+                              </div>
 
-                            <div className={styles.progressRow}>
-                              <span className={styles.playerName}>Rival:</span>
-                              <div className={styles.progressBar}>
-                                <div
-                                  className={`${styles.progressFill} ${styles.opponentFill}`}
-                                  style={{
-                                    width: `${
-                                      (battle.opponentCompletedCategories / 4) *
-                                      100
-                                    }%`,
-                                  }}
-                                ></div>
+                              <div className={styles.progressRow}>
+                                <span className={styles.playerName}>
+                                  Rival:
+                                </span>
+                                <div className={styles.progressBar}>
+                                  <div
+                                    className={`${styles.progressFill} ${styles.opponentFill}`}
+                                    style={{
+                                      width: `${
+                                        (battle.opponentCompletedCategories / 4) * 100
+                                      }%`,
+                                    }}
+                                  ></div>
+                                </div>
+                                <span className={styles.categoryCount}>
+                                  {battle.opponentCompletedCategories}/4
+                                </span>
                               </div>
-                              <span className={styles.categoryCount}>
-                                {battle.opponentCompletedCategories}/4
-                              </span>
                             </div>
-                          </div>
+                          )}
 
                           <div className={styles.battleFooter}>
                             <span className={styles.battleDate}>
@@ -208,9 +262,17 @@ const Home = () => {
                       </div>
                     </div>
                   )}
+                  {/* Paginado de activas */}
+                  {totalActivePages > 1 && (
+                    <div className={styles.paginationContainer}>
+                      <button className={pageStyles.joinButton} onClick={() => setActivePage(p => Math.max(1, p - 1))} disabled={activePage === 1}>Anterior</button>
+                      <span>  {activePage} de {totalActivePages}  </span>
+                      <button className={pageStyles.joinButton}  onClick={() => setActivePage(p => Math.min(totalActivePages, p + 1))} disabled={activePage === totalActivePages}>Siguiente</button>
+                    </div>
+                  )}
 
                   {/* Partidas completadas */}
-                  {completedBattles.length > 0 && (
+                  {paginatedCompletedBattles.length > 0 && (
                     <div
                       className={styles.completedBattlesSection}
                       style={{ marginTop: "2rem" }}
@@ -219,78 +281,109 @@ const Home = () => {
                         Partidas completadas
                       </h3>
                       <div className={styles.battlesList}>
-                        {completedBattles.map((battle) => (
-                          <div
-                            key={battle.battle_id}
-                            className={`${styles.battleCard} ${styles.completedBattle} ${styles.disabledBattle}`}
-                          >
-                            <div className={styles.battleHeader}>
-                              <span className={styles.opponentName}>
-                                VS {battle.opponent_name}
-                              </span>
-                              <span
-                                className={`${styles.battleResult} ${
-                                  battle.isWinner
-                                    ? styles.winResult
-                                    : styles.loseResult
-                                }`}
-                              >
-                                {battle.isWinner ? "¡Victoria!" : "Derrota"}
-                              </span>
-                            </div>
+                        {paginatedCompletedBattles.map((battle) => {
+                          // Determinar scores y resultado para bullet
+                          let myScore = null;
+                          let opponentScore = null;
+                          let resultLabel = null;
+                          if (battle.type === 'bullet') {
+                            const user = JSON.parse(localStorage.getItem("user"));
+                            const userId = user?.user_id;
+                            if (userId === battle.user_id1) {
+                              myScore = battle.score1;
+                              opponentScore = battle.score2;
+                            } else {
+                              myScore = battle.score2;
+                              opponentScore = battle.score1;
+                            }
+                            if (battle.winner_id === userId) resultLabel = "¡Victoria!";
+                            else if (battle.winner_id) resultLabel = "Derrota";
+                            else resultLabel = "Empate";
+                          }
+                          return (
+                            <div
+                              key={battle.battle_id}
+                              className={`${styles.battleCard} ${styles.completedBattle} ${styles.disabledBattle}`}
+                            >
+                              <div className={styles.battleHeader}>
+                                <span className={styles.opponentName}>
+                                  VS {battle.opponent_name}
+                                </span>
+                                <span
+                                  className={`${styles.battleResult} ${
+                                    battle.type === 'bullet'
+                                      ? (resultLabel === "¡Victoria!" ? styles.winResult : resultLabel === "Derrota" ? styles.loseResult : styles.drawResult)
+                                      : (battle.isWinner ? styles.winResult : styles.loseResult)
+                                  }`}
+                                >
+                                  {battle.type === 'bullet' ? resultLabel : (battle.isWinner ? "¡Victoria!" : "Derrota")}
+                                </span>
+                              </div>
 
-                            <div className={styles.battleProgress}>
-                              <div className={styles.progressRow}>
-                                <span className={styles.playerName}>Tú:</span>
-                                <div className={styles.progressBar}>
-                                  <div
-                                    className={styles.progressFill}
-                                    style={{
-                                      width: `${
-                                        (battle.myCompletedCategories / 4) * 100
-                                      }%`,
-                                    }}
-                                  ></div>
+                              {/* Mostrar score bullet o progreso classic */}
+                              {battle.type === 'bullet' ? (
+                                <div className={styles.bulletScoreRow}>
+                                  <span className={styles.playerName}>Tú:  </span>
+                                  <span className={styles.bulletScore}>{myScore ?? 0}</span>
+                                  <span style={{margin: '0 8px'}}>-</span>
+                                  <span className={styles.playerName}>Rival:  </span>
+                                  <span className={styles.bulletScore}>{opponentScore ?? 0}</span>
                                 </div>
-                                <span className={styles.categoryCount}>
-                                  {battle.myCompletedCategories}/4
-                                </span>
-                              </div>
-
-                              <div className={styles.progressRow}>
-                                <span className={styles.playerName}>
-                                  Rival:
-                                </span>
-                                <div className={styles.progressBar}>
-                                  <div
-                                    className={`${styles.progressFill} ${styles.opponentFill}`}
-                                    style={{
-                                      width: `${
-                                        (battle.opponentCompletedCategories /
-                                          4) *
-                                        100
-                                      }%`,
-                                    }}
-                                  ></div>
+                              ) : (
+                                <div className={styles.battleProgress}>
+                                  <div className={styles.progressRow}>
+                                    <span className={styles.playerName}>Tú:</span>
+                                    <div className={styles.progressBar}>
+                                      <div
+                                        className={styles.progressFill}
+                                        style={{
+                                          width: `${(battle.myCompletedCategories / 4) * 100}%`,
+                                        }}
+                                      ></div>
+                                    </div>
+                                    <span className={styles.categoryCount}>
+                                      {battle.myCompletedCategories}/4
+                                    </span>
+                                  </div>
+                                  <div className={styles.progressRow}>
+                                    <span className={styles.playerName}>
+                                      Rival:
+                                    </span>
+                                    <div className={styles.progressBar}>
+                                      <div
+                                        className={`${styles.progressFill} ${styles.opponentFill}`}
+                                        style={{
+                                          width: `${(battle.opponentCompletedCategories / 4) * 100}%`,
+                                        }}
+                                      ></div>
+                                    </div>
+                                    <span className={styles.categoryCount}>
+                                      {battle.opponentCompletedCategories}/4
+                                    </span>
+                                  </div>
                                 </div>
-                                <span className={styles.categoryCount}>
-                                  {battle.opponentCompletedCategories}/4
-                                </span>
-                              </div>
-                            </div>
+                              )}
 
-                            <div className={styles.battleFooter}>
-                              <span className={styles.battleDate}>
-                                Finalizada:{" "}
-                                {new Date(battle.date).toLocaleDateString()}
-                              </span>
-                              <div className={styles.completedLabel}>
-                                Partida finalizada
+                              <div className={styles.battleFooter}>
+                                <span className={styles.battleDate}>
+                                  Finalizada: {new Date(battle.date).toLocaleDateString()}
+                                </span>
+                                <div className={styles.completedLabel}>
+                                  Partida finalizada
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
+                      {/* Paginado de completadas */}
+                      {totalCompletedPages > 1 && (
+                        <div className={styles.paginationContainer}>
+                          <button className={pageStyles.joinButton}  onClick={() => setCompletedPage(p => Math.max(1, p - 1))} disabled={completedPage === 1}>Anterior</button>
+                          <span>  {completedPage} de {totalCompletedPages}  </span>
+                          <button className={pageStyles.joinButton}  onClick={() => setCompletedPage(p => Math.min(totalCompletedPages, p + 1))} disabled={completedPage === totalCompletedPages}>Siguiente</button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </>
