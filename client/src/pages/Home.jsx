@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { BurgerMenu } from "../components/BurgerMenu";
 import styles from "./css/Home.module.css";
+import pageStyles from "./css/inviteSection.module.css";
 import { motion } from "framer-motion";
 import axios from "axios";
 
@@ -190,16 +191,16 @@ const Home = () => {
                           {/* Mostrar puntaje simple si es bullet, barra si es classic */}
                           {battle.type === 'bullet' ? (
                             <div className={styles.bulletScoreRow}>
-                              <span className={styles.playerName}>Tú:</span>
+                              <span className={styles.playerName}>Tú: </span>
                               <span className={styles.bulletScore}>{battle.myScore ?? 0}</span>
                               <span style={{margin: '0 8px'}}>-</span>
-                              <span className={styles.playerName}>Rival:</span>
+                              <span className={styles.playerName}>Rival:  </span>
                               <span className={styles.bulletScore}>{battle.opponentScore ?? 0}</span>
                             </div>
                           ) : (
                             <div className={styles.battleProgress}>
                               <div className={styles.progressRow}>
-                                <span className={styles.playerName}>Tú:</span>
+                                <span className={styles.playerName}>Tú:  </span>
                                 <div className={styles.progressBar}>
                                   <div
                                     className={styles.progressFill}
@@ -264,9 +265,9 @@ const Home = () => {
                   {/* Paginado de activas */}
                   {totalActivePages > 1 && (
                     <div className={styles.paginationContainer}>
-                      <button onClick={() => setActivePage(p => Math.max(1, p - 1))} disabled={activePage === 1}>Anterior</button>
-                      <span>Página {activePage} de {totalActivePages}</span>
-                      <button onClick={() => setActivePage(p => Math.min(totalActivePages, p + 1))} disabled={activePage === totalActivePages}>Siguiente</button>
+                      <button className={pageStyles.joinButton} onClick={() => setActivePage(p => Math.max(1, p - 1))} disabled={activePage === 1}>Anterior</button>
+                      <span>  {activePage} de {totalActivePages}  </span>
+                      <button className={pageStyles.joinButton}  onClick={() => setActivePage(p => Math.min(totalActivePages, p + 1))} disabled={activePage === totalActivePages}>Siguiente</button>
                     </div>
                   )}
 
@@ -322,10 +323,10 @@ const Home = () => {
                               {/* Mostrar score bullet o progreso classic */}
                               {battle.type === 'bullet' ? (
                                 <div className={styles.bulletScoreRow}>
-                                  <span className={styles.playerName}>Tú:</span>
+                                  <span className={styles.playerName}>Tú:  </span>
                                   <span className={styles.bulletScore}>{myScore ?? 0}</span>
                                   <span style={{margin: '0 8px'}}>-</span>
-                                  <span className={styles.playerName}>Rival:</span>
+                                  <span className={styles.playerName}>Rival:  </span>
                                   <span className={styles.bulletScore}>{opponentScore ?? 0}</span>
                                 </div>
                               ) : (
@@ -378,9 +379,9 @@ const Home = () => {
                       {/* Paginado de completadas */}
                       {totalCompletedPages > 1 && (
                         <div className={styles.paginationContainer}>
-                          <button onClick={() => setCompletedPage(p => Math.max(1, p - 1))} disabled={completedPage === 1}>Anterior</button>
-                          <span>Página {completedPage} de {totalCompletedPages}</span>
-                          <button onClick={() => setCompletedPage(p => Math.min(totalCompletedPages, p + 1))} disabled={completedPage === totalCompletedPages}>Siguiente</button>
+                          <button className={pageStyles.joinButton}  onClick={() => setCompletedPage(p => Math.max(1, p - 1))} disabled={completedPage === 1}>Anterior</button>
+                          <span>  {completedPage} de {totalCompletedPages}  </span>
+                          <button className={pageStyles.joinButton}  onClick={() => setCompletedPage(p => Math.min(totalCompletedPages, p + 1))} disabled={completedPage === totalCompletedPages}>Siguiente</button>
                         </div>
                       )}
                     </div>
