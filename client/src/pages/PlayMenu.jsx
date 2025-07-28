@@ -35,6 +35,9 @@ const PlayMenu = () => {
   // Estado para búsqueda de amigos
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Estado para mostrar modal de jugar solo o con amigo en modo bala
+  const [showSoloBulletModal, setShowSoloBulletModal] = useState(false);
+
   // Efecto para cargar amigos al montar el componente
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -290,7 +293,7 @@ const PlayMenu = () => {
             title="Modo Bala"
             description="Responde preguntas en poco tiempo y haz tu mejor marca"
             onClick={() => {
-              setShowFriendSelector(true);
+              setShowSoloBulletModal(true);
               setIsBulletMode(true);
             }}
           />
@@ -331,6 +334,40 @@ const PlayMenu = () => {
           searchTerm={searchTerm}
           onSearchTermChange={setSearchTerm}
         />
+      )}
+
+      {/* Modal para elegir entre jugar solo o con amigo en bullet */}
+      {showSoloBulletModal && isBulletMode && (
+        <div className={styles.friendSelectorOverlay}>
+          <div className={styles.friendSelector} style={{ maxWidth: 420, minWidth: 320, padding: '2.5rem 2rem', boxShadow: '0 4px 24px rgba(22,179,185,0.13)', borderRadius: 18, background: 'linear-gradient(135deg, #f8fdfd 0%, #f0fafa 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h3 style={{ marginBottom: '1.2rem', color: '#16b3b9', fontWeight: 700 }}>¿Cómo quieres jugar el modo bala?</h3>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '1.5rem', width: '100%' }}>
+              <button
+                className={styles.friendSelectorButton}
+                style={{ flex: 1, minWidth: 0, fontSize: 16, padding: '1rem 0.5rem', borderRadius: 10, fontWeight: 600 }}
+                onClick={() => {
+                  setShowSoloBulletModal(false);
+                  setShowFriendSelector(true);
+                }}
+              >
+                Jugar con amigo
+              </button>
+              <button
+                className={styles.friendSelectorButton}
+                style={{ flex: 1, minWidth: 0, fontSize: 16, padding: '1rem 0.5rem', borderRadius: 10, fontWeight: 600 }}
+                onClick={() => {
+                  setShowSoloBulletModal(false);
+                  navigate('/BulletPlay');
+                }}
+              >
+                Jugar en solitario
+              </button>
+            </div>
+            <button className={styles.cancelButton} style={{ marginTop: '2.2rem', width: '100%' }} onClick={() => setShowSoloBulletModal(false)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -453,6 +490,7 @@ const FriendSelectorModal = ({
   searchTerm,
   onSearchTermChange,
 }) => (
+
   <div className={styles.friendSelectorOverlay}>
     <div className={styles.friendSelector}>
       <h3>Desafía a un amigo</h3>
@@ -465,6 +503,8 @@ const FriendSelectorModal = ({
         value={searchTerm}
         onChange={e => onSearchTermChange(e.target.value)}
       />
+
+
       <br/>
 
       {error && <div className={styles.errorMessage}>{error}</div>}
