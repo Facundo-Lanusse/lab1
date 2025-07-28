@@ -21,29 +21,48 @@ const Wheel = ({
   const spinTimeTotal = 4000;
   const radius = size / 2 - 10;
 
-  // Función para obtener iconos SVG basados en la categoría
+  // Función para obtener las rutas de los archivos SVG reales
   const getCategoryIcon = (categoryName) => {
     const category = categoryName.toLowerCase().trim();
 
-    // SVG paths para diferentes categorías (más simples y reconocibles)
     const icons = {
-      deportes:
-        "M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M7,9V11H17V9H7M7,13V15H17V13H7Z",
-      historia:
-        "M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.9L16.2,16.2Z",
-      ciencia:
-        "M7,2V4H8V18A4,4 0 0,0 12,22A4,4 0 0,0 16,18V4H17V2H7M11,16C10.4,16 10,15.6 10,15C10,14.4 10.4,14 11,14C11.6,14 12,14.4 12,15C12,15.6 11.6,16 11,16M13,12C12.4,12 12,11.6 12,11C12,10.4 12.4,10 13,10C13.6,10 14,10.4 14,11C14,11.6 13.6,12 13,12M14,7H10V4H14V7Z",
-      arte: "M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z",
-      geografía:
-        "M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22S19,14.25 19,9A7,7 0 0,0 12,2Z",
-      geografia:
-        "M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22S19,14.25 19,9A7,7 0 0,0 12,2Z",
-      entretenimiento: "M8,5.14V19.14L19,12.14L8,5.14Z",
-      default:
-        "M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2Z",
+      deportes: "/Play.svg", // Usamos el icono existente como placeholder
+      historia: "/chess-rook-solid-full.svg",
+      ciencia: "/flask-solid-full.svg",
+      arte: "/Vector.svg", // Usamos Vector como placeholder para arte
+      geografía: "/earth-americas-solid-full.svg",
+      geografia: "/earth-americas-solid-full.svg",
+      entretenimiento: "/ticket-solid-full.svg",
+      default: "/Play.svg",
     };
 
     return icons[category] || icons["default"];
+  };
+
+  // Función para calcular las posiciones de los iconos
+  const getIconPositions = () => {
+    const positions = [];
+    const anglePerSegment = (2 * Math.PI) / segments.length;
+    const angleOffset = (startAngle * Math.PI) / 180;
+    const centerX = size / 2;
+    const centerY = size / 2;
+
+    segments.forEach((segment, i) => {
+      const iconAngle = angleOffset + i * anglePerSegment + anglePerSegment / 2;
+      const iconDistance = radius * 0.75;
+      const iconX = centerX + iconDistance * Math.cos(iconAngle);
+      const iconY = centerY + iconDistance * Math.sin(iconAngle);
+
+      positions.push({
+        segment,
+        x: iconX,
+        y: iconY,
+        angle: iconAngle,
+        src: getCategoryIcon(segment),
+      });
+    });
+
+    return positions;
   };
 
   // Función para dibujar un icono SVG en el canvas
@@ -221,24 +240,6 @@ const Wheel = ({
       ctx.strokeStyle = "#FFFFFF";
       ctx.lineWidth = 2;
       ctx.stroke();
-
-      // Calcular posición para el icono
-      const iconAngle = startAngleRad + anglePerSegment / 2;
-      const iconDistance = radius * 0.75;
-      const iconX = centerX + iconDistance * Math.cos(iconAngle);
-      const iconY = centerY + iconDistance * Math.sin(iconAngle);
-
-      // Dibujar el icono con sombra
-      const iconPath = getCategoryIcon(segment);
-
-      // Sombra del icono
-      ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.4)";
-      ctx.shadowBlur = 3;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      drawIcon(ctx, iconPath, iconX, iconY, 32, contrastColor);
-      ctx.restore();
     });
 
     // Dibujar círculo central con gradiente
@@ -289,6 +290,27 @@ const Wheel = ({
           borderRadius: "50%",
         }}
       />
+
+      {/* Iconos SVG posicionados sobre la ruleta */}
+      {getIconPositions().map((iconData, index) => (
+        <img
+          key={`${iconData.segment}-${index}`}
+          src={iconData.src}
+          alt={iconData.segment}
+          style={{
+            position: "absolute",
+            left: iconData.x - 16, // Centrar el icono (32px / 2)
+            top: iconData.y - 16,
+            width: "32px",
+            height: "32px",
+            filter:
+              "drop-shadow(2px 2px 3px rgba(0,0,0,0.4)) brightness(0) invert(1)", // Hacer el SVG blanco con sombra
+            pointerEvents: "none",
+            transition: isSpinning ? "none" : "all 0.3s ease",
+            zIndex: 1,
+          }}
+        />
+      ))}
 
       {/* Flecha simple de un solo color - posicionada en el borde superior */}
       <div
