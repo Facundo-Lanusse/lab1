@@ -1,95 +1,207 @@
-/* Estilos mejorados para el Historial de Partidas Solo */
+/* Variables de colores - consistente con el resto de la app */
+:root {
+  --primary-color: #16b3b9; /* Turquesa - color principal */
+  --secondary-color: #f5ba26; /* Amarillo - acento */
+  --bg-color: #ffffff; /* Fondo blanco */
+  --text-color: #333333; /* Texto principal */
+  --text-light: #ffffff; /* Texto claro */
+  --border-color: #e0e0e0; /* Bordes suaves */
+  --hover-color: #14a1a6; /* Turquesa oscuro para hover */
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra elegante */
+  --light-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
 
+/* Contenedor principal */
 .historyContainer {
-  background: linear-gradient(160deg, #f8fcfc, #e6f7f7);
-  min-height: 100vh;
-  padding: 30px;
-  font-family: "Segoe UI", "Inter", sans-serif;
-  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background-color: var(--bg-color);
+  font-family: Inter, sans-serif;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
 }
 
-.arrow {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background-color: var(--bg-color);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-  padding: 0;
-  border: none;
-}
-
-.arrow img {
-  width: 16px;
-  height: 16px;
-  filter: none;
-}
-
-.arrow:hover {
-  transform: scale(1.05);
-  background-color: #f5f5f5;
-}
-
+/* Título principal */
 .historyTitle {
   color: var(--primary-color);
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 700;
-  margin-top: 70px;
-  margin-bottom: 35px;
+  margin: 20px 0 30px 0;
   text-align: center;
   position: relative;
-  padding-bottom: 15px;
+  flex-shrink: 0;
 }
 
 .historyTitle::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
   width: 80px;
-  height: 4px;
-  background: var(--gradient);
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
   border-radius: 2px;
 }
 
-.gamesList {
-  width: 100%;
-  max-width: 800px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 30px;
+/* Contenedor de filtros */
+.filtersContainer {
+  margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
-.gameCard {
-  background: white;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+.filterGroup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.totalCount {
+  text-align: center;
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--bg-color);
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--light-shadow);
+}
+
+.filterLabel {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 16px;
+}
+
+.filterButton {
+  background-color: var(--bg-color);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid rgba(79, 172, 254, 0.1);
+  box-shadow: var(--light-shadow);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filterButton:hover {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.filterButton.active {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  box-shadow: var(--shadow);
+}
+
+.clearFilterButton {
+  background-color: #e74c3c;
+  color: var(--text-light);
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--light-shadow);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clearFilterButton:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.filterStatus {
+  color: var(--primary-color);
+  font-style: italic;
+}
+
+/* Contenedor de la lista */
+.gamesList {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  max-height: 400px; /* Altura fija para aproximadamente 4 elementos */
+}
+
+/* Scrollbar personalizada */
+.gamesList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gamesList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.gamesList::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.gamesList::-webkit-scrollbar-thumb:hover {
+  background: var(--hover-color);
+}
+
+/* Tarjetas de juego */
+.gameCard {
+  background: var(--bg-color);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .gameCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
 }
 
+/* Contenido de las tarjetas */
 .score {
   font-size: 18px;
-  color: #2c3e50;
-  margin: 0 0 10px 0;
+  color: var(--text-color);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .score strong {
@@ -99,8 +211,11 @@
 
 .date {
   font-size: 16px;
-  color: #7f8c8d;
+  color: #777777;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .date strong {
@@ -108,154 +223,203 @@
   font-weight: 600;
 }
 
-.noGamesMessage {
-  font-size: 18px;
-  color: #7f8c8d;
+/* Mensajes */
+.noGamesMessage,
+.loadingMessage {
   text-align: center;
-  margin-top: 50px;
   padding: 40px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: var(--bg-color);
+  border-radius: 16px;
+  box-shadow: var(--light-shadow);
+  border: 1px solid var(--border-color);
+  color: #777777;
+  font-size: 18px;
+  font-style: italic;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+/* Media queries */
 
 .loadingMessage {
-  font-size: 18px;
   color: var(--primary-color);
-  text-align: center;
-  margin-top: 50px;
-  padding: 40px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-style: normal;
 }
 
-/* Estilos para la paginación */
+/* Contenedor de paginación */
 .paginationContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  margin: 30px 0;
+  gap: 16px;
+  margin-top: 20px;
+  flex-shrink: 0;
   flex-wrap: wrap;
 }
 
+/* Botones de paginación */
 .paginationButton {
-  background: var(--primary-color);
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-light);
   border: none;
+  border-radius: 12px;
   padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 80px;
+  min-width: 100px;
+  box-shadow: var(--light-shadow);
 }
 
 .paginationButton:hover:not(.disabled) {
-  background: var(--secondary-color);
-  transform: translateY(-1px);
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
 .paginationButton.disabled {
-  background: #bdc3c7;
+  background-color: #bdc3c7;
   cursor: not-allowed;
   opacity: 0.6;
+  transform: none;
 }
 
+/* Números de página */
 .pageNumbers {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .pageNumber {
-  background: white;
+  background-color: var(--bg-color);
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+  border-radius: 10px;
+  padding: 10px 14px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 40px;
+  min-width: 44px;
+  text-align: center;
+  box-shadow: var(--light-shadow);
 }
 
 .pageNumber:hover {
-  background: var(--primary-color);
-  color: white;
-  transform: translateY(-1px);
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
 .pageNumber.active {
-  background: var(--primary-color);
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  box-shadow: var(--shadow);
 }
 
+/* Información de paginación */
 .paginationInfo {
   text-align: center;
-  color: #7f8c8d;
+  color: #777777;
   font-size: 14px;
-  margin-top: 10px;
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--bg-color);
+  border-radius: 12px;
+  box-shadow: var(--light-shadow);
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
-/* Media queries para responsividad */
+/* Media queries */
 @media (max-width: 768px) {
+  .historyContainer {
+    padding: 20px 15px;
+  }
+
   .historyTitle {
-    font-size: 32px;
-    margin-top: 60px;
+    font-size: 28px;
+    margin: 15px 0 25px 0;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filterLabel {
+    font-size: 14px;
+  }
+
+  .filterButton {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .clearFilterButton {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .totalCount {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .gamesList {
+    max-height: 350px;
   }
 
   .gameCard {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .score,
-  .date {
-    justify-content: center;
-  }
-
-  .paginationContainer {
-    flex-direction: column;
+    padding: 20px;
     gap: 10px;
-  }
-
-  .pageNumbers {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .paginationButton {
-    min-width: 120px;
   }
 }
 
 @media (max-width: 480px) {
   .historyContainer {
-    padding: 20px;
+    padding: 15px 10px;
   }
 
   .historyTitle {
-    font-size: 28px;
-    margin-top: 50px;
+    font-size: 24px;
   }
 
-  .noGamesMessage {
-    padding: 30px;
-    font-size: 18px;
+  .filterGroup {
+    gap: 6px;
   }
 
-  .arrow {
-    top: 15px;
-    left: 15px;
-    width: 24px;
-    height: 24px;
+  .filterButton {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .clearFilterButton {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .totalCount {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  .gamesList {
+    max-height: 300px;
+  }
+
+  .gameCard {
+    padding: 16px;
+  }
+
+  .score,
+  .date {
+    font-size: 16px;
   }
 }
