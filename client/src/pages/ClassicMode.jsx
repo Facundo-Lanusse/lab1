@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -6,6 +6,7 @@ import styles from "./css/ClassicMode.module.css";
 import gameStyles from "./css/GamePlay.module.css"; // Estilos para las preguntas
 import Wheel from "../components/Wheel";
 import BackButton from "../components/BackButton";
+import GameEndScreen from "../components/GameEndScreen";
 
 // Función para normalizar nombres (quitar acentos y convertir a minúsculas)
 const normalizeString = (str) => {
@@ -77,14 +78,13 @@ const ClassicMode = () => {
   const [activeBattles, setActiveBattles] = useState([]);
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
-  const [showResultModal, setShowResultModal] = useState(false);
-  const [resultMessage, setResultMessage] = useState("");
   const [showQuestionView, setShowQuestionView] = useState(false); // Nueva vista para preguntas
   const [selectedIndex, setSelectedIndex] = useState(null); // Para el feedback visual de respuestas
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // Para mostrar respuesta correcta/incorrecta
   const [counterAnimating, setCounterAnimating] = useState(false); // Para animar el contador
   const [gameResultSaved, setGameResultSaved] = useState(false); // Para evitar guardar el resultado múltiples veces
-  const timeoutRef = useRef(null);
+  const [showGameEndScreen, setShowGameEndScreen] = useState(false); // Pantalla de fin de juego detallada
+  const [gameEndData, setGameEndData] = useState(null); // Datos del fin de juego
 
   // Obtener userId desde localStorage
   let userId;
@@ -268,9 +268,16 @@ const ClassicMode = () => {
       console.error("Error al cargar el estado de la batalla:", error);
       // Si es un error 403, la batalla probablemente terminó
       if (error.response?.status === 403) {
-        // Solo mostrar el modal si no se ha mostrado ya
-        if (!showResultModal) {
-          modalAfterWin();
+        // Solo mostrar la pantalla de fin si no se ha mostrado ya
+        if (!showGameEndScreen) {
+          // Intentar determinar si ganamos basado en el estado actual
+          const isWinner =
+            battle &&
+            (battle.user_id1 === userId
+              ? battle.user1Categories
+              : battle.user2Categories
+            ).filter((c) => c.completed).length >= 4;
+          showGameEndDetails(isWinner);
         }
       } else {
         setError("No se pudo cargar la batalla");
@@ -282,6 +289,55 @@ const ClassicMode = () => {
   useEffect(() => {
     fetchBattleState();
   }, [fetchBattleState]);
+
+  // Función para detectar fin de juego
+  const checkGameEnd = useCallback(() => {
+    if (!battle || gameResultSaved || showGameEndScreen) return;
+
+    const myCategories =
+      battle.user_id1 === userId
+        ? battle.user1Categories
+        : battle.user2Categories;
+    const opponentCategories =
+      battle.user_id1 === userId
+        ? battle.user2Categories
+        : battle.user1Categories;
+
+    const myCompletedCount = myCategories.filter((c) => c.completed).length;
+    const opponentCompletedCount = opponentCategories.filter(
+      (c) => c.completed
+    ).length;
+
+    console.log(
+      "🔍 Verificando fin de juego - Yo:",
+      myCompletedCount,
+      "Oponente:",
+      opponentCompletedCount
+    );
+
+    if (myCompletedCount >= 4 || opponentCompletedCount >= 4) {
+      console.log("🏁 ¡Juego terminado!");
+      const isWinner = myCompletedCount >= 4;
+
+      // Prevenir múltiples ejecuciones
+      setGameResultSaved(true);
+
+      // Guardar resultado
+      if (!gameResultSaved) {
+        saveGameResult(isWinner).catch(console.error);
+      }
+
+      // Mostrar pantalla de fin de juego inmediatamente
+      setTimeout(() => {
+        showGameEndDetails(isWinner);
+      }, 100);
+    }
+  }, [battle, userId, gameResultSaved, showGameEndScreen]);
+
+  // Ejecutar checkGameEnd cuando cambie el battle
+  useEffect(() => {
+    checkGameEnd();
+  }, [checkGameEnd]);
 
   // Acciones de juego
   const startNewBattle = async () => {
@@ -480,9 +536,7 @@ const ClassicMode = () => {
 
       console.log("Resultado guardado exitosamente:", response.data);
 
-      if (isWinner) {
-        navigate("/Home");
-      }
+      // No redirigir automáticamente, la pantalla de fin de juego manejará esto
     } catch (error) {
       console.error("Error al guardar resultado:", error);
 
@@ -500,8 +554,10 @@ const ClassicMode = () => {
 
       // Si es un error 403 o 404, probablemente la batalla terminó
       if (error.response?.status === 403 || error.response?.status === 404) {
-        console.log("La batalla ya terminó, mostrando modal");
-        modalAfterWin(isWinner);
+        console.log("La batalla ya terminó, mostrando pantalla de fin");
+        if (!showGameEndScreen) {
+          showGameEndDetails(isWinner);
+        }
       }
     }
   };
@@ -852,88 +908,12 @@ const ClassicMode = () => {
     const opponentCompletedCount = opponentCategories.filter(
       (c) => c.completed
     ).length;
-    if (myCompletedCount >= 4) {
-      if (
-        gameHistory.length > 0 &&
-        !gameHistory.some((h) => h.action === "game_end") &&
-        !gameResultSaved
-      ) {
-        saveGameResult(true);
-        setGameHistory((prev) => [
-          ...prev,
-          {
-            action: "game_end",
-            winner: userId,
-            timestamp: new Date().toISOString(),
-          },
-        ]);
-        setShowWheel(false);
-      }
-      return (
-        <div className={`${styles.battleResult} ${styles.winner}`}>
-          <h2>¡Felicidades! Has ganado la partida</h2>
-          <BackButton
-            onClick={() => navigate("/Play")}
-            style={{
-              position: "relative",
-              top: "20px",
-              left: "0",
-              margin: "0 auto",
-            }}
-          />
-          <button
-            className={styles.backButton}
-            onClick={() => navigate("/Play")}
-            style={{ marginTop: "20px" }}
-          >
-            Volver al menú
-          </button>
-        </div>
-      );
+
+    // Si el juego terminó, no mostrar el status (la pantalla de fin se encarga)
+    if (myCompletedCount >= 4 || opponentCompletedCount >= 4) {
+      return null;
     }
-    if (opponentCompletedCount >= 4) {
-      if (
-        gameHistory.length > 0 &&
-        !gameHistory.some((h) => h.action === "game_end") &&
-        !gameResultSaved
-      ) {
-        saveGameResult(false);
-        setGameHistory((prev) => [
-          ...prev,
-          {
-            action: "game_end",
-            winner:
-              battle.user_id1 === userId ? battle.user_id2 : battle.user_id1,
-            timestamp: new Date().toISOString(),
-          },
-        ]);
-        setShowWheel(false);
-      }
-      return (
-        <div className={`${styles.battleResult} ${styles.loser}`}>
-          <h2>
-            Has perdido la partida contra{" "}
-            {opponentInfo?.username || "tu oponente"}
-          </h2>
-          <BackButton
-            onClick={() => navigate("/Play")}
-            style={{
-              position: "relative",
-              top: "20px",
-              left: "0",
-              margin: "0 auto",
-            }}
-          />
-          <button
-            className={styles.backButton}
-            onClick={() => navigate("/Play")}
-            style={{ marginTop: "20px" }}
-          >
-            Volver al menú
-          </button>
-        </div>
-      );
-    }
+
     return (
       <div className={styles.battleStatus}>
         <div className={styles.playerStatus}>
@@ -1043,55 +1023,59 @@ const ClassicMode = () => {
     </div>
   );
 
-  // Función para mostrar el modal de resultado y redirigir
-  const modalAfterWin = (win = null) => {
-    if (showResultModal) return;
-    if (win === true) {
-      setResultMessage("¡Felicidades! Has ganado la partida");
-    } else if (win === false) {
-      setResultMessage(
-        `Has perdido la partida contra ${
-          opponentInfo?.username || "tu oponente"
-        }`
-      );
-    } else {
-      setResultMessage("La partida ha finalizado");
+  // Nueva función para mostrar la pantalla detallada de fin de juego
+  const showGameEndDetails = (isWinner) => {
+    console.log("🎮 showGameEndDetails llamada con isWinner:", isWinner);
+    console.log("🎮 Estado de battle:", battle);
+
+    if (!battle) {
+      console.log("❌ No hay battle, retornando");
+      return;
     }
-    setShowResultModal(true);
-    timeoutRef.current = setTimeout(() => {
-      setShowResultModal(false);
-      navigate("/Play");
-    }, 3000);
+
+    const myCategories =
+      battle.user_id1 === userId
+        ? battle.user1Categories
+        : battle.user2Categories;
+    const opponentCategories =
+      battle.user_id1 === userId
+        ? battle.user2Categories
+        : battle.user1Categories;
+
+    const myCompletedCount = myCategories.filter((c) => c.completed).length;
+    const opponentCompletedCount = opponentCategories.filter(
+      (c) => c.completed
+    ).length;
+
+    console.log(
+      "📊 Puntajes - Yo:",
+      myCompletedCount,
+      "Oponente:",
+      opponentCompletedCount
+    );
+
+    const gameData = {
+      isWinner,
+      myScore: myCompletedCount,
+      opponentScore: opponentCompletedCount,
+      myCategories,
+      opponentCategories,
+      opponentName: opponentInfo?.username || "Oponente",
+    };
+
+    console.log("🎯 Datos del juego:", gameData);
+
+    setGameEndData(gameData);
+    setShowGameEndScreen(true);
+
+    console.log("✅ Pantalla de fin de juego activada");
   };
 
-  // Evitar doble llamado a saveGameResult si la batalla ya está completada
-  useEffect(() => {
-    if (!battle || gameResultSaved) return;
-    // Solo guardar resultado si la batalla está en curso
-    if (battle.status !== "ongoing") return;
-    if (battle.user_id1 === userId || battle.user_id2 === userId) {
-      const myCategories =
-        battle.user_id1 === userId
-          ? battle.user1Categories
-          : battle.user2Categories;
-      const opponentCategories =
-        battle.user_id1 === userId
-          ? battle.user2Categories
-          : battle.user1Categories;
-      const myCompletedCount = myCategories.filter((c) => c.completed).length;
-      const opponentCompletedCount = opponentCategories.filter(
-        (c) => c.completed
-      ).length;
-      // Solo llamar a saveGameResult si alguien ha ganado y el modal no se ha mostrado
-      if (
-        (myCompletedCount === 4 || opponentCompletedCount === 4) &&
-        !showResultModal &&
-        !gameResultSaved
-      ) {
-        saveGameResult(myCompletedCount === 4);
-      }
-    }
-  }, [battle, userId, showResultModal, gameResultSaved]);
+  const handleGameEndClose = () => {
+    setShowGameEndScreen(false);
+    setGameEndData(null);
+    setGameResultSaved(false);
+  };
 
   if (!battleId) {
     return (
@@ -1110,6 +1094,13 @@ const ClassicMode = () => {
     return <div className={styles.loading}>Cargando...</div>;
   if (error) return <div className={styles.errorMessage}>{error}</div>;
 
+  // Si estamos mostrando la pantalla de fin de juego, mostrar solo esa
+  if (showGameEndScreen && gameEndData) {
+    return (
+      <GameEndScreen gameEndData={gameEndData} onClose={handleGameEndClose} />
+    );
+  }
+
   // Si estamos en la vista de preguntas, mostrar solo esa vista
   if (showQuestionView && question) {
     return renderQuestionView();
@@ -1118,33 +1109,16 @@ const ClassicMode = () => {
   // Si estamos mostrando la ruleta, mostrar solo esa vista
   if (showWheel && !showQuestionView) {
     return (
-      <div className={styles.classicModeContainer}>
-        {showResultModal && (
-          <div className={styles.resultModal}>
-            <div className={styles.resultModalContent}>
-              <h2>{resultMessage}</h2>
-              <p>Serás redirigido al menú principal...</p>
-            </div>
-          </div>
-        )}
-        {renderWheelView()}
-      </div>
+      <div className={styles.classicModeContainer}>{renderWheelView()}</div>
     );
   }
 
   return (
     <div className={styles.classicModeContainer}>
-      {showResultModal && (
-        <div className={styles.resultModal}>
-          <div className={styles.resultModalContent}>
-            <h2>{resultMessage}</h2>
-            <p>Serás redirigido al menú principal...</p>
-          </div>
-        </div>
-      )}
       <h2>Modo Clásico</h2>
       {message && <div className={styles.messageBox}>{message}</div>}
       <BackButton onClick={() => navigate(-1)} ariaLabel="Volver atrás" />
+
       {renderBattleStatus()}
       {/* Mostrar contenido basado en el estado del juego */}
       {canSelectCategory ? (
