@@ -64,7 +64,7 @@ router.get('/users', validateUser, async (req, res) => {
     }
 });
 
-router.get('/users/:id', validateUser, async (req, res) => {
+router.get('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const query = 'SELECT user_id, username, rank_points, email FROM users WHERE user_id = $1';

@@ -142,4 +142,15 @@ router.post('/uploadCommunityAnswers', async (req, res) => {
     }
 });
 
+router.get('/FetchCommunityCategories', async (req, res) => {
+    try {
+        const query = 'SELECT * FROM community_category';
+        const result = await db.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error al traer categorias pendientes", err);
+        res.status(500).json({ error: 'Fallo la consulta' });
+    }
+});
+
 module.exports = router;

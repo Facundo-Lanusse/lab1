@@ -210,49 +210,6 @@ create table battle_answer
 alter table battle_answer
     owner to postgres;
 
-create table community_category
-(
-    community_category_id serial
-        primary key,
-    name                  varchar(100)                                     not null
-        unique,
-    user_id               integer
-        references users,
-    publish_state         category_state default 'pending'::category_state not null,
-    game_mode             game_mode      default 'Solitary'::game_mode
-);
-
-alter table community_category
-    owner to postgres;
-
-create table community_question
-(
-    community_question_id serial
-        primary key,
-    question_text         text not null,
-    community_category_id integer
-                               references community_category
-                                   on delete set null,
-    alreadypicked         boolean default false
-);
-
-alter table community_question
-    owner to postgres;
-
-create table community_answer
-(
-    community_answer_id   serial
-        primary key,
-    community_question_id integer               not null
-        references community_question
-            on delete cascade,
-    answer_text           text                  not null,
-    is_correct            boolean default false not null
-);
-
-alter table community_answer
-    owner to postgres;
-
 create table bullet_questions
 (
     bullet_question_id serial
@@ -310,5 +267,48 @@ create table invitations
 );
 
 alter table invitations
+    owner to postgres;
+
+create table community_category
+(
+    community_category_id serial
+        primary key,
+    name                  varchar(100)                                     not null
+        unique,
+    user_id               integer
+        references users,
+    publish_state         category_state default 'pending'::category_state not null,
+    game_mode             game_mode      default 'Solitary'::game_mode
+);
+
+alter table community_category
+    owner to postgres;
+
+create table community_question
+(
+    community_question_id serial
+        primary key,
+    question_text         text not null,
+    community_category_id integer
+        references community_category
+            on delete cascade,
+    alreadypicked         boolean default false
+);
+
+alter table community_question
+    owner to postgres;
+
+create table community_answer
+(
+    community_answer_id   serial
+        primary key,
+    community_question_id integer               not null
+        references community_question
+            on delete cascade,
+    answer_text           text                  not null,
+    is_correct            boolean default false not null
+);
+
+alter table community_answer
     owner to postgres;
 
