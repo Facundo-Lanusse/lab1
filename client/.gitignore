@@ -24,3 +24,7 @@ yarn-error.log*
 
 /node_modules/
 /node_modules/.cache/
+
+# Mac
+.DS_Store
+.DS_Store?
