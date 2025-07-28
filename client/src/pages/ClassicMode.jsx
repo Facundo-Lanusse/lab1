@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 import styles from "./css/ClassicMode.module.css";
 import gameStyles from "./css/GamePlay.module.css"; // Estilos para las preguntas
 import Wheel from "../components/Wheel";
+import BackButton from "../components/BackButton";
 
 // Mapeo específico de colores por categoría
 const getCategoryColor = (categoryName) => {
@@ -511,16 +512,14 @@ const ClassicMode = () => {
     return (
       <div className={gameStyles.gameContainer}>
         <div className={gameStyles.header}>
-          <img
-            className={gameStyles.arrowLeftSolid1Icon}
-            alt="Volver"
-            src="../arrow-left-solid.svg"
+          <BackButton
             onClick={() => {
               setShowQuestionView(false);
               setQuestion(null);
               setSelectedIndex(null);
               setIsAnswerCorrect(null);
             }}
+            ariaLabel="Volver a la ruleta"
           />
 
           <div className={styles.classicModeProgress}>
@@ -717,9 +716,19 @@ const ClassicMode = () => {
       return (
         <div className={`${styles.battleResult} ${styles.winner}`}>
           <h2>¡Felicidades! Has ganado la partida</h2>
+          <BackButton
+            onClick={() => navigate("/Play")}
+            style={{
+              position: "relative",
+              top: "20px",
+              left: "0",
+              margin: "0 auto",
+            }}
+          />
           <button
             className={styles.backButton}
             onClick={() => navigate("/Play")}
+            style={{ marginTop: "20px" }}
           >
             Volver al menú
           </button>
@@ -749,9 +758,19 @@ const ClassicMode = () => {
             Has perdido la partida contra{" "}
             {opponentInfo?.username || "tu oponente"}
           </h2>
+          <BackButton
+            onClick={() => navigate("/Play")}
+            style={{
+              position: "relative",
+              top: "20px",
+              left: "0",
+              margin: "0 auto",
+            }}
+          />
           <button
             className={styles.backButton}
             onClick={() => navigate("/Play")}
+            style={{ marginTop: "20px" }}
           >
             Volver al menú
           </button>
@@ -967,13 +986,7 @@ const ClassicMode = () => {
       )}
       <h2>Modo Clásico</h2>
       {message && <div className={styles.messageBox}>{message}</div>}
-      <button
-        className={styles.backButton}
-        onClick={() => navigate(-1)}
-        aria-label="Volver atrás"
-      >
-        <img src="../arrow-left-solid.svg" alt="Volver" />
-      </button>
+      <BackButton onClick={() => navigate(-1)} ariaLabel="Volver atrás" />
       {renderBattleStatus()}
       {/* Mostrar contenido basado en el estado del juego */}
       {canSelectCategory ? (

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "./css/AdminUser.module.css";
 import fetchProfileImage from "../components/FetchProfileImage";
+import BackButton from "../components/BackButton";
 
 function Admin() {
   const navigate = useNavigate();
@@ -171,9 +172,7 @@ function Admin() {
         </div>
       )}
 
-      <button className={styles.backButton} onClick={handleBackClick}>
-        <img src="arrow-left-solid.svg" alt="Volver" />
-      </button>
+      <BackButton onClick={handleBackClick} ariaLabel="Volver al menú" />
 
       <h2 className={styles.adminTitle}>Panel de Administración</h2>
 

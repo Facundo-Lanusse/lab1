@@ -1,0 +1,61 @@
+/* Estilos base para el botón de volver atrás */
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: white;
+  color: #000000;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  z-index: 10;
+}
+
+.backButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Tamaños unificados */
+.backButtonSmall {
+  width: 42px;
+  height: 42px;
+}
+
+.backButtonMedium {
+  width: 48px;
+  height: 48px;
+}
+
+.backButtonLarge {
+  width: 56px;
+  height: 56px;
+}
+
+/* Icono unificado - tamaño estándar 24px con flecha negra */
+.backButtonIcon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%); /* Hace que el SVG sea negro */
+  transition: transform 0.3s ease;
+}
+
+.backButton:hover .backButtonIcon {
+  transform: scale(1.1);
+}
+
+/* Fallback para estilos base */
+.backButton {
+  background-color: #ffffff;
+}
+
+.backButton:hover {
+  background-color: #f5f5f5;
+  border-color: #d0d0d0;
+}
