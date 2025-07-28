@@ -197,6 +197,72 @@
   font-size: 15px;
 }
 
+/* ESTADO: Esperando turno o partida terminada */
+.statusCard {
+  background: linear-gradient(135deg, #f8fdfd 0%, #f0fafa 100%);
+  border: 2px solid #16b3b9;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(22, 179, 185, 0.13);
+  padding: 2.5rem 2rem;
+  max-width: 420px;
+  min-width: 320px;
+  margin: 120px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  animation: fadeInStatus 0.5s;
+}
+
+@keyframes fadeInStatus {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.statusTitle {
+  color: #16b3b9;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.statusSubtitle {
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.statusScore {
+  color: #16b3b9;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.statusButton {
+  background: #16b3b9;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.statusButton:hover {
+  background: #139ba1;
+}
+
 /* Media queries para responsividad */
 @media screen and (min-width: 1201px) {
   .header,

@@ -172,6 +172,38 @@ const PlayMenu = () => {
     }
   }, [selectedFriend, navigate, isBulletMode]);
 
+  // Función para iniciar una partida bullet online con un amigo
+  const startBulletOnline = useCallback(async () => {
+    if (!selectedFriend) return;
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user.user_id;
+      const res = await axios.post(
+        "http://localhost:3000/api/bullet-online/start",
+        {
+          userId: userId,
+          opponentId: selectedFriend.user_id,
+        }
+      );
+      const response = res.data;
+      if (response.success) {
+        navigate(`/BulletOnline/${response.battle.battle_id}`);
+      } else {
+        throw new Error(response.message || "No se pudo iniciar la partida");
+      }
+    } catch (error) {
+      let errorMessage = "Error desconocido";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      alert(`No se pudo iniciar la partida: ${errorMessage}`);
+    }
+  }, [selectedFriend, navigate]);
+
   // Función para generar un código de invitación
   const generateInviteCode = async () => {
     try {
@@ -316,7 +348,7 @@ const PlayMenu = () => {
           friends={paginatedFriends}
           selectedFriend={selectedFriend}
           onSelectFriend={setSelectedFriend}
-          onStartGame={startMode}
+          onStartGame={isBulletMode ? startBulletOnline : startMode}
           onClose={closeFriendSelector}
           loading={loading}
           error={error}

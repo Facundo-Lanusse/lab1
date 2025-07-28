@@ -43,6 +43,7 @@ app.use('/api', require('./routes/communityPlayRoutes'));
 app.use('/api', require('./routes/communityCategoriesJudgementRoutes'));
 app.use('/api', require('./routes/BulletRoutes'));
 app.use('/api', require('./routes/invitationRoutes'));
+app.use('/api', require('./routes/BulletOnlineRoutes'));
 
 server.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

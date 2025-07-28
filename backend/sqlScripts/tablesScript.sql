@@ -312,3 +312,17 @@ create table community_answer
 alter table community_answer
     owner to postgres;
 
+-- Tabla para partidas bullet online
+CREATE TABLE bullet_online_battle (
+    battle_id SERIAL PRIMARY KEY,
+    user_id1 INTEGER NOT NULL REFERENCES users,
+    user_id2 INTEGER NOT NULL REFERENCES users,
+    score1 INTEGER DEFAULT 0,
+    score2 INTEGER DEFAULT 0,
+    current_turn INTEGER NOT NULL REFERENCES users,
+    status VARCHAR(20) DEFAULT 'ongoing', -- 'ongoing', 'completed'
+    winner_id INTEGER REFERENCES users,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE bullet_online_battle OWNER TO postgres;
