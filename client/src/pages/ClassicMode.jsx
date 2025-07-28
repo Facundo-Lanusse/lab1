@@ -832,15 +832,6 @@ const ClassicMode = () => {
           size={350}
         />
 
-        <button
-          className={styles.cancelWheelButton}
-          onClick={() => {
-            setShowWheel(false);
-            setShowQuestionView(false);
-          }}
-        >
-          Cancelar
-        </button>
       </div>
     );
   };
