@@ -7,17 +7,25 @@ import gameStyles from "./css/GamePlay.module.css"; // Estilos para las pregunta
 import Wheel from "../components/Wheel";
 import BackButton from "../components/BackButton";
 
+// Función para normalizar nombres (quitar acentos y convertir a minúsculas)
+const normalizeString = (str) => {
+  return str
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""); // Remover acentos
+};
+
 // Mapeo específico de colores por categoría
 const getCategoryColor = (categoryName) => {
   const colorMap = {
     historia: "#f39c12", // Naranja cálido que complementa el turquesa
-    geografía: "#3498db", // Azul que armoniza con el turquesa #16b3b9
-    geografia: "#3498db", // Azul (sin acento)
+    geografia: "#3498db", // Azul que armoniza con el turquesa #16b3b9 (normalizado)
     entretenimiento: "#e74c3c", // Rojo coral que contrasta bien
     ciencia: "#27ae60", // Verde que complementa la paleta turquesa
   };
 
-  const key = categoryName.toLowerCase().trim();
+  const key = normalizeString(categoryName);
   return colorMap[key] || "#16b3b9"; // Color turquesa por defecto
 };
 
@@ -432,7 +440,7 @@ const ClassicMode = () => {
 
     // Buscar la categoría seleccionada en todas las categorías
     const selectedCat = allCategories.find(
-      (cat) => cat.name.toLowerCase().trim() === segment.toLowerCase().trim()
+      (cat) => normalizeString(cat.name) === normalizeString(segment)
     );
 
     if (selectedCat) {

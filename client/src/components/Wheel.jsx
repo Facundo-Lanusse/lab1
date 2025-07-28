@@ -23,17 +23,25 @@ const Wheel = ({
   const spinTimeTotal = 4000;
   const radius = size / 2 - 12; // Más espacio para efectos
 
+  // Función para normalizar nombres (quitar acentos y convertir a minúsculas)
+  const normalizeString = (str) => {
+    return str
+      .toLowerCase()
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, ""); // Remover acentos
+  };
+
   // Función para obtener las rutas de los archivos SVG reales
   const getCategoryIcon = (categoryName) => {
-    const category = categoryName.toLowerCase().trim();
+    const category = normalizeString(categoryName);
 
     const icons = {
       deportes: "/Play.svg", // Usamos el icono existente como placeholder
       historia: "/chess-rook-solid-full.svg",
       ciencia: "/flask-solid-full.svg",
       arte: "/Vector.svg", // Usamos Vector como placeholder para arte
-      geografía: "/earth-americas-solid-full.svg",
-      geografia: "/earth-americas-solid-full.svg",
+      geografia: "/earth-americas-solid-full.svg", // Normalizado sin acento
       entretenimiento: "/ticket-solid-full.svg",
       default: "/Play.svg",
     };
@@ -123,11 +131,60 @@ const Wheel = ({
 
       if (stopElapsedTime >= stopDuration) {
         stopRotation();
-        // Calcular en qué segmento quedó basado en el ángulo actual
-        const currentSegmentIndex =
-          Math.floor(((360 - (startAngle % 360)) / 360) * segments.length) %
-          segments.length;
-        const finalSegment = segments[currentSegmentIndex] || winningSegment;
+
+        // NUEVO ENFOQUE MEJORADO: Mismo sistema que el giro automático
+        const anglePerSegment = (2 * Math.PI) / segments.length; // radianes
+        const angleOffset = (startAngle * Math.PI) / 180; // convertir a radianes
+
+        // Calcular la posición angular de cada segmento (centro del segmento)
+        const segmentAngles = segments.map((segment, i) => {
+          const segmentAngle =
+            angleOffset + i * anglePerSegment + anglePerSegment / 2;
+          // Convertir a grados y normalizar
+          let angleDegrees = (segmentAngle * 180) / Math.PI;
+          angleDegrees = angleDegrees % 360;
+          if (angleDegrees < 0) angleDegrees += 360;
+
+          return {
+            segment,
+            index: i,
+            angle: angleDegrees,
+          };
+        });
+
+        // La flecha apunta hacia arriba, que en el sistema de coordenadas de canvas es 270°
+        const arrowAngle = 270;
+
+        // Encontrar el segmento cuyo centro está más cerca de la flecha
+        let closestSegment = null;
+        let minDistance = Infinity;
+
+        segmentAngles.forEach((seg) => {
+          let distance = Math.abs(seg.angle - arrowAngle);
+          // Considerar la naturaleza circular de los ángulos
+          if (distance > 180) {
+            distance = 360 - distance;
+          }
+
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestSegment = seg;
+          }
+        });
+
+        console.log("=== NUEVO ENFOQUE MANUAL MEJORADO ===");
+        console.log("startAngle:", startAngle);
+        console.log("anglePerSegment (rad):", anglePerSegment);
+        console.log("angleOffset (rad):", angleOffset);
+        console.log("segmentAngles:", segmentAngles);
+        console.log("arrowAngle:", arrowAngle);
+        console.log("closestSegment:", closestSegment);
+        console.log("selectedSegment:", closestSegment?.segment);
+        console.log("====================================");
+
+        const finalSegment = closestSegment
+          ? closestSegment.segment
+          : segments[0];
         finishSpinning(finalSegment);
         return;
       }
@@ -149,7 +206,76 @@ const Wheel = ({
     // Lógica normal de giro automático
     if (elapsedTime >= spinData.current.spinTimeTotal) {
       stopRotation();
-      finishSpinning(winningSegment);
+
+      // NUEVO ENFOQUE MEJORADO: Calcular el ángulo final basado en la animación completa
+      // En lugar de usar startAngle (que se modifica durante la animación),
+      // calculamos el ángulo final real basado en los datos de la animación
+
+      const angleToStop = calculateSegmentAngle(
+        segments.indexOf(winningSegment),
+        segments.length
+      );
+
+      const anglePerSegment = 360 / segments.length;
+      const centerOffset = anglePerSegment / 2;
+      // Este es el ángulo final real que la animación habría alcanzado
+      const finalAnimationAngle = 360 * 12 + angleToStop + centerOffset;
+
+      // Ahora calcular las posiciones de los segmentos basándose en este ángulo final
+      const anglePerSegmentRad = (2 * Math.PI) / segments.length; // radianes
+      const angleOffsetRad = (finalAnimationAngle * Math.PI) / 180; // convertir a radianes
+
+      // Calcular la posición angular de cada segmento (centro del segmento)
+      const segmentAngles = segments.map((segment, i) => {
+        const segmentAngle =
+          angleOffsetRad + i * anglePerSegmentRad + anglePerSegmentRad / 2;
+        // Convertir a grados y normalizar
+        let angleDegrees = (segmentAngle * 180) / Math.PI;
+        angleDegrees = angleDegrees % 360;
+        if (angleDegrees < 0) angleDegrees += 360;
+
+        return {
+          segment,
+          index: i,
+          angle: angleDegrees,
+        };
+      });
+
+      // La flecha apunta hacia arriba, que en el sistema de coordenadas de canvas es 270°
+      const arrowAngle = 270;
+
+      // Encontrar el segmento cuyo centro está más cerca de la flecha
+      let closestSegment = null;
+      let minDistance = Infinity;
+
+      segmentAngles.forEach((seg) => {
+        let distance = Math.abs(seg.angle - arrowAngle);
+        // Considerar la naturaleza circular de los ángulos
+        if (distance > 180) {
+          distance = 360 - distance;
+        }
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestSegment = seg;
+        }
+      });
+
+      console.log("=== NUEVO ENFOQUE FINAL DEBUG ===");
+      console.log("finalAnimationAngle:", finalAnimationAngle);
+      console.log("anglePerSegmentRad:", anglePerSegmentRad);
+      console.log("angleOffsetRad:", angleOffsetRad);
+      console.log("segmentAngles:", segmentAngles);
+      console.log("arrowAngle:", arrowAngle);
+      console.log("closestSegment:", closestSegment);
+      console.log("selectedSegment:", closestSegment?.segment);
+      console.log("expectedWinningSegment:", winningSegment);
+      console.log("==================================");
+
+      const finalSegment = closestSegment
+        ? closestSegment.segment
+        : segments[0];
+      finishSpinning(finalSegment);
       return;
     }
 
