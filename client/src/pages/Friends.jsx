@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "./css/FriendsMenu.module.css";
 import fetchProfileImage from "../components/FetchProfileImage";
 import BackButton from "../components/BackButton";
+import pageStyles from "./css/inviteSection.module.css";
+
 
 function Friends() {
   const navigate = useNavigate();
@@ -476,7 +478,8 @@ function Friends() {
             {totalPages > 1 && (
               <div className={styles.pagination}>
                 <button
-                  className={styles.pageButton}
+                  className={pageStyles.joinButton}
+                  style={{margin: '10px'}}
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
                 >
@@ -486,6 +489,7 @@ function Friends() {
                 {/* Números de página */}
                 {[...Array(totalPages)].map((_, index) => (
                   <button
+
                     key={index + 1}
                     className={`${styles.pageButton} ${
                       currentPage === index + 1 ? styles.activePage : ""
@@ -497,7 +501,8 @@ function Friends() {
                 ))}
 
                 <button
-                  className={styles.pageButton}
+                    className={pageStyles.joinButton}
+                    style={{margin: '10px'}}
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                 >
