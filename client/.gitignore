@@ -25,6 +25,8 @@ yarn-error.log*
 /node_modules/
 /node_modules/.cache/
 
+/public/uploads
+
 # Mac
 .DS_Store
 .DS_Store?
