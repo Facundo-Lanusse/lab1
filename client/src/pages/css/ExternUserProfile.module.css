@@ -2,270 +2,326 @@
 
 /* Variables de colores - mantienen la misma paleta */
 :root {
-    --primary-color: #16b3b9;      /* Turquesa - color principal */
-    --secondary-color: #f5ba26;    /* Amarillo - acento */
-    --bg-color: #ffffff;           /* Fondo blanco */
-    --text-color: #333333;         /* Texto principal */
-    --text-light: #ffffff;         /* Texto claro */
-    --border-color: #e0e0e0;       /* Bordes suaves */
-    --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
-    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
-    --win-color: #4CAF50;          /* Verde para victorias */
-    --lose-color: #F44336;         /* Rojo para derrotas */
+  --primary-color: #16b3b9; /* Turquesa - color principal */
+  --secondary-color: #f5ba26; /* Amarillo - acento */
+  --bg-color: #ffffff; /* Fondo blanco */
+  --text-color: #333333; /* Texto principal */
+  --text-light: #ffffff; /* Texto claro */
+  --border-color: #e0e0e0; /* Bordes suaves */
+  --hover-color: #14a1a6; /* Turquesa oscuro para hover */
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  --win-color: #4caf50; /* Verde para victorias */
+  --lose-color: #f44336; /* Rojo para derrotas */
 }
 
 /* Contenedor principal */
 .profileContainer {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px 20px;
-    background-color: var(--bg-color);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    font-family: Inter, sans-serif;
+  width: 100%;
+  max-width: 800px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background-color: var(--bg-color);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  font-family: Inter, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Encabezado del perfil */
 .profileHeader {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .profileImage {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-light);
-    font-weight: 600;
-    font-size: 36px;
-    margin-right: 25px;
-    flex-shrink: 0;
-    object-fit: cover;
-    border: 3px solid var(--secondary-color);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-weight: 600;
+  font-size: 36px;
+  margin-right: 25px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 3px solid var(--secondary-color);
 }
 
 .profileInfo {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .profileInfo h1 {
-    font-size: 28px;
-    color: var(--primary-color);
-    margin: 0 0 10px 0;
-    font-weight: 600;
+  font-size: 28px;
+  color: var(--primary-color);
+  margin: 0 0 10px 0;
+  font-weight: 600;
 }
 
 .profileInfo p {
-    margin: 5px 0;
-    font-size: 16px;
-    color: var(--text-color);
+  margin: 5px 0;
+  font-size: 16px;
+  color: var(--text-color);
 }
 
 .rankPoints {
-    font-weight: 600;
-    color: var(--secondary-color);
-    font-size: 18px;
+  font-weight: 600;
+  color: var(--secondary-color);
+  font-size: 18px;
 }
 
 /* Contenido del perfil */
 .profileContent {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  flex: 1;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
-    .profileContent {
-        grid-template-columns: 1fr;
-    }
+  .profileContent {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Secciones individuales */
 .profileSection {
-    background-color: var(--bg-color);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    transition: transform 0.2s ease;
+  background-color: var(--bg-color);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .profileSection:hover {
-    transform: translateY(-3px);
+  transform: translateY(-3px);
 }
 
 .profileSection h2 {
-    color: var(--primary-color);
-    font-size: 20px;
-    margin-top: 0;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border-color);
+  color: var(--primary-color);
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 /* Listas de historial */
 .historyList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Scrollbar personalizada */
+.historyList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.historyList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.historyList::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.historyList::-webkit-scrollbar-thumb:hover {
+  background: var(--hover-color);
 }
 
 .historyList li {
-    display: flex;
-    flex-direction: column;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    background-color: var(--bg-color);
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background-color: var(--bg-color);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
 }
 
 .historyList li:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 2px 8px rgba(22, 179, 185, 0.15);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(22, 179, 185, 0.15);
 }
 
 .historyList li span {
-    margin: 3px 0;
-    font-size: 14px;
+  margin: 3px 0;
+  font-size: 14px;
 }
 
 /* Estilos para partidas ganadas/perdidas */
 .winner {
-    border-left: 4px solid var(--win-color) !important;
+  border-left: 4px solid var(--win-color) !important;
 }
 
 .loser {
-    border-left: 4px solid var(--lose-color) !important;
+  border-left: 4px solid var(--lose-color) !important;
 }
 
 /* Lista de amigos */
 .friendsList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Scrollbar personalizada para amigos */
+.friendsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.friendsList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.friendsList::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.friendsList::-webkit-scrollbar-thumb:hover {
+  background: var(--hover-color);
 }
 
 .friendCard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-    background-color: var(--bg-color);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background-color: var(--bg-color);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  text-align: center;
 }
 
 .friendCard:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-    border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary-color);
 }
 
 .friendAvatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-light);
-    font-weight: 600;
-    font-size: 22px;
-    margin-bottom: 10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-weight: 600;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
 .friendUsername {
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--text-color);
-    margin: 0;
-    word-break: break-word;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-color);
+  margin: 0;
+  word-break: break-word;
 }
 
 /* Mensaje cuando no hay datos */
 .emptyMessage {
-    color: #777777;
-    text-align: center;
-    padding: 15px;
-    font-style: italic;
+  color: #777777;
+  text-align: center;
+  padding: 15px;
+  font-style: italic;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Botón para añadir como amigo */
 .addFriendButton {
-    background-color: var(--secondary-color);
-    color: var(--text-light);
-    border: none;
-    border-radius: 30px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 20px;
-    box-shadow: var(--shadow);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  background-color: var(--secondary-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .addFriendButton:hover {
-    background-color: #e0aa20;
-    transform: scale(1.05);
+  background-color: #e0aa20;
+  transform: scale(1.05);
 }
 
 /* Estado de la amistad */
 .friendshipStatus {
-    margin-top: 15px;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
+  margin-top: 15px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .friendshipPending {
-    background-color: #FFF3CD;
-    color: #856404;
-    border: 1px solid #FFEEBA;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
 }
 
 .friendshipAccepted {
-    background-color: #D4EDDA;
-    color: #155724;
-    border: 1px solid #C3E6CB;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
 /* Animaciones para cargar */
 .loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 300px;
-    font-size: 18px;
-    color: var(--primary-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 18px;
+  color: var(--primary-color);
 }
 
 /* Mensaje de error */
 .errorMessage {
-    color: var(--lose-color);
-    text-align: center;
-    padding: 20px;
-    background-color: #FFEBEE;
-    border-radius: 10px;
-    margin: 20px 0;
+  color: var(--lose-color);
+  text-align: center;
+  padding: 20px;
+  background-color: #ffebee;
+  border-radius: 10px;
+  margin: 20px 0;
 }
-
-
