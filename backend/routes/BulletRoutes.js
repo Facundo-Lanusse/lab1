@@ -50,15 +50,14 @@ router.post('/CheckBulletQuestion', async (req, res) =>{
 });
 
 router.post('/UncheckBulletQuestion', async (req, res) =>{
-
     try {
-        const updateQuestionQuery = 'Update bullet_questions set already_picked = false'
-        await db.query(updateQuestionQuery)
-        res.json({message: 'Se actualizó la pregunta correctamente'})
-
+        const updateQuestionQuery = 'Update bullet_questions set already_picked = false';
+        await db.query(updateQuestionQuery);
+        res.json({message: 'Se actualizó la pregunta correctamente'});
     }
     catch (error){
-        console.log('Fallo el update de la pregunta', error)
+        console.log('Fallo el update de la pregunta', error);
+        res.status(500).json({ error: 'Error al desmarcar preguntas', details: error.message });
     }
 
 });
