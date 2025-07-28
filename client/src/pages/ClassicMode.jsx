@@ -1,13 +1,22 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { io } from 'socket.io-client';
-import styles from './css/ClassicMode.module.css';
-import Wheel from '../components/Wheel';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { io } from "socket.io-client";
+import styles from "./css/ClassicMode.module.css";
+import gameStyles from "./css/GamePlay.module.css"; // Estilos para las preguntas
+import Wheel from "../components/Wheel";
 
 const COLORS = [
-  '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-  '#FF9F40', '#32CD32', '#FF69B4', '#BA55D3', '#20B2AA'
+  "#FF6384",
+  "#36A2EB",
+  "#FFCE56",
+  "#4BC0C0",
+  "#9966FF",
+  "#FF9F40",
+  "#32CD32",
+  "#FF69B4",
+  "#BA55D3",
+  "#20B2AA",
 ];
 
 // mezclar orden de las respuestas
@@ -31,33 +40,37 @@ const ClassicMode = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [correctCounter, setCorrectCounter] = useState(0);
   const [canSelectCategory, setCanSelectCategory] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [opponentInfo, setOpponentInfo] = useState(null);
   const [gameHistory, setGameHistory] = useState([]);
   const [showWheel, setShowWheel] = useState(false);
   const [availableCategories, setAvailableCategories] = useState([]);
+  const [allCategories, setAllCategories] = useState([]); // Todas las categorías para mostrar en la ruleta
   const [activeBattles, setActiveBattles] = useState([]);
   const [friends, setFriends] = useState([]);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [showResultModal, setShowResultModal] = useState(false);
-  const [resultMessage, setResultMessage] = useState('');
+  const [resultMessage, setResultMessage] = useState("");
+  const [showQuestionView, setShowQuestionView] = useState(false); // Nueva vista para preguntas
+  const [selectedIndex, setSelectedIndex] = useState(null); // Para el feedback visual de respuestas
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // Para mostrar respuesta correcta/incorrecta
   const timeoutRef = useRef(null);
 
   // Obtener userId desde localStorage
   let userId;
   try {
-    const userObj = JSON.parse(localStorage.getItem('user'));
+    const userObj = JSON.parse(localStorage.getItem("user"));
     userId = parseInt(userObj?.user_id);
   } catch {}
   if (!userId || isNaN(userId)) {
-    userId = parseInt(localStorage.getItem('userId')) || null;
+    userId = parseInt(localStorage.getItem("userId")) || null;
   }
 
   const isMyTurn = battle && battle.currentTurn === userId;
 
   // Redirigir si no hay usuario
   useEffect(() => {
-    if (!userId) navigate('/login');
+    if (!userId) navigate("/login");
   }, [userId, navigate]);
 
   // Cargar batallas y amigos si no hay battleId
@@ -65,8 +78,8 @@ const ClassicMode = () => {
     if (!battleId) {
       fetchActiveBattles();
       fetchFriends();
-    } else if (sessionStorage.getItem('newBattle') === battleId) {
-      sessionStorage.removeItem('newBattle');
+    } else if (sessionStorage.getItem("newBattle") === battleId) {
+      sessionStorage.removeItem("newBattle");
       setShowWheel(true);
     }
   }, [battleId]);
@@ -74,16 +87,22 @@ const ClassicMode = () => {
   // WebSocket para actualizaciones en tiempo real
   useEffect(() => {
     if (!battleId) return;
-    const socket = io('http://localhost:3000');
-    socket.on('connect', async () => {
+    const socket = io("http://localhost:3000");
+    socket.on("connect", async () => {
       try {
-        await axios.post(`http://localhost:3000/api/classic/battle/${battleId}/join`, { socketId: socket.id });
+        await axios.post(
+          `http://localhost:3000/api/classic/battle/${battleId}/join`,
+          { socketId: socket.id }
+        );
       } catch {}
     });
-    socket.on('battleUpdated', (data) => {
-      if (data.battleId === Number(battleId) || data.battleId === battleId) fetchBattleState();
+    socket.on("battleUpdated", (data) => {
+      if (data.battleId === Number(battleId) || data.battleId === battleId)
+        fetchBattleState();
     });
-    return () => { socket.disconnect(); };
+    return () => {
+      socket.disconnect();
+    };
     // eslint-disable-next-line
   }, [battleId]);
 
@@ -92,11 +111,17 @@ const ClassicMode = () => {
     if (!battleId || !userId) return;
     // Solo restaurar el contador si es mi turno
     if (battle && battle.currentTurn === userId) {
-      const stored = localStorage.getItem(`correctCounter_${battleId}_${userId}`);
+      const stored = localStorage.getItem(
+        `correctCounter_${battleId}_${userId}`
+      );
       setCorrectCounter(stored !== null ? Number(stored) : 0);
       // Mostrar mensaje si hay respuestas correctas acumuladas
       if (stored && Number(stored) > 0) {
-        setMessage(`¡Respuesta correcta! ${Number(stored)}/3 respuestas correctas consecutivas.`);
+        setMessage(
+          `¡Respuesta correcta! ${Number(
+            stored
+          )}/3 respuestas correctas consecutivas.`
+        );
       }
     } else {
       setCorrectCounter(0);
@@ -107,7 +132,10 @@ const ClassicMode = () => {
     if (!battleId || !userId) return;
     // Solo guardar el contador si es mi turno
     if (battle && battle.currentTurn === userId) {
-      localStorage.setItem(`correctCounter_${battleId}_${userId}`, correctCounter);
+      localStorage.setItem(
+        `correctCounter_${battleId}_${userId}`,
+        correctCounter
+      );
     }
   }, [correctCounter, battleId, userId, battle && battle.currentTurn]);
 
@@ -115,7 +143,8 @@ const ClassicMode = () => {
     if (!battle) return;
     if (!isMyTurn) {
       setCorrectCounter(0);
-      if (battleId && userId) localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
+      if (battleId && userId)
+        localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
     }
   }, [battle, isMyTurn, battleId, userId]);
 
@@ -123,21 +152,30 @@ const ClassicMode = () => {
   const fetchActiveBattles = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`http://localhost:3000/api/classic/battles`, { params: { userId } });
+      const { data } = await axios.get(
+        `http://localhost:3000/api/classic/battles`,
+        { params: { userId } }
+      );
       setActiveBattles(data.battles || []);
     } catch (err) {
-      setError('No se pudieron cargar las batallas activas');
-    } finally { setLoading(false); }
+      setError("No se pudieron cargar las batallas activas");
+    } finally {
+      setLoading(false);
+    }
   };
   const fetchFriends = async () => {
     try {
-      const { data } = await axios.get('http://localhost:3000/api/friends', { params: { userId } });
+      const { data } = await axios.get("http://localhost:3000/api/friends", {
+        params: { userId },
+      });
       setFriends(data.friends || []);
     } catch {}
   };
   const fetchOpponentInfo = async (opponentId) => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/api/users/${opponentId}`);
+      const { data } = await axios.get(
+        `http://localhost:3000/api/users/${opponentId}`
+      );
       setOpponentInfo(data);
     } catch {}
   };
@@ -145,216 +183,559 @@ const ClassicMode = () => {
     if (!battleId) return;
     try {
       setLoading(true);
-      const { data } = await axios.get(`http://localhost:3000/api/classic/battle/${battleId}/state`);
+      const { data } = await axios.get(
+        `http://localhost:3000/api/classic/battle/${battleId}/state`
+      );
       if (data.success) {
         setBattle(data.battle);
         if (data.history) setGameHistory(data.history);
         const isCurrentUserTurn = data.battle.currentTurn === userId;
         if (isCurrentUserTurn) {
-          setMessage('Es tu turno');
-          const userCategories = data.battle.user_id1 === userId ? data.battle.user1Categories : data.battle.user2Categories;
-          setAvailableCategories(userCategories.filter(cat => !cat.completed));
+          setMessage("Es tu turno");
+          const userCategories =
+            data.battle.user_id1 === userId
+              ? data.battle.user1Categories
+              : data.battle.user2Categories;
+          // Guardar todas las categorías para mostrar en la ruleta
+          setAllCategories(userCategories);
+          // Guardar solo las disponibles (no completadas) para la lógica del juego
+          setAvailableCategories(
+            userCategories.filter((cat) => !cat.completed)
+          );
         } else {
-          setMessage('Esperando a que juegue el oponente');
+          setMessage("Esperando a que juegue el oponente");
         }
-        const opponentId = data.battle.user_id1 === userId ? data.battle.user_id2 : data.battle.user_id1;
+        const opponentId =
+          data.battle.user_id1 === userId
+            ? data.battle.user_id2
+            : data.battle.user_id1;
         fetchOpponentInfo(opponentId);
       }
     } catch {
       modalAfterWin();
-      setError('No se pudo cargar la batalla');
-    } finally { setLoading(false); }
+      setError("No se pudo cargar la batalla");
+    } finally {
+      setLoading(false);
+    }
   }, [battleId, userId]);
-  useEffect(() => { fetchBattleState(); }, [fetchBattleState]);
+  useEffect(() => {
+    fetchBattleState();
+  }, [fetchBattleState]);
 
   // Acciones de juego
   const startNewBattle = async () => {
-    if (!selectedFriend) return setError('Selecciona un amigo para desafiar');
+    if (!selectedFriend) return setError("Selecciona un amigo para desafiar");
     try {
       setLoading(true);
-      const { data } = await axios.post('http://localhost:3000/api/classic/start', { userId, opponentId: selectedFriend.user_id });
+      const { data } = await axios.post(
+        "http://localhost:3000/api/classic/start",
+        { userId, opponentId: selectedFriend.user_id }
+      );
       if (data.success) {
-        sessionStorage.setItem('newBattle', data.battleId);
+        sessionStorage.setItem("newBattle", data.battleId);
         navigate(`/Classic/${data.battleId}`);
       }
-    } catch { setError('No se pudo iniciar la batalla'); }
-    finally { setLoading(false); }
+    } catch {
+      setError("No se pudo iniciar la batalla");
+    } finally {
+      setLoading(false);
+    }
   };
   const loadQuestion = async (categoryId) => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`http://localhost:3000/api/classic/battle/${battleId}/questions`, { params: { categoryId } });
+      const { data } = await axios.get(
+        `http://localhost:3000/api/classic/battle/${battleId}/questions`,
+        { params: { categoryId } }
+      );
       if (data.success) {
         setQuestion(data.question);
         // Shuffle answers before setting state
         const shuffledAnswers = shuffleArray(data.answers);
         setAnswers(shuffledAnswers);
         setSelectedCategory(categoryId);
+        setShowQuestionView(true); // Cambiar a vista de preguntas
+        setSelectedIndex(null); // Reset del estado visual
+        setIsAnswerCorrect(null); // Reset del estado visual
       }
-    } catch { setError('No se pudo cargar la pregunta'); }
-    finally { setLoading(false); }
+    } catch {
+      setError("No se pudo cargar la pregunta");
+    } finally {
+      setLoading(false);
+    }
   };
   const handleCategorySelect = async (categoryId) => {
     if (canSelectCategory) {
       try {
-        const { data } = await axios.post(`http://localhost:3000/api/classic/battle/${battleId}/select-category`, { categoryId, userId });
+        const { data } = await axios.post(
+          `http://localhost:3000/api/classic/battle/${battleId}/select-category`,
+          { categoryId, userId }
+        );
         if (data.success) {
           setCanSelectCategory(false);
-          setGameHistory(prev => [...prev, { userId, action: 'mark_category', categoryId, timestamp: new Date().toISOString() }]);
-          setMessage('¡Categoría completada! Has ganado un punto.');
+          setGameHistory((prev) => [
+            ...prev,
+            {
+              userId,
+              action: "mark_category",
+              categoryId,
+              timestamp: new Date().toISOString(),
+            },
+          ]);
+          setMessage("¡Categoría completada! Has ganado un punto.");
           fetchBattleState();
+          setShowQuestionView(false); // Volver a la vista principal
         }
-      } catch { setError('No se pudo seleccionar la categoría'); }
+      } catch {
+        setError("No se pudo seleccionar la categoría");
+      }
     } else {
       loadQuestion(categoryId);
     }
   };
-  const handleAnswerQuestion = async (answerId) => {
+  const handleAnswerQuestion = async (answerId, answerIndex) => {
+    // Mostrar feedback visual inmediato
+    setSelectedIndex(answerIndex);
+    const selectedAnswer = answers[answerIndex];
+    setIsAnswerCorrect(selectedAnswer.is_correct);
+
     try {
       setLoading(true);
-      const { data } = await axios.post(`http://localhost:3000/api/classic/battle/${battleId}/answer`, { questionId: question.question_id, answerId, userId });
+      const { data } = await axios.post(
+        `http://localhost:3000/api/classic/battle/${battleId}/answer`,
+        { questionId: question.question_id, answerId, userId }
+      );
       if (data.success) {
         setMessage(data.message);
-        setGameHistory(prev => [...prev, { userId, action: 'answer', correct: data.correct, questionId: question.question_id, categoryId: selectedCategory, timestamp: new Date().toISOString() }]);
-        if (data.correct) {
-          const newCorrectCount = correctCounter + 1;
-          setCorrectCounter(newCorrectCount);
-          localStorage.setItem(`correctCounter_${battleId}_${userId}`, newCorrectCount);
-          if (newCorrectCount >= 3) {
-            setCanSelectCategory(true);
-            setMessage('¡Tres respuestas correctas consecutivas! Selecciona una categoría para marcar.');
+        setGameHistory((prev) => [
+          ...prev,
+          {
+            userId,
+            action: "answer",
+            correct: data.correct,
+            questionId: question.question_id,
+            categoryId: selectedCategory,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+
+        // Esperar un poco para mostrar el feedback visual
+        setTimeout(() => {
+          if (data.correct) {
+            const newCorrectCount = correctCounter + 1;
+            setCorrectCounter(newCorrectCount);
+            localStorage.setItem(
+              `correctCounter_${battleId}_${userId}`,
+              newCorrectCount
+            );
+            if (newCorrectCount >= 3) {
+              setCanSelectCategory(true);
+              setMessage(
+                "¡Tres respuestas correctas consecutivas! Selecciona una categoría para marcar."
+              );
+              setCorrectCounter(0);
+              localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
+              setShowWheel(false);
+              setQuestion(null);
+              setShowQuestionView(false); // Volver a la vista principal
+            } else {
+              setMessage(
+                `¡Respuesta correcta! ${newCorrectCount}/3 respuestas correctas consecutivas.`
+              );
+              setQuestion(null);
+              setShowQuestionView(false); // Volver a la vista principal
+            }
+          } else {
             setCorrectCounter(0);
             localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
-            setShowWheel(false);
+            setMessage("Respuesta incorrecta. Turno del oponente.");
             setQuestion(null);
-          } else {
-            setMessage(`¡Respuesta correcta! ${newCorrectCount}/3 respuestas correctas consecutivas.`);
-            setQuestion(null);
+            setSelectedCategory(null);
+            setShowQuestionView(false); // Volver a la vista principal
+            fetchBattleState(); // Forzar actualización inmediata del estado
           }
-        } else {
-          setCorrectCounter(0);
-          localStorage.setItem(`correctCounter_${battleId}_${userId}`, 0);
-          setMessage('Respuesta incorrecta. Turno del oponente.');
-          setQuestion(null);
-          setSelectedCategory(null);
-          fetchBattleState(); // <-- Forzar actualización inmediata del estado para que el render muestre "no es tu turno"
-        }
+        }, 1500); // Esperar 1.5 segundos para mostrar el feedback
       }
-    } catch { setError('No se pudo procesar la respuesta'); }
-    finally { setLoading(false); }
+    } catch {
+      setError("No se pudo procesar la respuesta");
+      setShowQuestionView(false); // Volver a la vista principal en caso de error
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
+    }
   };
   const handleContinueAnswering = () => {
-    if (battle?.winner != null) return setMessage('The game has ended. You cannot continue answering.');
-    if (selectedCategory) loadQuestion(selectedCategory);
+    if (battle?.winner != null)
+      return setMessage("The game has ended. You cannot continue answering.");
+
+    // Mostrar la ruleta en lugar de cargar directamente la pregunta
+    setShowWheel(true);
+    setShowQuestionView(false);
   };
   const handlePassTurn = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.post(`http://localhost:3000/api/classic/battle/${battleId}/pass-turn`, { userId });
+      const { data } = await axios.post(
+        `http://localhost:3000/api/classic/battle/${battleId}/pass-turn`,
+        { userId }
+      );
       if (data.success) {
-        setMessage('Has pasado el turno al oponente');
+        setMessage("Has pasado el turno al oponente");
         fetchBattleState();
       }
-    } catch { setError('No se pudo pasar el turno'); }
-    finally { setLoading(false); }
+    } catch {
+      setError("No se pudo pasar el turno");
+    } finally {
+      setLoading(false);
+    }
   };
   const saveGameResult = async (isWinner) => {
     try {
-      await axios.post(`http://localhost:3000/api/classic/battle/${battleId}/result`, { userId, isWinner });
-      if(isWinner){navigate('/Home')}
+      await axios.post(
+        `http://localhost:3000/api/classic/battle/${battleId}/result`,
+        { userId, isWinner }
+      );
+      if (isWinner) {
+        navigate("/Home");
+      }
     } catch {}
   };
-  const handleStartWheel = () => { if (isMyTurn && !question) setShowWheel(true); };
+  const handleStartWheel = () => {
+    if (isMyTurn && !question) {
+      setShowWheel(true);
+      setShowQuestionView(false); // Asegurar que estamos en la vista de ruleta
+    }
+  };
   const handleFinishSpin = (segment) => {
     setShowWheel(false);
-    const selectedCat = availableCategories.find(cat => cat.name.toLowerCase().trim() === segment.toLowerCase().trim());
+
+    // Buscar la categoría seleccionada en todas las categorías
+    const selectedCat = allCategories.find(
+      (cat) => cat.name.toLowerCase().trim() === segment.toLowerCase().trim()
+    );
+
     if (selectedCat) {
-      canSelectCategory ? handleCategorySelect(selectedCat.category_id) : loadQuestion(selectedCat.category_id);
+      // Verificar si la categoría está disponible (no completada)
+      const isAvailable = availableCategories.find(
+        (cat) => cat.category_id === selectedCat.category_id
+      );
+
+      if (isAvailable) {
+        // Si puede seleccionar categoría (3 respuestas correctas), marcar la categoría
+        // Si no, cargar pregunta de esa categoría
+        if (canSelectCategory) {
+          handleCategorySelect(selectedCat.category_id);
+        } else {
+          loadQuestion(selectedCat.category_id);
+        }
+      } else {
+        // Si la categoría ya está completada, elegir una aleatoria de las disponibles
+        if (availableCategories.length > 0) {
+          const randomCategory =
+            availableCategories[
+              Math.floor(Math.random() * availableCategories.length)
+            ];
+          if (canSelectCategory) {
+            handleCategorySelect(randomCategory.category_id);
+          } else {
+            loadQuestion(randomCategory.category_id);
+          }
+        }
+      }
     } else if (availableCategories.length > 0) {
-      canSelectCategory ? handleCategorySelect(availableCategories[0].category_id) : loadQuestion(availableCategories[0].category_id);
+      // Fallback: elegir una categoría aleatoria de las disponibles
+      const randomCategory =
+        availableCategories[
+          Math.floor(Math.random() * availableCategories.length)
+        ];
+      if (canSelectCategory) {
+        handleCategorySelect(randomCategory.category_id);
+      } else {
+        loadQuestion(randomCategory.category_id);
+      }
     }
   };
 
   // Render helpers
-  const getCategoryNames = () => availableCategories.map(cat => cat.name);
-  const getRandomWinningSegment = () => availableCategories.length === 0 ? '' : availableCategories[Math.floor(Math.random() * availableCategories.length)].name;
+  const getCategoryNames = () => allCategories.map((cat) => cat.name); // Mostrar todas las categorías
+  const getRandomWinningSegment = () => {
+    // Solo seleccionar de las categorías disponibles (no completadas)
+    if (availableCategories.length === 0) return "";
+    return availableCategories[
+      Math.floor(Math.random() * availableCategories.length)
+    ].name;
+  };
 
-  const renderCategories = () => {
-    if (!battle) return null;
-    const categories = battle.user_id1 === userId ? battle.user1Categories : battle.user2Categories;
+  // Nueva función para renderizar la vista de preguntas estilo bullet/solitario
+  const renderQuestionView = () => {
+    if (!question || !showQuestionView) return null;
+
+    const myCategories =
+      battle.user_id1 === userId
+        ? battle.user1Categories
+        : battle.user2Categories;
+    const opponentCategories =
+      battle.user_id1 === userId
+        ? battle.user2Categories
+        : battle.user1Categories;
+    const myCompletedCount = myCategories.filter((c) => c.completed).length;
+    const opponentCompletedCount = opponentCategories.filter(
+      (c) => c.completed
+    ).length;
+
+    // Encontrar la información de la categoría actual para mostrar en la pregunta
+    const currentQuestionCategory = allCategories.find(
+      (cat) => cat.category_id === selectedCategory
+    );
+
     return (
-      <div className={styles.categoriesContainer}>
-        <h3>Categorías</h3>
-        <div className={styles.categoriesGrid}>
-          {categories.map(category => (
-            <div
-              key={category.category_id}
-              className={`${styles.categoryCard} ${category.completed ? styles.completed : ''}`}
-              onClick={() => !category.completed && isMyTurn && handleCategorySelect(category.category_id)}
-            >
-              <span>{category.name}</span>
-              {category.completed && <span className={styles.checkMark}>✓</span>}
+      <div className={gameStyles.gameContainer}>
+        <div className={gameStyles.header}>
+          <img
+            className={gameStyles.arrowLeftSolid1Icon}
+            alt="Volver"
+            src="../arrow-left-solid.svg"
+            onClick={() => {
+              setShowQuestionView(false);
+              setQuestion(null);
+              setSelectedIndex(null);
+              setIsAnswerCorrect(null);
+            }}
+          />
+
+          <div className={styles.classicModeProgress}>
+            <div className={styles.progressItem}>
+              <span className={styles.playerLabel}>
+                Tú: {myCompletedCount}/4
+              </span>
             </div>
-          ))}
+            <div className={styles.vsIndicatorSmall}>VS</div>
+            <div className={styles.progressItem}>
+              <span className={styles.playerLabel}>
+                {opponentInfo?.username || "Oponente"}: {opponentCompletedCount}
+                /4
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.correctCounterSmall}>
+            <span>{correctCounter}/3</span>
+          </div>
         </div>
-        {isMyTurn && !question && !canSelectCategory && (
-          <button className={styles.wheelButton} onClick={handleStartWheel} disabled={availableCategories.length === 0}>
-            Usar ruleta para elegir categoría
-          </button>
+
+        {/* Indicador de categoría - posicionado debajo del header */}
+        {currentQuestionCategory && (
+          <div className={gameStyles.categoryIndicator}>
+            <span className={gameStyles.categoryLabel}>Categoría:</span>
+            <span className={gameStyles.categoryName}>
+              {currentQuestionCategory.name}
+            </span>
+          </div>
         )}
+
+        <div className={gameStyles.questionContainer}>
+          <h1 className={gameStyles.titleDePrueba}>{question.questiontext}</h1>
+        </div>
+
+        <div className={gameStyles.answersContainer} key={question.question_id}>
+          {answers.map((answer, index) => {
+            let buttonClass = gameStyles.buttonAnswers;
+
+            // Aplicar estilos de feedback visual
+            if (selectedIndex === index) {
+              buttonClass += isAnswerCorrect
+                ? ` ${gameStyles.correct}`
+                : ` ${gameStyles.incorrect}`;
+            }
+
+            return (
+              <button
+                key={answer.answer_id}
+                className={buttonClass}
+                onClick={() => handleAnswerQuestion(answer.answer_id, index)}
+                disabled={selectedIndex !== null || loading}
+              >
+                {answer.text}
+              </button>
+            );
+          })}
+        </div>
       </div>
     );
   };
 
-  const renderQuestion = () => {
-    if (!question || !isMyTurn) return null;
-    const opponentCategories = battle?.user_id1 === userId ? battle?.user2Categories : battle?.user1Categories;
-    const opponentCompletedCount = opponentCategories?.filter(c => c.completed).length || 0;
-    if (opponentCompletedCount >= 4) return null;
+  // Nueva función para renderizar solo la ruleta
+  const renderWheelView = () => {
+    if (!showWheel || showQuestionView) return null;
+
     return (
-      <div className={styles.questionContainer}>
-        <h3>Pregunta:</h3>
-        <p className={styles.questionText}>{question.questiontext}</p>
-        <div className={styles.answersList}>
-          {answers.map(answer => (
-            <button key={answer.answer_id} className={styles.answerButton} onClick={() => handleAnswerQuestion(answer.answer_id)}>
-              {answer.text}
-            </button>
+      <div className={styles.wheelContainer}>
+        <h3>
+          {canSelectCategory
+            ? "Gira la ruleta para marcar una categoría"
+            : "Gira la ruleta para obtener una categoría aleatoria"}
+        </h3>
+
+        {/* Indicador de categorías completadas */}
+        {allCategories.length > 0 && (
+          <div className={styles.categoriesStatus}>
+            <p>Estado de categorías:</p>
+            <div className={styles.categoryIndicators}>
+              {allCategories.map((category) => (
+                <div
+                  key={category.category_id}
+                  className={`${styles.categoryIndicator} ${
+                    category.completed ? styles.completed : styles.available
+                  }`}
+                >
+                  {category.name}
+                  {category.completed && (
+                    <span className={styles.checkMark}>✓</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Wheel
+          segments={getCategoryNames()}
+          segColors={COLORS}
+          winningSegment={getRandomWinningSegment()}
+          onFinished={handleFinishSpin}
+          primaryColor="#30609b"
+          contrastColor="#ffffff"
+          buttonText="Girar"
+          size={350}
+        />
+        <button
+          className={styles.cancelWheelButton}
+          onClick={() => {
+            setShowWheel(false);
+            setShowQuestionView(false);
+          }}
+        >
+          Cancelar
+        </button>
+      </div>
+    );
+  };
+  const renderCategories = () => {
+    if (!battle || !canSelectCategory) return null;
+    const categories =
+      battle.user_id1 === userId
+        ? battle.user1Categories
+        : battle.user2Categories;
+    return (
+      <div className={styles.categoriesContainer}>
+        <h3>Elige una categoría para marcar</h3>
+        <div className={styles.categoriesGrid}>
+          {categories.map((category) => (
+            <div
+              key={category.category_id}
+              className={`${styles.categoryCard} ${
+                category.completed ? styles.completed : ""
+              }`}
+              onClick={() =>
+                !category.completed &&
+                isMyTurn &&
+                handleCategorySelect(category.category_id)
+              }
+              style={{
+                cursor:
+                  !category.completed && isMyTurn ? "pointer" : "not-allowed",
+              }}
+            >
+              <span>{category.name}</span>
+              {category.completed && (
+                <span className={styles.checkMark}>✓</span>
+              )}
+            </div>
           ))}
         </div>
+        <button
+          className={styles.wheelButton}
+          onClick={handleStartWheel}
+          disabled={availableCategories.length === 0}
+        >
+          Usar ruleta para elegir categoría
+        </button>
       </div>
     );
   };
 
   const renderBattleStatus = () => {
     if (!battle) return null;
-    const myCategories = battle.user_id1 === userId ? battle.user1Categories : battle.user2Categories;
-    const opponentCategories = battle.user_id1 === userId ? battle.user2Categories : battle.user1Categories;
-    const myCompletedCount = myCategories.filter(c => c.completed).length;
-    const opponentCompletedCount = opponentCategories.filter(c => c.completed).length;
+    const myCategories =
+      battle.user_id1 === userId
+        ? battle.user1Categories
+        : battle.user2Categories;
+    const opponentCategories =
+      battle.user_id1 === userId
+        ? battle.user2Categories
+        : battle.user1Categories;
+    const myCompletedCount = myCategories.filter((c) => c.completed).length;
+    const opponentCompletedCount = opponentCategories.filter(
+      (c) => c.completed
+    ).length;
     if (myCompletedCount >= 4) {
-      if (gameHistory.length > 0 && !gameHistory.some(h => h.action === 'game_end')) {
+      if (
+        gameHistory.length > 0 &&
+        !gameHistory.some((h) => h.action === "game_end")
+      ) {
         saveGameResult(true);
-        setGameHistory(prev => [...prev, { action: 'game_end', winner: userId, timestamp: new Date().toISOString() }]);
+        setGameHistory((prev) => [
+          ...prev,
+          {
+            action: "game_end",
+            winner: userId,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
         setShowWheel(false);
       }
       return (
         <div className={`${styles.battleResult} ${styles.winner}`}>
           <h2>¡Felicidades! Has ganado la partida</h2>
-          <button className={styles.backButton} onClick={() => navigate('/Play')}>Volver al menú</button>
+          <button
+            className={styles.backButton}
+            onClick={() => navigate("/Play")}
+          >
+            Volver al menú
+          </button>
         </div>
       );
     }
     if (opponentCompletedCount >= 4) {
-      if (gameHistory.length > 0 && !gameHistory.some(h => h.action === 'game_end')) {
+      if (
+        gameHistory.length > 0 &&
+        !gameHistory.some((h) => h.action === "game_end")
+      ) {
         saveGameResult(false);
-        setGameHistory(prev => [...prev, { action: 'game_end', winner: battle.user_id1 === userId ? battle.user_id2 : battle.user_id1, timestamp: new Date().toISOString() }]);
+        setGameHistory((prev) => [
+          ...prev,
+          {
+            action: "game_end",
+            winner:
+              battle.user_id1 === userId ? battle.user_id2 : battle.user_id1,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
         setShowWheel(false);
       }
       return (
         <div className={`${styles.battleResult} ${styles.loser}`}>
-          <h2>Has perdido la partida contra {opponentInfo?.username || 'tu oponente'}</h2>
-          <button className={styles.backButton} onClick={() => navigate('/Play')}>Volver al menú</button>
+          <h2>
+            Has perdido la partida contra{" "}
+            {opponentInfo?.username || "tu oponente"}
+          </h2>
+          <button
+            className={styles.backButton}
+            onClick={() => navigate("/Play")}
+          >
+            Volver al menú
+          </button>
         </div>
       );
     }
@@ -363,14 +744,20 @@ const ClassicMode = () => {
         <div className={styles.playerStatus}>
           <h4>Tu progreso:</h4>
           <div className={styles.progressBar}>
-            <div className={styles.progress} style={{ width: `${(myCompletedCount / 4) * 100}%` }}></div>
+            <div
+              className={styles.progress}
+              style={{ width: `${(myCompletedCount / 4) * 100}%` }}
+            ></div>
           </div>
           <span>{myCompletedCount}/4 categorías</span>
         </div>
         <div className={styles.playerStatus}>
-          <h4>{opponentInfo?.username || 'Oponente'}:</h4>
+          <h4>{opponentInfo?.username || "Oponente"}:</h4>
           <div className={styles.progressBar}>
-            <div className={`${styles.progress} ${styles.opponent}`} style={{ width: `${(opponentCompletedCount / 4) * 100}%` }}></div>
+            <div
+              className={`${styles.progress} ${styles.opponent}`}
+              style={{ width: `${(opponentCompletedCount / 4) * 100}%` }}
+            ></div>
           </div>
           <span>{opponentCompletedCount}/4 categorías</span>
         </div>
@@ -385,18 +772,32 @@ const ClassicMode = () => {
         <h3>Tus partidas activas</h3>
         {activeBattles.length > 0 ? (
           <div className={styles.activeBattlesList}>
-            {activeBattles.map(battle => (
-              <div key={battle.battle_id} className={styles.battleItem} onClick={() => navigate(`/Classic/${battle.battle_id}`)}>
+            {activeBattles.map((battle) => (
+              <div
+                key={battle.battle_id}
+                className={styles.battleItem}
+                onClick={() => navigate(`/Classic/${battle.battle_id}`)}
+              >
                 <div className={styles.battleOpponent}>
-                  <span className={styles.opponentName}>{battle.opponent_name}</span>
+                  <span className={styles.opponentName}>
+                    {battle.opponent_name}
+                  </span>
                   {battle.currentTurn === userId ? (
-                    <span className={`${styles.turnIndicator} ${styles.yourTurn}`}>Tu turno</span>
+                    <span
+                      className={`${styles.turnIndicator} ${styles.yourTurn}`}
+                    >
+                      Tu turno
+                    </span>
                   ) : (
-                    <span className={styles.turnIndicator}>Turno del oponente</span>
+                    <span className={styles.turnIndicator}>
+                      Turno del oponente
+                    </span>
                   )}
                 </div>
                 <div className={styles.battleStatus}>
-                  <span className={styles.statusDate}>Iniciado: {new Date(battle.date).toLocaleDateString()}</span>
+                  <span className={styles.statusDate}>
+                    Iniciado: {new Date(battle.date).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
             ))}
@@ -411,18 +812,36 @@ const ClassicMode = () => {
           <p>Elige un amigo para desafiar:</p>
           <div className={styles.friendsList}>
             {friends.length > 0 ? (
-              friends.map(friend => (
-                <div key={friend.user_id} className={`${styles.friendItem} ${selectedFriend && selectedFriend.user_id === friend.user_id ? styles.selected : ''}`} onClick={() => setSelectedFriend(friend)}>
-                  <img src={friend.profile_picture || 'defaultProfileImage.png'} alt={friend.username} className={styles.friendAvatar} />
+              friends.map((friend) => (
+                <div
+                  key={friend.user_id}
+                  className={`${styles.friendItem} ${
+                    selectedFriend && selectedFriend.user_id === friend.user_id
+                      ? styles.selected
+                      : ""
+                  }`}
+                  onClick={() => setSelectedFriend(friend)}
+                >
+                  <img
+                    src={friend.profile_picture || "defaultProfileImage.png"}
+                    alt={friend.username}
+                    className={styles.friendAvatar}
+                  />
                   <span className={styles.friendName}>{friend.username}</span>
                 </div>
               ))
             ) : (
-              <p className={styles.noFriends}>No tienes amigos para desafiar. ¡Agrega algunos amigos primero!</p>
+              <p className={styles.noFriends}>
+                No tienes amigos para desafiar. ¡Agrega algunos amigos primero!
+              </p>
             )}
           </div>
         </div>
-        <button className={styles.startBattleButton} disabled={!selectedFriend || friends.length === 0} onClick={startNewBattle}>
+        <button
+          className={styles.startBattleButton}
+          disabled={!selectedFriend || friends.length === 0}
+          onClick={startNewBattle}
+        >
           Iniciar Batalla
         </button>
       </div>
@@ -433,16 +852,20 @@ const ClassicMode = () => {
   const modalAfterWin = (win = null) => {
     if (showResultModal) return;
     if (win === true) {
-      setResultMessage('¡Felicidades! Has ganado la partida');
+      setResultMessage("¡Felicidades! Has ganado la partida");
     } else if (win === false) {
-      setResultMessage(`Has perdido la partida contra ${opponentInfo?.username || 'tu oponente'}`);
+      setResultMessage(
+        `Has perdido la partida contra ${
+          opponentInfo?.username || "tu oponente"
+        }`
+      );
     } else {
-      setResultMessage('La partida ha finalizado');
+      setResultMessage("La partida ha finalizado");
     }
     setShowResultModal(true);
     timeoutRef.current = setTimeout(() => {
       setShowResultModal(false);
-      navigate('/Play');
+      navigate("/Play");
     }, 3000);
   };
 
@@ -450,14 +873,25 @@ const ClassicMode = () => {
   useEffect(() => {
     if (!battle) return;
     // Solo guardar resultado si la batalla está en curso
-    if (battle.status !== 'ongoing') return;
-    if ((battle.user_id1 === userId || battle.user_id2 === userId)) {
-      const myCategories = battle.user_id1 === userId ? battle.user1Categories : battle.user2Categories;
-      const opponentCategories = battle.user_id1 === userId ? battle.user2Categories : battle.user1Categories;
-      const myCompletedCount = myCategories.filter(c => c.completed).length;
-      const opponentCompletedCount = opponentCategories.filter(c => c.completed).length;
+    if (battle.status !== "ongoing") return;
+    if (battle.user_id1 === userId || battle.user_id2 === userId) {
+      const myCategories =
+        battle.user_id1 === userId
+          ? battle.user1Categories
+          : battle.user2Categories;
+      const opponentCategories =
+        battle.user_id1 === userId
+          ? battle.user2Categories
+          : battle.user1Categories;
+      const myCompletedCount = myCategories.filter((c) => c.completed).length;
+      const opponentCompletedCount = opponentCategories.filter(
+        (c) => c.completed
+      ).length;
       // Solo llamar a saveGameResult si el modal ya se mostró (es decir, después de 3 segundos)
-      if ((myCompletedCount === 4 || opponentCompletedCount === 4) && !showResultModal) {
+      if (
+        (myCompletedCount === 4 || opponentCompletedCount === 4) &&
+        !showResultModal
+      ) {
         saveGameResult(myCompletedCount === 4);
       }
     }
@@ -466,12 +900,41 @@ const ClassicMode = () => {
   if (!battleId) {
     return (
       <div className={styles.classicModeContainer}>
-        {loading ? <div className={styles.loading}>Cargando...</div> : error ? <div className={styles.errorMessage}>{error}</div> : renderClassicModeHome()}
+        {loading ? (
+          <div className={styles.loading}>Cargando...</div>
+        ) : error ? (
+          <div className={styles.errorMessage}>{error}</div>
+        ) : (
+          renderClassicModeHome()
+        )}
       </div>
     );
   }
-  if (loading && !battle) return <div className={styles.loading}>Cargando...</div>;
+  if (loading && !battle)
+    return <div className={styles.loading}>Cargando...</div>;
   if (error) return <div className={styles.errorMessage}>{error}</div>;
+
+  // Si estamos en la vista de preguntas, mostrar solo esa vista
+  if (showQuestionView && question) {
+    return renderQuestionView();
+  }
+
+  // Si estamos mostrando la ruleta, mostrar solo esa vista
+  if (showWheel && !showQuestionView) {
+    return (
+      <div className={styles.classicModeContainer}>
+        {showResultModal && (
+          <div className={styles.resultModal}>
+            <div className={styles.resultModalContent}>
+              <h2>{resultMessage}</h2>
+              <p>Serás redirigido al menú principal...</p>
+            </div>
+          </div>
+        )}
+        {renderWheelView()}
+      </div>
+    );
+  }
 
   return (
     <div className={styles.classicModeContainer}>
@@ -485,37 +948,70 @@ const ClassicMode = () => {
       )}
       <h2>Modo Clásico</h2>
       {message && <div className={styles.messageBox}>{message}</div>}
-      <button className={styles.backButton} onClick={() => navigate(-1)} aria-label="Volver atrás">
+      <button
+        className={styles.backButton}
+        onClick={() => navigate(-1)}
+        aria-label="Volver atrás"
+      >
         <img src="../arrow-left-solid.svg" alt="Volver" />
       </button>
       {renderBattleStatus()}
-      {showWheel || (isMyTurn && !question && !canSelectCategory) ? (
-        <div className={styles.wheelContainer}>
-          <h3>Gira la ruleta para seleccionar una categoría</h3>
-          <Wheel
-            segments={getCategoryNames()}
-            segColors={COLORS}
-            winningSegment={getRandomWinningSegment()}
-            onFinished={handleFinishSpin}
-            primaryColor="#30609b"
-            contrastColor="#ffffff"
-            buttonText="Girar"
-            size={350}
-          />
-        </div>
-      ) : canSelectCategory ? (
+      {/* Mostrar contenido basado en el estado del juego */}
+      {canSelectCategory ? (
         <div className={styles.categorySelection}>
-          <h3>¡Respuestas correctas! Selecciona una categoría para marcar:</h3>
+          <h3>
+            ¡3 respuestas correctas consecutivas! Puedes elegir una categoría
+            para marcar:
+          </h3>
           {renderCategories()}
         </div>
       ) : (
         <>
-          {renderQuestion()}
-          {!isMyTurn && (
-            <div className={styles.waitingMessage}>
-              <h3>Esperando a que {opponentInfo?.username || 'el oponente'} juegue su turno...</h3>
+          {isMyTurn && !question && !showWheel && correctCounter === 0 && (
+            <div className={styles.turnStartContainer}>
+              <h3>Es tu turno</h3>
+              <p>
+                Presiona continuar para girar la ruleta y obtener una categoría
+                aleatoria
+              </p>
+              <button
+                className={styles.continueButton}
+                onClick={handleStartWheel}
+                disabled={availableCategories.length === 0}
+              >
+                Continuar
+              </button>
             </div>
           )}
+
+          {!isMyTurn && (
+            <div className={styles.waitingMessage}>
+              <h3>
+                Esperando a que {opponentInfo?.username || "el oponente"} juegue
+                su turno...
+              </h3>
+            </div>
+          )}
+
+          {correctCounter > 0 &&
+            question === null &&
+            isMyTurn &&
+            !showWheel && (
+              <div className={styles.continueOptions}>
+                <button
+                  className={styles.continueButton}
+                  onClick={handleContinueAnswering}
+                >
+                  Continuar respondiendo
+                </button>
+                <button
+                  className={styles.passTurnButton}
+                  onClick={handlePassTurn}
+                >
+                  Pasar turno
+                </button>
+              </div>
+            )}
         </>
       )}
       {correctCounter > 0 && (
