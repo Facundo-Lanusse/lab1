@@ -53,11 +53,16 @@ const Wheel = ({
       const iconX = centerX + iconDistance * Math.cos(iconAngle);
       const iconY = centerY + iconDistance * Math.sin(iconAngle);
 
+      // Calcular el ángulo de rotación para que el icono mire hacia el centro
+      // Agregamos 90 grados porque los iconos por defecto "miran" hacia arriba
+      const iconRotation = (iconAngle * 180) / Math.PI + 90;
+
       positions.push({
         segment,
         x: iconX,
         y: iconY,
         angle: iconAngle,
+        rotation: iconRotation,
         src: getCategoryIcon(segment),
       });
     });
@@ -307,6 +312,8 @@ const Wheel = ({
               "drop-shadow(2px 2px 3px rgba(0,0,0,0.4)) brightness(0) invert(1)", // Hacer el SVG blanco con sombra
             pointerEvents: "none",
             transition: isSpinning ? "none" : "all 0.3s ease",
+            transform: `rotate(${iconData.rotation}deg)`, // Rotar el icono para que mire hacia el centro
+            transformOrigin: "center center", // Punto de rotación en el centro del icono
             zIndex: 1,
           }}
         />
