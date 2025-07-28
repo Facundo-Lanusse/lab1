@@ -25,6 +25,19 @@ const PlayMenu = () => {
   const [showBattleNotification, setShowBattleNotification] = useState(false);
   const [notifiedBattles, setNotifiedBattles] = useState(new Set());
 
+  // Estado para indicar si es bullet o clásico
+  const [isBulletMode, setIsBulletMode] = useState(false);
+
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const friendsPerPage = 3;
+
+  // Estado para búsqueda de amigos
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Estado para mostrar modal de jugar solo o con amigo en modo bala
+  const [showSoloBulletModal, setShowSoloBulletModal] = useState(false);
+
   // Efecto para cargar amigos al montar el componente
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -109,26 +122,38 @@ const PlayMenu = () => {
   };
 
   // Función para iniciar una partida clásica con un amigo
-  const startClassicGame = useCallback(async () => {
+  const startMode = useCallback(async () => {
     if (!selectedFriend) return;
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const userId = user.user_id;
 
-      const response = await axios.post(
-        "http://localhost:3000/api/classic/start",
-        {
-          userId: userId,
-          opponentId: selectedFriend.user_id,
-        }
-      );
+      let res;
+      if (!isBulletMode) {
+        res = await axios.post(
+          "http://localhost:3000/api/classic/start",
+          {
+            userId: userId,
+            opponentId: selectedFriend.user_id,
+          }
+        );
+      } else {
+        res = await axios.post(
+          "http://localhost:3000/api/bullet/start",
+          {
+            userId: userId,
+            opponentId: selectedFriend.user_id,
+          }
+        );
+      }
+      const response = res.data;
 
-      if (response.data.success) {
-        navigate(`/Classic/${response.data.battleId}`);
+      if (response.success) {
+        navigate(`/Classic/${response.battleId}`);
       } else {
         throw new Error(
-          response.data.message || "No se pudo iniciar la batalla"
+          response.message || "No se pudo iniciar la batalla"
         );
       }
     } catch (error) {
@@ -145,7 +170,7 @@ const PlayMenu = () => {
 
       alert(`No se pudo iniciar la partida: ${errorMessage}`);
     }
-  }, [selectedFriend, navigate]);
+  }, [selectedFriend, navigate, isBulletMode]);
 
   // Función para generar un código de invitación
   const generateInviteCode = async () => {
@@ -215,7 +240,23 @@ const PlayMenu = () => {
     setGeneratedInviteCode("");
     setShowInviteSection(false);
     setError(null);
+    setIsBulletMode(null);
   };
+
+  // Filtrar amigos por búsqueda antes de paginar
+  const filteredFriends = friends.filter(friend =>
+    friend.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const totalPages = Math.ceil(filteredFriends.length / friendsPerPage);
+  const paginatedFriends = filteredFriends.slice(
+    (currentPage - 1) * friendsPerPage,
+    currentPage * friendsPerPage
+  );
+
+  // Reiniciar página si cambia la lista de amigos
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [friends]);
 
   return (
     <div className={styles.playMenuContainer}>
@@ -251,14 +292,20 @@ const PlayMenu = () => {
             icon={<BulletIcon />}
             title="Modo Bala"
             description="Responde preguntas en poco tiempo y haz tu mejor marca"
-            onClick={() => navigate("/BulletPLay")}
+            onClick={() => {
+              setShowSoloBulletModal(true);
+              setIsBulletMode(true);
+            }}
           />
 
           <GameModeCard
             icon={<ClassicIcon />}
             title="Modo Clásico"
             description="Compite con un amigo para ver quién completa primero las categorías"
-            onClick={() => setShowFriendSelector(true)}
+            onClick={() => {
+              setShowFriendSelector(true);
+              setIsBulletMode(false);
+            }}
           />
         </div>
       </div>
@@ -266,10 +313,10 @@ const PlayMenu = () => {
       {/* Modal selector de amigos */}
       {showFriendSelector && (
         <FriendSelectorModal
-          friends={friends}
+          friends={paginatedFriends}
           selectedFriend={selectedFriend}
           onSelectFriend={setSelectedFriend}
-          onStartGame={startClassicGame}
+          onStartGame={startMode}
           onClose={closeFriendSelector}
           loading={loading}
           error={error}
@@ -280,7 +327,47 @@ const PlayMenu = () => {
           generatedInviteCode={generatedInviteCode}
           showInviteSection={showInviteSection}
           onCopyCode={copyInviteCode}
+          isBulletMode={isBulletMode}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
         />
+      )}
+
+      {/* Modal para elegir entre jugar solo o con amigo en bullet */}
+      {showSoloBulletModal && isBulletMode && (
+        <div className={styles.friendSelectorOverlay}>
+          <div className={styles.friendSelector} style={{ maxWidth: 420, minWidth: 320, padding: '2.5rem 2rem', boxShadow: '0 4px 24px rgba(22,179,185,0.13)', borderRadius: 18, background: 'linear-gradient(135deg, #f8fdfd 0%, #f0fafa 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h3 style={{ marginBottom: '1.2rem', color: '#16b3b9', fontWeight: 700 }}>¿Cómo quieres jugar el modo bala?</h3>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '1.5rem', width: '100%' }}>
+              <button
+                className={styles.friendSelectorButton}
+                style={{ flex: 1, minWidth: 0, fontSize: 16, padding: '1rem 0.5rem', borderRadius: 10, fontWeight: 600 }}
+                onClick={() => {
+                  setShowSoloBulletModal(false);
+                  setShowFriendSelector(true);
+                }}
+              >
+                Jugar con amigo
+              </button>
+              <button
+                className={styles.friendSelectorButton}
+                style={{ flex: 1, minWidth: 0, fontSize: 16, padding: '1rem 0.5rem', borderRadius: 10, fontWeight: 600 }}
+                onClick={() => {
+                  setShowSoloBulletModal(false);
+                  navigate('/BulletPlay');
+                }}
+              >
+                Jugar en solitario
+              </button>
+            </div>
+            <button className={styles.cancelButton} style={{ marginTop: '2.2rem', width: '100%' }} onClick={() => setShowSoloBulletModal(false)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -396,26 +483,70 @@ const FriendSelectorModal = ({
   generatedInviteCode,
   showInviteSection,
   onCopyCode,
+  isBulletMode,
+  currentPage,
+  totalPages,
+  onPageChange,
+  searchTerm,
+  onSearchTermChange,
 }) => (
+
   <div className={styles.friendSelectorOverlay}>
     <div className={styles.friendSelector}>
       <h3>Desafía a un amigo</h3>
 
-      {error && <div className={styles.errorMessage}>{error}</div>}
+      {/* Buscador de amigos */}
+      <input
+          className={styles.cancelButton}
+        type="text"
+        placeholder="Buscar amigo por nombre..."
+        value={searchTerm}
+        onChange={e => onSearchTermChange(e.target.value)}
+      />
 
+
+      <br/>
+
+      {error && <div className={styles.errorMessage}>{error}</div>}
       {/* Lista de amigos */}
       {loading ? (
         <div className={styles.loadingMessage}>Cargando amigos...</div>
-      ) : friends.length > 0 ? (
+      ) : totalPages > 0 ? (
         <FriendsList
           friends={friends}
           selectedFriend={selectedFriend}
           onSelectFriend={onSelectFriend}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
         />
       ) : (
         <p className={styles.noFriends}>
           No tienes amigos para jugar. ¡Agrega algunos amigos primero!
         </p>
+      )}
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button
+            onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+            disabled={currentPage === 1}
+            className={inviteStyle.joinButton}
+          >
+            Anterior
+          </button>
+          <span style={{ padding: "0 10px" }}>
+             {currentPage} de {totalPages}
+          </span>
+          <button
+            onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={inviteStyle.joinButton}
+          >
+            Siguiente
+          </button>
+        </div>
       )}
 
       {/* Botones de acción */}
@@ -447,7 +578,7 @@ const FriendSelectorModal = ({
 );
 
 // Componente para la lista de amigos
-const FriendsList = ({ friends, selectedFriend, onSelectFriend }) => (
+const FriendsList = ({ friends, selectedFriend, onSelectFriend, currentPage, totalPages, onPageChange }) => (
   <div className={styles.friendsList}>
     {friends.map((friend) => (
       <div
@@ -524,4 +655,5 @@ const InviteSection = ({
     )}
   </div>
 );
+
 export default PlayMenu;
