@@ -92,6 +92,8 @@ const Wheel = ({
     angleDelta: 0,
     spinTime: 0,
     spinTimeTotal: 0,
+    manualStop: false, // Para controlar parada manual
+    stopTime: 0, // Momento en que se presionó parar
   });
 
   // Controla cuando se termina el giro
@@ -114,6 +116,37 @@ const Wheel = ({
     const elapsedTime = now - spinData.current.startTime;
     spinData.current.spinTime = elapsedTime;
 
+    // Si se activó la parada manual, usar desaceleración más rápida
+    if (spinData.current.manualStop) {
+      const stopElapsedTime = now - spinData.current.stopTime;
+      const stopDuration = 2500; // 2.5 segundos para parar más gradualmente
+
+      if (stopElapsedTime >= stopDuration) {
+        stopRotation();
+        // Calcular en qué segmento quedó basado en el ángulo actual
+        const currentSegmentIndex =
+          Math.floor(((360 - (startAngle % 360)) / 360) * segments.length) %
+          segments.length;
+        const finalSegment = segments[currentSegmentIndex] || winningSegment;
+        finishSpinning(finalSegment);
+        return;
+      }
+
+      // Función de desaceleración más suave para parada manual
+      const stopProgress = stopElapsedTime / stopDuration;
+      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3); // Desaceleración más suave
+      const stopEased = easeOutCubic(stopProgress);
+
+      // Reducir la velocidad gradualmente desde el momento de la parada
+      const remainingAngle = spinData.current.angleDelta * (1 - stopEased);
+      const newAngle = spinData.current.angleAtStop + remainingAngle;
+
+      setStartAngle(newAngle);
+      timerRef.current = setTimeout(rotateWheel, timerDelay);
+      return;
+    }
+
+    // Lógica normal de giro automático
     if (elapsedTime >= spinData.current.spinTimeTotal) {
       stopRotation();
       finishSpinning(winningSegment);
@@ -183,10 +216,30 @@ const Wheel = ({
       angleDelta: randomAngleDelta,
       spinTime: 0,
       spinTimeTotal: spinTimeTotal,
+      manualStop: false,
+      stopTime: 0,
+      angleAtStop: 0,
     };
 
     // Iniciar la animación
     rotateWheel();
+  };
+
+  // Función para parar la ruleta manualmente con desaceleración
+  const stopSpin = () => {
+    if (!isSpinning) return;
+
+    // Activar parada manual y guardar el momento y ángulo actual
+    spinData.current.manualStop = true;
+    spinData.current.stopTime = new Date().getTime();
+    spinData.current.angleAtStop = startAngle;
+
+    // Calcular cuánto ángulo le queda por recorrer (reducido para parada manual)
+    const currentProgress =
+      spinData.current.spinTime / spinData.current.spinTimeTotal;
+    const remainingProgress = 1 - currentProgress;
+    spinData.current.angleDelta =
+      spinData.current.angleDelta * remainingProgress * 0.5; // Reducir a 50% de la velocidad restante (menos agresivo)
   };
 
   // Dibujar la ruleta
@@ -377,8 +430,7 @@ const Wheel = ({
 
       {/* Botón central estilo Preguntados */}
       <button
-        onClick={spin}
-        disabled={isSpinning}
+        onClick={isSpinning ? stopSpin : spin}
         style={{
           position: "absolute",
           top: "50%",
@@ -388,11 +440,11 @@ const Wheel = ({
           color: "#333333",
           border: "3px solid #D4AF37",
           borderRadius: "50%",
-          width: radius * 0.4,
-          height: radius * 0.4,
-          cursor: isSpinning ? "default" : "pointer",
+          width: radius * 0.5, // Botón más grande para que quepa el texto
+          height: radius * 0.5,
+          cursor: "pointer",
           fontWeight: "bold",
-          fontSize: "16px",
+          fontSize: "13px", // Tamaño más pequeño para que quepa
           fontFamily: "Arial, sans-serif",
           boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
           zIndex: 3,
@@ -401,26 +453,29 @@ const Wheel = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          padding: "0",
+          lineHeight: "1",
+          textAlign: "center",
           transform: isSpinning
             ? "translate(-50%, -50%) scale(0.95)"
             : "translate(-50%, -50%) scale(1)",
         }}
         onMouseEnter={(e) => {
-          if (!isSpinning) {
-            e.target.style.transform = "translate(-50%, -50%) scale(1.05)";
-            e.target.style.background = "#FFF9E6";
-            e.target.style.borderColor = "#E6C347";
-          }
+          e.target.style.transform = isSpinning
+            ? "translate(-50%, -50%) scale(0.95)"
+            : "translate(-50%, -50%) scale(1.05)";
+          e.target.style.background = "#FFF9E6";
+          e.target.style.borderColor = "#E6C347";
         }}
         onMouseLeave={(e) => {
-          if (!isSpinning) {
-            e.target.style.transform = "translate(-50%, -50%) scale(1)";
-            e.target.style.background = "#FFFFFF";
-            e.target.style.borderColor = "#D4AF37";
-          }
+          e.target.style.transform = isSpinning
+            ? "translate(-50%, -50%) scale(0.95)"
+            : "translate(-50%, -50%) scale(1)";
+          e.target.style.background = "#FFFFFF";
+          e.target.style.borderColor = "#D4AF37";
         }}
       >
-        {isSpinning ? "GIRANDO" : "GIRAR"}
+        {isSpinning ? "PARAR" : "GIRAR"}
       </button>
     </div>
   );
