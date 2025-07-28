@@ -182,12 +182,16 @@ const BulletOnlinePlay = () => {
     else if (battle.winner_id) msg = "Perdiste.";
     else msg = "Empate.";
     return (
-      <div className={styles.gameContainer}>
-        <h2>Resultado</h2>
-        <p>{msg}</p>
-        <p>Tu puntaje: {userId === battle.user_id1 ? battle.score1 : battle.score2}</p>
-        <p>Puntaje rival: {userId === battle.user_id1 ? battle.score2 : battle.score1}</p>
-        <button className={styles.modalButton} onClick={() => navigate("/Play")}>Volver al menú</button>
+      <div className={styles.statusCard}>
+        <h2 className={styles.statusTitle}>Resultado</h2>
+        <div className={styles.statusSubtitle}>{msg}</div>
+        <div className={styles.statusScore}>
+          Tu puntaje: {userId === battle.user_id1 ? battle.score1 : battle.score2}
+        </div>
+        <div className={styles.statusScore}>
+          Puntaje rival: {userId === battle.user_id1 ? battle.score2 : battle.score1}
+        </div>
+        <button className={styles.statusButton} onClick={() => navigate("/Play")}>Volver al menú</button>
       </div>
     );
   }
@@ -195,11 +199,11 @@ const BulletOnlinePlay = () => {
   // Wait for your turn
   if (!myTurn) {
     return (
-      <div className={styles.classicModeContainer}>
-        <h2>Esperando tu turno...</h2>
-        <p>El oponente está jugando.</p>
-        <p>Puntaje rival: {opponentScore ?? "-"}</p>
-        <button className={styles.modalButton} onClick={() => navigate("/Play")}>Volver al menú</button>
+      <div className={styles.statusCard}>
+        <h2 className={styles.statusTitle}>Esperando tu turno...</h2>
+        <div className={styles.statusSubtitle}>El oponente está jugando.</div>
+        <div className={styles.statusScore}>Puntaje rival: {opponentScore ?? "-"}</div>
+        <button className={styles.statusButton} onClick={() => navigate("/Play")}>Volver al menú</button>
       </div>
     );
   }
