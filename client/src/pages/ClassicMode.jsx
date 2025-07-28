@@ -82,6 +82,7 @@ const ClassicMode = () => {
   const [showQuestionView, setShowQuestionView] = useState(false); // Nueva vista para preguntas
   const [selectedIndex, setSelectedIndex] = useState(null); // Para el feedback visual de respuestas
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // Para mostrar respuesta correcta/incorrecta
+  const [counterAnimating, setCounterAnimating] = useState(false); // Para animar el contador
   const timeoutRef = useRef(null);
 
   // Obtener userId desde localStorage
@@ -369,6 +370,10 @@ const ClassicMode = () => {
           if (data.correct) {
             const newCorrectCount = correctCounter + 1;
             setCorrectCounter(newCorrectCount);
+            // Activar animación del contador
+            setCounterAnimating(true);
+            setTimeout(() => setCounterAnimating(false), 300);
+
             localStorage.setItem(
               `correctCounter_${battleId}_${userId}`,
               newCorrectCount
@@ -585,73 +590,99 @@ const ClassicMode = () => {
 
     return (
       <div className={gameStyles.gameContainer}>
-        <div className={gameStyles.header}>
-          <BackButton
-            onClick={() => {
-              setShowQuestionView(false);
-              setQuestion(null);
-              setSelectedIndex(null);
-              setIsAnswerCorrect(null);
-            }}
-            ariaLabel="Volver a la ruleta"
-          />
+        <div className={styles.questionHeader}>
+          <div className={styles.headerLeft}>
+            <BackButton
+              onClick={() => {
+                setShowQuestionView(false);
+                setQuestion(null);
+                setSelectedIndex(null);
+                setIsAnswerCorrect(null);
+              }}
+              ariaLabel="Volver a la ruleta"
+            />
+          </div>
 
-          <div className={styles.classicModeProgress}>
-            <div className={styles.progressItem}>
-              <span className={styles.playerLabel}>
-                Tú: {myCompletedCount}/4
-              </span>
-            </div>
-            <div className={styles.vsIndicatorSmall}>VS</div>
-            <div className={styles.progressItem}>
-              <span className={styles.playerLabel}>
-                {opponentInfo?.username || "Oponente"}: {opponentCompletedCount}
-                /4
-              </span>
+          <div className={styles.headerCenter}>
+            <div className={styles.classicModeProgress}>
+              <div className={styles.progressItem}>
+                <span className={styles.playerLabel}>
+                  Tú: {myCompletedCount}/4
+                </span>
+              </div>
+              <div className={styles.vsIndicatorSmall}>VS</div>
+              <div className={styles.progressItem}>
+                <span className={styles.playerLabel}>
+                  {opponentInfo?.username || "Oponente"}:{" "}
+                  {opponentCompletedCount}
+                  /4
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className={styles.correctCounterSmall}>
-            <span>{correctCounter}/3</span>
+          <div className={styles.headerRight}>
+            {/* Espacio reservado para mantener el balance del header */}
           </div>
         </div>
 
-        {/* Indicador de categoría - posicionado debajo del header */}
-        {currentQuestionCategory && (
-          <div className={gameStyles.categoryIndicator}>
-            <span className={gameStyles.categoryLabel}>Categoría:</span>
-            <span className={gameStyles.categoryName}>
-              {currentQuestionCategory.name}
-            </span>
-          </div>
-        )}
+        {/* Indicador de categoría y contador - posicionados juntos */}
+        <div className={styles.questionContent}>
+          {currentQuestionCategory && (
+            <div className={styles.categoryAndCounterContainer}>
+              {/* Categoría centrada */}
+              <div className={styles.categoryCenter}>
+                <div className={gameStyles.categoryIndicator}>
+                  <span className={gameStyles.categoryLabel}>Categoría:</span>
+                  <span className={gameStyles.categoryName}>
+                    {currentQuestionCategory.name}
+                  </span>
+                </div>
+              </div>
 
-        <div className={gameStyles.questionContainer}>
-          <h1 className={gameStyles.titleDePrueba}>{question.questiontext}</h1>
-        </div>
-
-        <div className={gameStyles.answersContainer} key={question.question_id}>
-          {answers.map((answer, index) => {
-            let buttonClass = gameStyles.buttonAnswers;
-
-            // Aplicar estilos de feedback visual
-            if (selectedIndex === index) {
-              buttonClass += isAnswerCorrect
-                ? ` ${gameStyles.correct}`
-                : ` ${gameStyles.incorrect}`;
-            }
-
-            return (
-              <button
-                key={answer.answer_id}
-                className={buttonClass}
-                onClick={() => handleAnswerQuestion(answer.answer_id, index)}
-                disabled={selectedIndex !== null || loading}
+              {/* Contador alineado a la derecha */}
+              <div
+                className={`${styles.correctCounterInline} ${
+                  counterAnimating ? styles.animate : ""
+                }`}
               >
-                {answer.text}
-              </button>
-            );
-          })}
+                <span>{correctCounter}/3</span>
+              </div>
+            </div>
+          )}
+
+          <div className={gameStyles.questionContainer}>
+            <h1 className={gameStyles.titleDePrueba}>
+              {question.questiontext}
+            </h1>
+          </div>
+
+          <div
+            className={gameStyles.answersContainer}
+            key={question.question_id}
+          >
+            {answers.map((answer, index) => {
+              let buttonClass = gameStyles.buttonAnswers;
+
+              // Aplicar estilos de feedback visual
+              if (selectedIndex === index) {
+                buttonClass += isAnswerCorrect
+                  ? ` ${gameStyles.correct}`
+                  : ` ${gameStyles.incorrect}`;
+              }
+
+              return (
+                <button
+                  key={answer.answer_id}
+                  className={buttonClass}
+                  onClick={() => handleAnswerQuestion(answer.answer_id, index)}
+                  disabled={selectedIndex !== null || loading}
+                >
+                  {answer.text}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     );

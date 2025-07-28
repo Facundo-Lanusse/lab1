@@ -163,32 +163,118 @@
   margin: 0;
 }
 
-/* Header compacto para vista de preguntas en modo clásico */
+/* Header compacto para vista de preguntas en modo clásico - Diseño perfeccionista */
+.questionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  height: 70px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  /* Fondo elegante con gradiente sutil */
+  background: linear-gradient(
+    180deg,
+    var(--bg-color) 0%,
+    rgba(var(--bg-color-rgb, 255, 255, 255), 0.98) 100%
+  );
+  backdrop-filter: blur(10px);
+
+  /* Bordes y sombras elegantes */
+  border-bottom: 1px solid rgba(22, 179, 185, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(22, 179, 185, 0.1);
+
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 60px;
+}
+
+.headerCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0 20px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: 60px;
+}
+
 .classicModeProgress {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
   color: var(--text-color);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+
+  /* Fondo sutil para destacar el progreso */
+  background: rgba(22, 179, 185, 0.05);
+  border: 1px solid rgba(22, 179, 185, 0.15);
+  border-radius: 20px;
+  padding: 10px 20px;
+
+  /* Sombra interna elegante */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .progressItem {
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .playerLabel {
   color: var(--text-color);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: color 0.3s ease;
 }
 
 .vsIndicatorSmall {
-  color: var(--text-secondary);
+  color: #16b3b9;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 2px rgba(22, 179, 185, 0.3);
+
+  /* Efecto de badge elegante */
+  background: linear-gradient(
+    135deg,
+    rgba(22, 179, 185, 0.1),
+    rgba(22, 179, 185, 0.05)
+  );
+  border: 1px solid rgba(22, 179, 185, 0.2);
+  border-radius: 12px;
+  padding: 4px 8px;
+
+  transition: all 0.3s ease;
+}
+
+.vsIndicatorSmall:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(22, 179, 185, 0.15),
+    rgba(22, 179, 185, 0.08)
+  );
+  border-color: rgba(22, 179, 185, 0.3);
+  transform: scale(1.05);
 }
 
 .correctCounterSmall {
@@ -199,6 +285,283 @@
   font-size: 14px;
   font-weight: 600;
   box-shadow: var(--shadow-soft);
+}
+
+/* Contenido principal de la pregunta */
+.questionContent {
+  margin-top: 90px; /* Espacio ajustado para el header mejorado */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* Contenedor para categoría y contador juntos */
+.categoryAndCounterContainer {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 800px; /* Alineado con el ancho de la pregunta */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 150px; /* Mismo padding que el contenido de la pregunta*/
+  z-index: 3;
+}
+
+/* Wrapper para centrar la categoría */
+.categoryCenter {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Contador alineado a la derecha */
+.correctCounterInline {
+  /* Diseño minimalista que combina con la categoría */
+  background: rgba(255, 255, 255, 0.95);
+  color: #16b3b9;
+
+  /* Tipografía limpia */
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  /* Forma simple y elegante */
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(22, 179, 185, 0.3);
+
+  /* Sombra sutil que combina con la categoría */
+  box-shadow: 0 2px 8px rgba(22, 179, 185, 0.15);
+  backdrop-filter: blur(10px);
+
+  /* Transición suave */
+  transition: all 0.2s ease;
+
+  /* Sin posicionamiento absoluto */
+  flex-shrink: 0;
+}
+
+/* Anular el posicionamiento del indicador de categoría cuando está dentro del contenedor */
+.categoryAndCounterContainer .categoryCenter > div[class*="categoryIndicator"] {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+
+/* Contador inline justo al lado de la categoría */
+.correctCounterInline {
+  /* Diseño minimalista que combina con la categoría */
+  background: rgba(255, 255, 255, 0.95);
+  color: #16b3b9;
+
+  /* Tipografía limpia */
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  /* Forma simple y elegante */
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(22, 179, 185, 0.3);
+
+  /* Sombra sutil que combina con la categoría */
+  box-shadow: 0 2px 8px rgba(22, 179, 185, 0.15);
+  backdrop-filter: blur(10px);
+
+  /* Transición suave */
+  transition: all 0.2s ease;
+
+  /* Posicionamiento relativo para el contenido */
+  position: relative;
+  overflow: hidden;
+
+  /* Mantener en línea con la categoría */
+  flex-shrink: 0;
+}
+
+/* Efecto hover minimalista */
+.correctCounterInline:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(22, 179, 185, 0.4);
+  box-shadow: 0 4px 12px rgba(22, 179, 185, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Animación de pulso más sutil */
+.correctCounterInline.animate {
+  animation: correctCounterPulse 0.3s ease-out;
+}
+
+/* Texto del contador inline */
+.correctCounterInline span {
+  display: inline-block;
+  font-family: inherit;
+}
+
+/* Contador de respuestas correctas - Diseño minimalista y estético (mantenido para compatibilidad) */
+.correctCounterAligned {
+  position: fixed;
+  top: 100px;
+  right: 30px;
+
+  /* Diseño minimalista */
+  background: rgba(255, 255, 255, 0.95);
+  color: #16b3b9;
+
+  /* Tipografía limpia */
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  /* Forma simple y elegante */
+  padding: 10px 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(22, 179, 185, 0.3);
+
+  /* Sombra más visible */
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+
+  /* Transición suave */
+  transition: all 0.2s ease;
+  z-index: 999;
+
+  /* Posicionamiento absoluto para mejor visibilidad */
+  position: fixed;
+  overflow: hidden;
+}
+
+/* Efecto hover minimalista */
+.correctCounterAligned:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(22, 179, 185, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Animación de pulso más sutil */
+@keyframes correctCounterPulse {
+  0% {
+    transform: translateY(0) scale(1);
+    border-color: rgba(22, 179, 185, 0.2);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.02);
+    border-color: rgba(22, 179, 185, 0.4);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    border-color: rgba(22, 179, 185, 0.2);
+  }
+}
+
+/* Activar animación */
+.correctCounterAligned.animate {
+  animation: correctCounterPulse 0.3s ease-out;
+}
+
+/* Texto del contador */
+.correctCounterAligned span {
+  display: inline-block;
+  font-family: inherit;
+}
+
+/* Responsive minimalista */
+@media (max-width: 768px) {
+  .questionHeader {
+    padding: 15px 20px;
+    height: 65px;
+  }
+
+  .classicModeProgress {
+    gap: 15px;
+    padding: 8px 16px;
+    border-radius: 16px;
+  }
+
+  .playerLabel {
+    font-size: 14px;
+  }
+
+  .vsIndicatorSmall {
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 10px;
+  }
+
+  .categoryAndCounterContainer {
+    top: 75px;
+    gap: 6px; /* Espacio pequeño en tablets */
+  }
+
+  .correctCounterInline {
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 16px;
+  }
+
+  .correctCounterAligned {
+    right: 20px;
+    top: 80px;
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+    border: 2px solid rgba(22, 179, 185, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .questionContent {
+    margin-top: 85px;
+  }
+}
+
+@media (max-width: 480px) {
+  .questionHeader {
+    padding: 12px 16px;
+    height: 60px;
+  }
+
+  .classicModeProgress {
+    gap: 12px;
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  .playerLabel {
+    font-size: 13px;
+  }
+
+  .categoryAndCounterContainer {
+    top: 70px;
+    gap: 5px; /* Espacio muy pequeño en móviles */
+    flex-direction: row; /* Mantener horizontal en móviles también */
+  }
+
+  .correctCounterInline {
+    padding: 5px 8px;
+    font-size: 12px;
+    border-radius: 14px;
+  }
+
+  .correctCounterAligned {
+    right: 16px;
+    top: 70px;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+    border: 2px solid rgba(22, 179, 185, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .questionContent {
+    margin-top: 80px;
+  }
 }
 
 /* Contenedor para inicio de turno */
