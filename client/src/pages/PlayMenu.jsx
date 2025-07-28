@@ -26,8 +26,14 @@ const PlayMenu = () => {
   const [notifiedBattles, setNotifiedBattles] = useState(new Set());
 
   // Estado para indicar si es bullet o clásico
-    const [isBulletMode, setIsBulletMode] = useState(false);
+  const [isBulletMode, setIsBulletMode] = useState(false);
 
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const friendsPerPage = 3;
+
+  // Estado para búsqueda de amigos
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Efecto para cargar amigos al montar el componente
   useEffect(() => {
@@ -231,8 +237,23 @@ const PlayMenu = () => {
     setGeneratedInviteCode("");
     setShowInviteSection(false);
     setError(null);
-    setIsBulletMode(null)
+    setIsBulletMode(null);
   };
+
+  // Filtrar amigos por búsqueda antes de paginar
+  const filteredFriends = friends.filter(friend =>
+    friend.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const totalPages = Math.ceil(filteredFriends.length / friendsPerPage);
+  const paginatedFriends = filteredFriends.slice(
+    (currentPage - 1) * friendsPerPage,
+    currentPage * friendsPerPage
+  );
+
+  // Reiniciar página si cambia la lista de amigos
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [friends]);
 
   return (
     <div className={styles.playMenuContainer}>
@@ -268,15 +289,20 @@ const PlayMenu = () => {
             icon={<BulletIcon />}
             title="Modo Bala"
             description="Responde preguntas en poco tiempo y haz tu mejor marca"
-            onClick={() => { setShowFriendSelector(true); setIsBulletMode(true); }}
+            onClick={() => {
+              setShowFriendSelector(true);
+              setIsBulletMode(true);
+            }}
           />
 
           <GameModeCard
             icon={<ClassicIcon />}
             title="Modo Clásico"
             description="Compite con un amigo para ver quién completa primero las categorías"
-            onClick={() => { setShowFriendSelector(true); setIsBulletMode(false); }}
-
+            onClick={() => {
+              setShowFriendSelector(true);
+              setIsBulletMode(false);
+            }}
           />
         </div>
       </div>
@@ -284,7 +310,7 @@ const PlayMenu = () => {
       {/* Modal selector de amigos */}
       {showFriendSelector && (
         <FriendSelectorModal
-          friends={friends}
+          friends={paginatedFriends}
           selectedFriend={selectedFriend}
           onSelectFriend={setSelectedFriend}
           onStartGame={startMode}
@@ -298,9 +324,13 @@ const PlayMenu = () => {
           generatedInviteCode={generatedInviteCode}
           showInviteSection={showInviteSection}
           onCopyCode={copyInviteCode}
-            isBulletMode={isBulletMode}
+          isBulletMode={isBulletMode}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
         />
-
       )}
     </div>
   );
@@ -344,7 +374,6 @@ const GameModeCard = ({ icon, title, description, onClick }) => (
     </div>
     <h3>{title}</h3>
     <p>{description}</p>
-
   </div>
 );
 
@@ -417,38 +446,67 @@ const FriendSelectorModal = ({
   generatedInviteCode,
   showInviteSection,
   onCopyCode,
-    isBulletMode,
+  isBulletMode,
+  currentPage,
+  totalPages,
+  onPageChange,
+  searchTerm,
+  onSearchTermChange,
 }) => (
   <div className={styles.friendSelectorOverlay}>
     <div className={styles.friendSelector}>
       <h3>Desafía a un amigo</h3>
 
-      {error && <div className={styles.errorMessage}>{error}</div>}
-      <div>
-        {isBulletMode ? (
-            <p className={styles.modeDescription}>
-                Estás en modo <strong>Bala</strong>. Responde preguntas rápidamente.
-            </p>
-        ) : (
-            <p className={styles.modeDescription}>
-                Estás en modo <strong>Clásico</strong>. Compite con un amigo.
-            </p>
+      {/* Buscador de amigos */}
+      <input
+          className={styles.cancelButton}
+        type="text"
+        placeholder="Buscar amigo por nombre..."
+        value={searchTerm}
+        onChange={e => onSearchTermChange(e.target.value)}
+      />
+      <br/>
 
-        )}
-      </div>
+      {error && <div className={styles.errorMessage}>{error}</div>}
       {/* Lista de amigos */}
       {loading ? (
         <div className={styles.loadingMessage}>Cargando amigos...</div>
-      ) : friends.length > 0 ? (
+      ) : totalPages > 0 ? (
         <FriendsList
           friends={friends}
           selectedFriend={selectedFriend}
           onSelectFriend={onSelectFriend}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
         />
       ) : (
         <p className={styles.noFriends}>
           No tienes amigos para jugar. ¡Agrega algunos amigos primero!
         </p>
+      )}
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button
+            onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+            disabled={currentPage === 1}
+            className={inviteStyle.joinButton}
+          >
+            Anterior
+          </button>
+          <span style={{ padding: "0 10px" }}>
+             {currentPage} de {totalPages}
+          </span>
+          <button
+            onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={inviteStyle.joinButton}
+          >
+            Siguiente
+          </button>
+        </div>
       )}
 
       {/* Botones de acción */}
@@ -480,7 +538,7 @@ const FriendSelectorModal = ({
 );
 
 // Componente para la lista de amigos
-const FriendsList = ({ friends, selectedFriend, onSelectFriend }) => (
+const FriendsList = ({ friends, selectedFriend, onSelectFriend, currentPage, totalPages, onPageChange }) => (
   <div className={styles.friendsList}>
     {friends.map((friend) => (
       <div
@@ -557,4 +615,5 @@ const InviteSection = ({
     )}
   </div>
 );
+
 export default PlayMenu;
