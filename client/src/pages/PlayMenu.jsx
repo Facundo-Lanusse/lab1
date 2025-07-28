@@ -25,6 +25,10 @@ const PlayMenu = () => {
   const [showBattleNotification, setShowBattleNotification] = useState(false);
   const [notifiedBattles, setNotifiedBattles] = useState(new Set());
 
+  // Estado para indicar si es bullet o clásico
+    const [isBulletMode, setIsBulletMode] = useState(false);
+
+
   // Efecto para cargar amigos al montar el componente
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -109,26 +113,38 @@ const PlayMenu = () => {
   };
 
   // Función para iniciar una partida clásica con un amigo
-  const startClassicGame = useCallback(async () => {
+  const startMode = useCallback(async () => {
     if (!selectedFriend) return;
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const userId = user.user_id;
 
-      const response = await axios.post(
-        "http://localhost:3000/api/classic/start",
-        {
-          userId: userId,
-          opponentId: selectedFriend.user_id,
-        }
-      );
+      let res;
+      if (!isBulletMode) {
+        res = await axios.post(
+          "http://localhost:3000/api/classic/start",
+          {
+            userId: userId,
+            opponentId: selectedFriend.user_id,
+          }
+        );
+      } else {
+        res = await axios.post(
+          "http://localhost:3000/api/bullet/start",
+          {
+            userId: userId,
+            opponentId: selectedFriend.user_id,
+          }
+        );
+      }
+      const response = res.data;
 
-      if (response.data.success) {
-        navigate(`/Classic/${response.data.battleId}`);
+      if (response.success) {
+        navigate(`/Classic/${response.battleId}`);
       } else {
         throw new Error(
-          response.data.message || "No se pudo iniciar la batalla"
+          response.message || "No se pudo iniciar la batalla"
         );
       }
     } catch (error) {
@@ -145,7 +161,7 @@ const PlayMenu = () => {
 
       alert(`No se pudo iniciar la partida: ${errorMessage}`);
     }
-  }, [selectedFriend, navigate]);
+  }, [selectedFriend, navigate, isBulletMode]);
 
   // Función para generar un código de invitación
   const generateInviteCode = async () => {
@@ -215,6 +231,7 @@ const PlayMenu = () => {
     setGeneratedInviteCode("");
     setShowInviteSection(false);
     setError(null);
+    setIsBulletMode(null)
   };
 
   return (
@@ -251,14 +268,15 @@ const PlayMenu = () => {
             icon={<BulletIcon />}
             title="Modo Bala"
             description="Responde preguntas en poco tiempo y haz tu mejor marca"
-            onClick={() => navigate("/BulletPLay")}
+            onClick={() => { setShowFriendSelector(true); setIsBulletMode(true); }}
           />
 
           <GameModeCard
             icon={<ClassicIcon />}
             title="Modo Clásico"
             description="Compite con un amigo para ver quién completa primero las categorías"
-            onClick={() => setShowFriendSelector(true)}
+            onClick={() => { setShowFriendSelector(true); setIsBulletMode(false); }}
+
           />
         </div>
       </div>
@@ -269,7 +287,7 @@ const PlayMenu = () => {
           friends={friends}
           selectedFriend={selectedFriend}
           onSelectFriend={setSelectedFriend}
-          onStartGame={startClassicGame}
+          onStartGame={startMode}
           onClose={closeFriendSelector}
           loading={loading}
           error={error}
@@ -280,7 +298,9 @@ const PlayMenu = () => {
           generatedInviteCode={generatedInviteCode}
           showInviteSection={showInviteSection}
           onCopyCode={copyInviteCode}
+            isBulletMode={isBulletMode}
         />
+
       )}
     </div>
   );
@@ -324,6 +344,7 @@ const GameModeCard = ({ icon, title, description, onClick }) => (
     </div>
     <h3>{title}</h3>
     <p>{description}</p>
+
   </div>
 );
 
@@ -396,13 +417,25 @@ const FriendSelectorModal = ({
   generatedInviteCode,
   showInviteSection,
   onCopyCode,
+    isBulletMode,
 }) => (
   <div className={styles.friendSelectorOverlay}>
     <div className={styles.friendSelector}>
       <h3>Desafía a un amigo</h3>
 
       {error && <div className={styles.errorMessage}>{error}</div>}
+      <div>
+        {isBulletMode ? (
+            <p className={styles.modeDescription}>
+                Estás en modo <strong>Bala</strong>. Responde preguntas rápidamente.
+            </p>
+        ) : (
+            <p className={styles.modeDescription}>
+                Estás en modo <strong>Clásico</strong>. Compite con un amigo.
+            </p>
 
+        )}
+      </div>
       {/* Lista de amigos */}
       {loading ? (
         <div className={styles.loadingMessage}>Cargando amigos...</div>
