@@ -18,9 +18,14 @@ function Admin() {
   });
   const [userImages, setUserImages] = useState({});
 
+  // Función auxiliar para verificar si un usuario es admin
+  const isUserAdmin = (user) => {
+    return user.is_admin === true || user.is_admin === 1;
+  };
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user.is_admin) {
+    if (!user || !isUserAdmin(user)) {
       navigate("/Home");
     } else {
       fetchUsers();
@@ -36,6 +41,16 @@ function Admin() {
         },
       });
       setUsers(res.data.users);
+
+      // Debug: verificar detección de administradores
+      console.log("Total usuarios cargados:", res.data.users.length);
+
+      const admins = res.data.users.filter((user) => isUserAdmin(user));
+      console.log(
+        "Administradores encontrados:",
+        admins.map((u) => `${u.username} (is_admin: ${u.is_admin})`)
+      );
+      console.log("Total administradores:", admins.length);
 
       // Cargar las imágenes de perfil de todos los usuarios
       const imagePromises = res.data.users.map(async (user) => {
@@ -158,14 +173,49 @@ function Admin() {
               <button
                 className={styles.cancelButton}
                 onClick={closeDeleteConfirmation}
+                style={{
+                  backgroundColor: "#6c757d",
+                  color: "white",
+                  border: "none",
+                  padding: "12px 24px",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  marginRight: "12px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#5a6268";
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#6c757d";
+                }}
               >
-                Cancelar
+                CANCELAR
               </button>
               <button
                 className={styles.confirmButton}
                 onClick={confirmDeleteUser}
+                style={{
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  padding: "12px 24px",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#c82333";
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#dc3545";
+                }}
               >
-                Eliminar usuario
+                ELIMINAR USUARIO
               </button>
             </div>
           </div>
@@ -196,9 +246,15 @@ function Admin() {
           </div>
           <div className={styles.statCard}>
             <span className={styles.statValue}>
-              {users.filter((user) => user.is_admin).length}
+              {users.filter((user) => isUserAdmin(user)).length}
             </span>
             <span className={styles.statLabel}>Administradores</span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statValue}>
+              {users.filter((user) => !isUserAdmin(user)).length}
+            </span>
+            <span className={styles.statLabel}>Usuarios Regulares</span>
           </div>
         </div>
       )}
@@ -225,22 +281,59 @@ function Admin() {
               <h3 className={styles.userName}>{user.username}</h3>
               <p className={styles.userEmail}>{user.email}</p>
               <div className={styles.userMeta}>
-                <span className={styles.userRole}>
-                  {user.is_admin ? "Administrador" : "Usuario"}
+                <span
+                  className={styles.userRole}
+                  style={{
+                    backgroundColor: isUserAdmin(user) ? "#28a745" : "#6c757d",
+                    color: "white",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {isUserAdmin(user) ? "ADMIN" : "USER"}
                 </span>
                 <span className={styles.userJoined}>ID: {user.user_id}</span>
               </div>
             </div>
 
             <div className={styles.userActions}>
-              {!user.is_admin && (
+              {!isUserAdmin(user) && (
                 <button
                   className={styles.deleteButton}
                   onClick={() =>
                     openDeleteConfirmation(user.user_id, user.username)
                   }
+                  title="Eliminar usuario"
+                  style={{
+                    backgroundColor: "#dc3545",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "8px 10px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "32px",
+                    width: "60px",
+                    textAlign: "center",
+                    lineHeight: "1",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.backgroundColor = "#c82333";
+                    e.target.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.backgroundColor = "#dc3545";
+                    e.target.style.transform = "translateY(0)";
+                  }}
                 >
-                  <img src="cross.png" alt="Eliminar" />
+                  BORRAR
                 </button>
               )}
             </div>

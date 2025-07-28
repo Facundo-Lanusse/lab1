@@ -71,6 +71,24 @@ const ExternUserProfile = () => {
   if (error) return <div>Error: {error}</div>;
   if (!profileData) return <div>No se encontró el perfil</div>;
 
+  // Función para obtener el resultado en español
+  const getResultInSpanish = (battle) => {
+    // Determinar si el usuario del perfil ganó
+    const isUserWinner = battle.is_winner;
+
+    // Manejar diferentes casos de resultado
+    if (isUserWinner === null || isUserWinner === undefined) {
+      return "Empate";
+    } else if (isUserWinner === true || isUserWinner === 1) {
+      return "Victoria";
+    } else if (isUserWinner === false || isUserWinner === 0) {
+      return "Derrota";
+    } else {
+      // Fallback por si hay algún valor inesperado
+      return "Resultado desconocido";
+    }
+  };
+
   return (
     <div className={styles.profileContainer}>
       <BackButton onClick={() => navigate(-1)} ariaLabel="Volver" />
@@ -102,7 +120,10 @@ const ExternUserProfile = () => {
             <ul className={styles.historyList}>
               {soloHistory.map((game) => (
                 <li key={game.game_id}>
-                  <span>Fecha: {game.game_date}</span>
+                  <span>
+                    Fecha:{" "}
+                    {new Date(game.game_date).toLocaleDateString("es-ES")}
+                  </span>
                   <span>Puntuación: {game.score}</span>
                 </li>
               ))}
@@ -118,18 +139,23 @@ const ExternUserProfile = () => {
           <h2>Historial de batallas</h2>
           {battleHistory.length > 0 ? (
             <ul className={styles.historyList}>
-              {battleHistory.map((battle) => (
-                <li
-                  key={battle.battle_id}
-                  className={battle.is_winner ? styles.winner : styles.loser}
-                >
-                  <span>
-                    {battle.user1_name} vs {battle.user2_name}
-                  </span>
-                  <span>Resultado: {battle.result}</span>
-                  <span>Fecha: {battle.date}</span>
-                </li>
-              ))}
+              {battleHistory.map((battle) => {
+                const result = getResultInSpanish(battle);
+                return (
+                  <li
+                    key={battle.battle_id}
+                    className={battle.is_winner ? styles.winner : styles.loser}
+                  >
+                    <span>
+                      {battle.user1_name} vs {battle.user2_name}
+                    </span>
+                    <span>Resultado: {result}</span>
+                    <span>
+                      Fecha: {new Date(battle.date).toLocaleDateString("es-ES")}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className={styles.emptyMessage}>No hay batallas registradas</p>
