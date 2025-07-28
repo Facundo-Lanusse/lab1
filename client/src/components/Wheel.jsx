@@ -14,6 +14,7 @@ const Wheel = ({
 }) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [startAngle, setStartAngle] = useState(0);
+  const [finalSpinAngle, setFinalSpinAngle] = useState(0); // Nuevo estado para el ángulo final
   const [currentSegment, setCurrentSegment] = useState(null);
   const [showSparkles, setShowSparkles] = useState(false);
   const canvasRef = useRef(null);
@@ -57,6 +58,7 @@ const Wheel = ({
     const centerX = size / 2;
     const centerY = size / 2;
 
+    // VOLVER AL ORDEN NORMAL
     segments.forEach((segment, i) => {
       const iconAngle = angleOffset + i * anglePerSegment + anglePerSegment / 2;
       const iconDistance = radius * 0.75;
@@ -94,216 +96,89 @@ const Wheel = ({
     ctx.restore();
   };
 
-  // Variables para la animación
+  // Variables para la animación ORIGINALES
   const spinData = useRef({
     startTime: 0,
     angleDelta: 0,
     spinTime: 0,
     spinTimeTotal: 0,
-    manualStop: false, // Para controlar parada manual
-    stopTime: 0, // Momento en que se presionó parar
+    randomOffset: 0, // Calcular una sola vez al inicio
   });
 
   // Controla cuando se termina el giro
-  const finishSpinning = (segment) => {
+  const finishSpinning = (finalAngle = null) => {
     setIsSpinning(false);
-    setCurrentSegment(segment);
+
+    if (segments.length === 0) {
+      console.log("No hay segmentos disponibles");
+      return;
+    }
+
+    // Usar el ángulo final pasado como parámetro o el estado guardado
+    const angleToUse = finalAngle !== null ? finalAngle : finalSpinAngle;
+    const currentAngle = angleToUse % 360;
+    // Normalizar el ángulo para que esté entre 0 y 360
+    const normalizedAngle =
+      currentAngle < 0 ? currentAngle + 360 : currentAngle;
+
+    // Calcular el ángulo por segmento
+    const anglePerSegment = 360 / segments.length;
+
+    // CORRECCIÓN: La flecha está visualmente arriba (270° en Canvas), no en 0°
+    // Lógica de detección: encontrar qué segmento está bajo la flecha (270°)
+    const arrowAngle = 270; // La flecha está arriba
+    const originalPosition = (360 - normalizedAngle + arrowAngle) % 360;
+    const selectedIndex = Math.floor(originalPosition / anglePerSegment);
+    const selectedSegment = segments[selectedIndex];
+
+    setCurrentSegment(selectedSegment);
     setShowSparkles(true);
 
     // Ocultar sparkles después de 2 segundos
     setTimeout(() => setShowSparkles(false), 2000);
 
     if (onFinished) {
-      onFinished(segment);
+      onFinished(selectedSegment);
     }
   };
 
-  // Animación del giro con mejor easing
+  // Animación del giro SIMPLE ALEATORIO
   const rotateWheel = () => {
     const now = new Date().getTime();
     const elapsedTime = now - spinData.current.startTime;
     spinData.current.spinTime = elapsedTime;
 
-    // Si se activó la parada manual, usar desaceleración más rápida
-    if (spinData.current.manualStop) {
-      const stopElapsedTime = now - spinData.current.stopTime;
-      const stopDuration = 2500; // 2.5 segundos para parar más gradualmente
-
-      if (stopElapsedTime >= stopDuration) {
-        stopRotation();
-
-        // NUEVO ENFOQUE MEJORADO: Mismo sistema que el giro automático
-        const anglePerSegment = (2 * Math.PI) / segments.length; // radianes
-        const angleOffset = (startAngle * Math.PI) / 180; // convertir a radianes
-
-        // Calcular la posición angular de cada segmento (centro del segmento)
-        const segmentAngles = segments.map((segment, i) => {
-          const segmentAngle =
-            angleOffset + i * anglePerSegment + anglePerSegment / 2;
-          // Convertir a grados y normalizar
-          let angleDegrees = (segmentAngle * 180) / Math.PI;
-          angleDegrees = angleDegrees % 360;
-          if (angleDegrees < 0) angleDegrees += 360;
-
-          return {
-            segment,
-            index: i,
-            angle: angleDegrees,
-          };
-        });
-
-        // La flecha apunta hacia arriba, que en el sistema de coordenadas de canvas es 270°
-        const arrowAngle = 270;
-
-        // Encontrar el segmento cuyo centro está más cerca de la flecha
-        let closestSegment = null;
-        let minDistance = Infinity;
-
-        segmentAngles.forEach((seg) => {
-          let distance = Math.abs(seg.angle - arrowAngle);
-          // Considerar la naturaleza circular de los ángulos
-          if (distance > 180) {
-            distance = 360 - distance;
-          }
-
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestSegment = seg;
-          }
-        });
-
-        console.log("=== NUEVO ENFOQUE MANUAL MEJORADO ===");
-        console.log("startAngle:", startAngle);
-        console.log("anglePerSegment (rad):", anglePerSegment);
-        console.log("angleOffset (rad):", angleOffset);
-        console.log("segmentAngles:", segmentAngles);
-        console.log("arrowAngle:", arrowAngle);
-        console.log("closestSegment:", closestSegment);
-        console.log("selectedSegment:", closestSegment?.segment);
-        console.log("====================================");
-
-        const finalSegment = closestSegment
-          ? closestSegment.segment
-          : segments[0];
-        finishSpinning(finalSegment);
-        return;
-      }
-
-      // Función de desaceleración más suave para parada manual
-      const stopProgress = stopElapsedTime / stopDuration;
-      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3); // Desaceleración más suave
-      const stopEased = easeOutCubic(stopProgress);
-
-      // Reducir la velocidad gradualmente desde el momento de la parada
-      const remainingAngle = spinData.current.angleDelta * (1 - stopEased);
-      const newAngle = spinData.current.angleAtStop + remainingAngle;
-
-      setStartAngle(newAngle);
-      timerRef.current = setTimeout(rotateWheel, timerDelay);
-      return;
-    }
-
-    // Lógica normal de giro automático
+    // Cuando se termina el tiempo de giro
     if (elapsedTime >= spinData.current.spinTimeTotal) {
       stopRotation();
 
-      // NUEVO ENFOQUE MEJORADO: Calcular el ángulo final basado en la animación completa
-      // En lugar de usar startAngle (que se modifica durante la animación),
-      // calculamos el ángulo final real basado en los datos de la animación
+      // Calcular y guardar el ángulo final real
+      const finalAngle = spinData.current.angleDelta % 360;
+      setFinalSpinAngle(finalAngle);
+      setStartAngle(finalAngle);
 
-      const angleToStop = calculateSegmentAngle(
-        segments.indexOf(winningSegment),
-        segments.length
-      );
-
-      const anglePerSegment = 360 / segments.length;
-      const centerOffset = anglePerSegment / 2;
-      // Este es el ángulo final real que la animación habría alcanzado
-      const finalAnimationAngle = 360 * 12 + angleToStop + centerOffset;
-
-      // Ahora calcular las posiciones de los segmentos basándose en este ángulo final
-      const anglePerSegmentRad = (2 * Math.PI) / segments.length; // radianes
-      const angleOffsetRad = (finalAnimationAngle * Math.PI) / 180; // convertir a radianes
-
-      // Calcular la posición angular de cada segmento (centro del segmento)
-      const segmentAngles = segments.map((segment, i) => {
-        const segmentAngle =
-          angleOffsetRad + i * anglePerSegmentRad + anglePerSegmentRad / 2;
-        // Convertir a grados y normalizar
-        let angleDegrees = (segmentAngle * 180) / Math.PI;
-        angleDegrees = angleDegrees % 360;
-        if (angleDegrees < 0) angleDegrees += 360;
-
-        return {
-          segment,
-          index: i,
-          angle: angleDegrees,
-        };
-      });
-
-      // La flecha apunta hacia arriba, que en el sistema de coordenadas de canvas es 270°
-      const arrowAngle = 270;
-
-      // Encontrar el segmento cuyo centro está más cerca de la flecha
-      let closestSegment = null;
-      let minDistance = Infinity;
-
-      segmentAngles.forEach((seg) => {
-        let distance = Math.abs(seg.angle - arrowAngle);
-        // Considerar la naturaleza circular de los ángulos
-        if (distance > 180) {
-          distance = 360 - distance;
-        }
-
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestSegment = seg;
-        }
-      });
-
-      console.log("=== NUEVO ENFOQUE FINAL DEBUG ===");
-      console.log("finalAnimationAngle:", finalAnimationAngle);
-      console.log("anglePerSegmentRad:", anglePerSegmentRad);
-      console.log("angleOffsetRad:", angleOffsetRad);
-      console.log("segmentAngles:", segmentAngles);
-      console.log("arrowAngle:", arrowAngle);
-      console.log("closestSegment:", closestSegment);
-      console.log("selectedSegment:", closestSegment?.segment);
-      console.log("expectedWinningSegment:", winningSegment);
-      console.log("==================================");
-
-      const finalSegment = closestSegment
-        ? closestSegment.segment
-        : segments[0];
-      finishSpinning(finalSegment);
+      // Terminar el giro y detectar el segmento automáticamente, pasando el ángulo calculado
+      setTimeout(() => finishSpinning(finalAngle), 100); // Pasar el ángulo como parámetro
       return;
     }
 
-    // Función de desaceleración mejorada (ease-out-cubic)
+    // Función de desaceleración
     const easeOutCubic = (t) => {
       return 1 - Math.pow(1 - t, 3);
     };
 
-    // Calcular progreso de 0 a 1
+    // Calcular progreso
     const progress = elapsedTime / spinData.current.spinTimeTotal;
     const easedProgress = easeOutCubic(progress);
 
-    // Calcular el ángulo actual con mejor suavidad
-    const currentAngle = spinData.current.angleDelta * (1 - easedProgress);
+    // Calcular el ángulo actual basado en la animación
+    // Invertir la lógica: al principio easedProgress=0, al final easedProgress=1
+    const currentAngle = spinData.current.angleDelta * easedProgress;
 
-    const angleToStop = calculateSegmentAngle(
-      segments.indexOf(winningSegment),
-      segments.length
-    );
+    // Actualizar el ángulo de inicio para el dibujo
+    setStartAngle(currentAngle);
 
-    // Ajustar para que la flecha apunte exactamente al centro del segmento ganador
-    // La flecha está en la parte superior (0°), compensamos el desfase
-    const anglePerSegment = 360 / segments.length;
-    const centerOffset = anglePerSegment / 2;
-    const newAngle = 360 * 12 + angleToStop + centerOffset + currentAngle;
-
-    setStartAngle(newAngle);
-
+    // Continuar la animación
     timerRef.current = setTimeout(rotateWheel, timerDelay);
   };
 
@@ -336,36 +211,30 @@ const Wheel = ({
     // Generar un ángulo aleatorio con más variación
     const randomAngleDelta = Math.floor(Math.random() * 2160) + 1800; // Entre 5-11 vueltas
 
-    // Configurar la animación
+    // Calcular offset aleatorio UNA SOLA VEZ para evitar movimiento errático
+    let randomOffset = 0;
+    if (segments.length === 2) {
+      const anglePerSegment = 360 / segments.length;
+      randomOffset = (Math.random() - 0.5) * anglePerSegment * 0.15; // Reducido a ±7.5% del segmento para más fluidez
+    }
+
+    // Configurar la animación ORIGINAL
     spinData.current = {
       startTime: new Date().getTime(),
       angleDelta: randomAngleDelta,
       spinTime: 0,
       spinTimeTotal: spinTimeTotal,
-      manualStop: false,
-      stopTime: 0,
-      angleAtStop: 0,
+      randomOffset: randomOffset,
     };
 
     // Iniciar la animación
     rotateWheel();
   };
 
-  // Función para parar la ruleta manualmente con desaceleración
+  // Función ORIGINAL para parar - por ahora deshabilitada para simplicidad
   const stopSpin = () => {
-    if (!isSpinning) return;
-
-    // Activar parada manual y guardar el momento y ángulo actual
-    spinData.current.manualStop = true;
-    spinData.current.stopTime = new Date().getTime();
-    spinData.current.angleAtStop = startAngle;
-
-    // Calcular cuánto ángulo le queda por recorrer (reducido para parada manual)
-    const currentProgress =
-      spinData.current.spinTime / spinData.current.spinTimeTotal;
-    const remainingProgress = 1 - currentProgress;
-    spinData.current.angleDelta =
-      spinData.current.angleDelta * remainingProgress * 0.5; // Reducir a 50% de la velocidad restante (menos agresivo)
+    // Por simplicidad, no hacer nada por ahora
+    console.log("Función de parar deshabilitada temporalmente");
   };
 
   // Dibujar la ruleta
@@ -402,6 +271,7 @@ const Wheel = ({
     const anglePerSegment = (2 * Math.PI) / segments.length;
     const angleOffset = (startAngle * Math.PI) / 180;
 
+    // VOLVER AL ORDEN NORMAL - sin complicaciones
     segments.forEach((segment, i) => {
       const startAngleRad = angleOffset + i * anglePerSegment;
       const endAngleRad = startAngleRad + anglePerSegment;

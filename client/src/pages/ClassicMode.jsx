@@ -224,11 +224,28 @@ const ClassicMode = () => {
             data.battle.user_id1 === userId
               ? data.battle.user1Categories
               : data.battle.user2Categories;
-          // Guardar todas las categorías para mostrar en la ruleta
-          setAllCategories(userCategories);
+
+          // Ordenar las categorías inmediatamente para consistencia
+          const sortedUserCategories = [...userCategories].sort((a, b) =>
+            normalizeString(a.name).localeCompare(normalizeString(b.name))
+          );
+
+          console.log("=== BACKEND CATEGORIES DEBUG ===");
+          console.log(
+            "Categorías del backend (original):",
+            userCategories.map((cat) => cat.name)
+          );
+          console.log(
+            "Categorías del backend (ordenadas):",
+            sortedUserCategories.map((cat) => cat.name)
+          );
+          console.log("=================================");
+
+          // Guardar todas las categorías ordenadas para mostrar en la ruleta
+          setAllCategories(sortedUserCategories);
           // Guardar solo las disponibles (no completadas) para la lógica del juego
           setAvailableCategories(
-            userCategories.filter((cat) => !cat.completed)
+            sortedUserCategories.filter((cat) => !cat.completed)
           );
         } else {
           setMessage("Esperando a que juegue el oponente");
@@ -397,7 +414,18 @@ const ClassicMode = () => {
     if (battle?.winner != null)
       return setMessage("The game has ended. You cannot continue answering.");
 
-    // Mostrar la ruleta en lugar de cargar directamente la pregunta
+    // Si solo queda una categoría disponible, cargar directamente la pregunta
+    if (availableCategories.length === 1) {
+      const lastCategory = availableCategories[0];
+      if (canSelectCategory) {
+        handleCategorySelect(lastCategory.category_id);
+      } else {
+        loadQuestion(lastCategory.category_id);
+      }
+      return;
+    }
+
+    // Si hay más de una categoría, mostrar la ruleta
     setShowWheel(true);
     setShowQuestionView(false);
   };
@@ -431,6 +459,18 @@ const ClassicMode = () => {
   };
   const handleStartWheel = () => {
     if (isMyTurn && !question) {
+      // Si solo queda una categoría disponible, cargar directamente la pregunta
+      if (availableCategories.length === 1) {
+        const lastCategory = availableCategories[0];
+        if (canSelectCategory) {
+          handleCategorySelect(lastCategory.category_id);
+        } else {
+          loadQuestion(lastCategory.category_id);
+        }
+        return;
+      }
+
+      // Si hay más de una categoría, mostrar la ruleta
       setShowWheel(true);
       setShowQuestionView(false); // Asegurar que estamos en la vista de ruleta
     }
@@ -438,61 +478,87 @@ const ClassicMode = () => {
   const handleFinishSpin = (segment) => {
     setShowWheel(false);
 
-    // Buscar la categoría seleccionada en todas las categorías
-    const selectedCat = allCategories.find(
+    console.log("Segmento de la ruleta:", segment);
+
+    // Usar categorías ordenadas consistentemente
+    const sortedCategories = getSortedAvailableCategories();
+    console.log(
+      "Categorías disponibles (ordenadas):",
+      sortedCategories.map((cat) => cat.name)
+    );
+
+    // Buscar la categoría seleccionada en las categorías disponibles ordenadas
+    const selectedCat = sortedCategories.find(
       (cat) => normalizeString(cat.name) === normalizeString(segment)
     );
 
+    console.log("Categoría encontrada:", selectedCat);
+
     if (selectedCat) {
-      // Verificar si la categoría está disponible (no completada)
-      const isAvailable = availableCategories.find(
-        (cat) => cat.category_id === selectedCat.category_id
+      // La categoría está disponible por definición (ya que viene de la ruleta de disponibles)
+      if (canSelectCategory) {
+        handleCategorySelect(selectedCat.category_id);
+      } else {
+        loadQuestion(selectedCat.category_id);
+      }
+    } else {
+      // Fallback más robusto: buscar por coincidencia parcial
+      console.log("Buscando con coincidencia parcial...");
+      const partialMatch = sortedCategories.find(
+        (cat) =>
+          normalizeString(cat.name).includes(normalizeString(segment)) ||
+          normalizeString(segment).includes(normalizeString(cat.name))
       );
 
-      if (isAvailable) {
-        // Si puede seleccionar categoría (3 respuestas correctas), marcar la categoría
-        // Si no, cargar pregunta de esa categoría
+      if (partialMatch) {
+        console.log("Coincidencia parcial encontrada:", partialMatch);
         if (canSelectCategory) {
-          handleCategorySelect(selectedCat.category_id);
+          handleCategorySelect(partialMatch.category_id);
         } else {
-          loadQuestion(selectedCat.category_id);
+          loadQuestion(partialMatch.category_id);
         }
-      } else {
-        // Si la categoría ya está completada, elegir una aleatoria de las disponibles
-        if (availableCategories.length > 0) {
-          const randomCategory =
-            availableCategories[
-              Math.floor(Math.random() * availableCategories.length)
-            ];
-          if (canSelectCategory) {
-            handleCategorySelect(randomCategory.category_id);
-          } else {
-            loadQuestion(randomCategory.category_id);
-          }
+      } else if (sortedCategories.length > 0) {
+        // Último fallback: elegir una categoría aleatoria de las disponibles ordenadas
+        console.log("Usando fallback aleatorio");
+        const randomCategory =
+          sortedCategories[Math.floor(Math.random() * sortedCategories.length)];
+        if (canSelectCategory) {
+          handleCategorySelect(randomCategory.category_id);
+        } else {
+          loadQuestion(randomCategory.category_id);
         }
-      }
-    } else if (availableCategories.length > 0) {
-      // Fallback: elegir una categoría aleatoria de las disponibles
-      const randomCategory =
-        availableCategories[
-          Math.floor(Math.random() * availableCategories.length)
-        ];
-      if (canSelectCategory) {
-        handleCategorySelect(randomCategory.category_id);
-      } else {
-        loadQuestion(randomCategory.category_id);
       }
     }
   };
 
   // Render helpers
-  const getCategoryNames = () => allCategories.map((cat) => cat.name); // Mostrar todas las categorías
+  const getSortedAvailableCategories = () => {
+    // Ordenar alfabéticamente para asegurar consistencia entre usuarios
+    return [...availableCategories].sort((a, b) =>
+      normalizeString(a.name).localeCompare(normalizeString(b.name))
+    );
+  };
+
+  const getSortedAllCategories = () => {
+    // Ordenar todas las categorías alfabéticamente para consistencia visual
+    return [...allCategories].sort((a, b) =>
+      normalizeString(a.name).localeCompare(normalizeString(b.name))
+    );
+  };
+
+  const getCategoryNames = () => {
+    const sortedCategories = getSortedAvailableCategories();
+    return sortedCategories.map((cat) => cat.name);
+  };
   const getRandomWinningSegment = () => {
     // Solo seleccionar de las categorías disponibles (no completadas)
-    if (availableCategories.length === 0) return "";
-    return availableCategories[
-      Math.floor(Math.random() * availableCategories.length)
-    ].name;
+    const sortedCategories = getSortedAvailableCategories();
+    if (sortedCategories.length === 0) return "";
+    const randomSegment =
+      sortedCategories[Math.floor(Math.random() * sortedCategories.length)]
+        .name;
+    console.log("Segmento ganador aleatorio:", randomSegment);
+    return randomSegment;
   };
 
   // Nueva función para renderizar la vista de preguntas estilo bullet/solitario
@@ -600,7 +666,7 @@ const ClassicMode = () => {
         <h3>
           {canSelectCategory
             ? "Gira la ruleta para marcar una categoría"
-            : "Gira la ruleta para obtener una categoría aleatoria"}
+            : `Gira la ruleta para obtener una pregunta (${availableCategories.length} categorías disponibles)`}
         </h3>
 
         {/* Indicador de categorías completadas */}
@@ -608,7 +674,7 @@ const ClassicMode = () => {
           <div className={styles.categoriesStatus}>
             <p>Estado de categorías:</p>
             <div className={styles.categoryIndicators}>
-              {allCategories.map((category) => (
+              {getSortedAllCategories().map((category) => (
                 <div
                   key={category.category_id}
                   className={`${styles.categoryIndicator} ${
@@ -627,7 +693,7 @@ const ClassicMode = () => {
 
         <Wheel
           segments={getCategoryNames()}
-          segColors={getCategoryColors(allCategories)}
+          segColors={getCategoryColors(getSortedAvailableCategories())}
           winningSegment={getRandomWinningSegment()}
           onFinished={handleFinishSpin}
           primaryColor="#30609b"
@@ -635,6 +701,7 @@ const ClassicMode = () => {
           buttonText="Girar"
           size={350}
         />
+
         <button
           className={styles.cancelWheelButton}
           onClick={() => {
@@ -653,11 +720,17 @@ const ClassicMode = () => {
       battle.user_id1 === userId
         ? battle.user1Categories
         : battle.user2Categories;
+
+    // Ordenar categorías alfabéticamente para consistencia
+    const sortedCategories = [...categories].sort((a, b) =>
+      normalizeString(a.name).localeCompare(normalizeString(b.name))
+    );
+
     return (
       <div className={styles.categoriesContainer}>
         <h3>Elige una categoría para marcar</h3>
         <div className={styles.categoriesGrid}>
-          {categories.map((category) => (
+          {sortedCategories.map((category) => (
             <div
               key={category.category_id}
               className={`${styles.categoryCard} ${
@@ -1011,8 +1084,9 @@ const ClassicMode = () => {
             <div className={styles.turnStartContainer}>
               <h3>Es tu turno</h3>
               <p>
-                Presiona continuar para girar la ruleta y obtener una categoría
-                aleatoria
+                {availableCategories.length === 1
+                  ? `Solo queda la categoría ${availableCategories[0].name}. Presiona continuar para obtener una pregunta.`
+                  : "Presiona continuar para girar la ruleta y obtener una categoría aleatoria"}
               </p>
               <button
                 className={styles.continueButton}
