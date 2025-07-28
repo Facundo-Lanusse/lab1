@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: column;
     align-Items: center;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     box-Shadow: var(--shadow);
     cursor: pointer;
 }
@@ -50,7 +50,7 @@
     border-radius: 30px;
     padding: 10px 20px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     font-weight: bold;
     margin-top: auto;
 }
@@ -62,7 +62,7 @@
     border-radius: 30px;
     padding: 10px 20px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     font-weight: bold;
     margin-top: auto;
     display: flex;
@@ -99,7 +99,7 @@
     border-radius: 8px;
     padding: 8px 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     font-weight: 500;
     min-width: 40px;
     height: 36px;

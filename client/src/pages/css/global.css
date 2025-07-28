@@ -1,4 +1,105 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* Variables CSS globales - Consistentes en toda la aplicación */
+:root {
+  /* Colores principales */
+  --primary-color: #16b3b9; /* Turquesa - color principal */
+  --primary-light: #8ae0e6; /* Turquesa claro */
+  --primary-dark: #0f797f; /* Turquesa oscuro */
+  --secondary-color: #f5ba26; /* Amarillo - acento */
+  --secondary-light: #ffd866; /* Amarillo claro */
+  --tertiary-color: #ff6b6b; /* Color complementario */
+  --success-color: #6cc551; /* Verde para éxito */
+  --error-color: #e74c3c; /* Rojo para errores */
+  --warning-color: #f39c12; /* Naranja para advertencias */
+
+  /* Colores de fondo */
+  --bg-color: #ffffff; /* Fondo blanco principal */
+  --bg-secondary: #f7f9fc; /* Fondo gris muy claro */
+  --panel-color: #ffffff; /* Color de paneles */
+
+  /* Colores de texto */
+  --text-color: #333333; /* Texto principal */
+  --text-light: #ffffff; /* Texto claro */
+  --text-secondary: #666666; /* Texto secundario */
+  --text-muted: #777777; /* Texto suave */
+
+  /* Colores de borde */
+  --border-color: #e0e0e0; /* Bordes suaves */
+  --border-dark: #d0d0d0; /* Bordes más oscuros */
+
+  /* Colores de hover y estados */
+  --hover-color: #14a1a6; /* Turquesa oscuro para hover */
+  --active-color: #0f797f; /* Color activo */
+
+  /* Colores específicos */
+  --win-color: #4caf50; /* Verde para victorias */
+  --lose-color: #f44336; /* Rojo para derrotas */
+  --clr: #f7f9fc; /* Color para NavigationBar background */
+
+  /* Sombras */
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra ligera */
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra estándar */
+  --shadow-medium: 0 6px 20px rgba(0, 0, 0, 0.15); /* Sombra media */
+  --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.2); /* Sombra pesada */
+
+  /* Gradientes */
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  --gradient-secondary: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Bordes redondeados */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-circle: 50%;
+
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Fuentes */
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+
+  /* Pesos de fuente */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+/* Reset básico */
+* {
+  box-sizing: border-box;
+}
+
 body {
-    margin: 0; line-height: normal;
+  margin: 0;
+  line-height: normal;
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: var(--bg-color);
 }

@@ -1,593 +1,580 @@
 /* Home.module.css */
 
 /* Variables de colores - manteniendo consistencia con FriendsMenu */
-:root {
-    --primary-color: #16b3b9;      /* Turquesa - color principal */
-    --primary-light: #8ae0e6;      /* Turquesa claro */
-    --primary-dark: #0f797f;       /* Turquesa oscuro */
-    --secondary-color: #f5ba26;    /* Amarillo - acento */
-    --secondary-light: #ffd866;    /* Amarillo claro */
-    --tertiary-color: #ff6b6b;     /* Color complementario */
-    --success-color: #6cc551;      /* Verde para éxito */
-    --bg-color: #f7f9fc;           /* Fondo gris muy claro */
-    --panel-color: #ffffff;        /* Color de paneles */
-    --text-color: #333333;         /* Texto principal */
-    --text-light: #ffffff;         /* Texto claro */
-    --text-secondary: #666666;     /* Texto secundario */
-    --border-color: #e0e0e0;       /* Bordes suaves */
-    --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
-    --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.05);  /* Sombra sutil */
-    --shadow-medium: 0 6px 20px rgba(0, 0, 0, 0.1); /* Sombra media */
-}
 
 /* Estilos base */
 .homeContainer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    font-family: Inter, sans-serif;
-    overflow: auto;
-    background-color: var(--bg-color);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family);
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--bg-color);
+  z-index: 1;
 }
-
 .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--bg-color);
-    z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+  z-index: -1;
 }
 
 .homeContent {
-    width: 100%;
-    max-width: 1200px;
-    margin: 70px auto 30px;
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    z-index: 1;
-}
-
-/* Header section */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 70px 20px 120px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 0;
+} /* Header section */
 .headerSection {
-    margin-bottom: 30px;
-    padding-bottom: 15px;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
 }
 
 .welcomeTitle {
-    font-size: 32px;
-    color: var(--text-color);
-    margin-bottom: 6px;
-    font-weight: 700;
+  font-size: 32px;
+  color: var(--text-color);
+  margin-bottom: 6px;
+  font-weight: 700;
 }
 
 .welcomeTitle span {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .welcomeSubtitle {
-    font-size: 16px;
-    color: var(--text-secondary);
-    font-weight: 400;
-    margin: 0;
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin: 0;
 }
 
 /* Dashboard layout */
 .dashboardLayout {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 24px;
-    width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  width: 100%;
 }
 
 /* Main panel styles */
 .mainPanel {
-    background: var(--panel-color);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: var(--shadow-soft);
+  background: var(--panel-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
 }
 
 .panelHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 .sectionTitle {
-    font-size: 22px;
-    color: var(--text-color);
-    margin: 0;
-    font-weight: 600;
+  font-size: 22px;
+  color: var(--text-color);
+  margin: 0;
+  font-weight: 600;
 }
 
 .newGameButton {
-    background: var(--primary-color);
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 30px;
-    text-decoration: none;
-    transition: all 0.2s ease;
+  background: var(--primary-color);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 30px;
+  text-decoration: none;
+  transition: var(--transition-fast);
 }
 
 .newGameButton:hover {
-    background: var(--hover-color);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-soft);
+  background: var(--hover-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Battles list con scroll oculto y más espacio izquierdo */
 .battlesList {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-height: 600px;
-    overflow-y: auto;
-    /* Ocultar scrollbar pero mantener funcionalidad */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-    padding: 2px 10px 0 4px; /* Top, right, bottom, left - más padding a la izquierda */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 600px;
+  overflow-y: auto;
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  padding: 2px 10px 0 4px; /* Top, right, bottom, left - más padding a la izquierda */
 }
 
 /* Ocultar scrollbar para Chrome, Safari y Opera */
 .battlesList::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 /* Estilo mejorado de las tarjetas de batalla */
 .battleCard {
-    background-color: var(--panel-color);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: var(--shadow-soft);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid var(--border-color);
-    border-left: 4px solid var(--secondary-color);
-    position: relative;
-    /* Sin margen izquierdo para evitar el desplazamiento */
-    margin-left: 0;
-    margin-right: 1px;
-    margin-top: 1px;
-    margin-bottom: 1px;
-    overflow: visible; /* Asegurar que nada se corte */
+  background-color: var(--panel-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--secondary-color);
+  position: relative;
+  /* Sin margen izquierdo para evitar el desplazamiento */
+  margin-left: 0;
+  margin-right: 1px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  overflow: visible; /* Asegurar que nada se corte */
 }
 
 .battleCard:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-    background-color: #fefefe;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  background-color: #fefefe;
 }
 
 .battleHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .opponentName {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-color);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
 }
 
 .turnIndicator {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .yourTurn {
-    background-color: var(--success-color);
-    color: white;
+  background-color: var(--success-color);
+  color: white;
 }
 
 .opponentTurn {
-    background-color: #e0e0e0;
-    color: var(--text-secondary);
+  background-color: #e0e0e0;
+  color: var(--text-secondary);
 }
 
 .battleProgress {
-    margin: 20px 0;
-    background: rgba(240, 240, 240, 0.3);
-    padding: 16px;
-    border-radius: 8px;
+  margin: 20px 0;
+  background: rgba(240, 240, 240, 0.3);
+  padding: 16px;
+  border-radius: 8px;
 }
 
 .progressRow {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
 }
 
 .progressRow:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .playerName {
-    font-size: 14px;
-    font-weight: 500;
-    min-width: 40px;
-    color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 40px;
+  color: var(--text-color);
 }
 
 .progressBar {
-    flex-grow: 1;
-    height: 10px;
-    background-color: #eeeeee;
-    border-radius: 5px;
-    overflow: hidden;
+  flex-grow: 1;
+  height: 10px;
+  background-color: #eeeeee;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .progressFill {
-    height: 100%;
-    background-color: var(--primary-color);
-    border-radius: 5px;
-    transition: width 0.3s ease;
+  height: 100%;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  transition: width 0.3s ease;
 }
 
 .opponentFill {
-    background-color: var(--tertiary-color);
+  background-color: var(--tertiary-color);
 }
 
 .categoryCount {
-    font-size: 14px;
-    font-weight: 600;
-    min-width: 30px;
-    text-align: right;
-    color: var(--text-color);
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 30px;
+  text-align: right;
+  color: var(--text-color);
 }
 
 .battleFooter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
 }
 
 .battleDate {
-    font-size: 13px;
-    color: var(--text-secondary);
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .continueButton {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .arrowIcon {
-    transition: transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .battleCard:hover .arrowIcon {
-    transform: translateX(3px);
+  transform: translateX(3px);
 }
 
 /* Loading, error states and empty state */
 .loadingContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 50px 20px;
-    color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+  color: var(--text-secondary);
 }
 
 .loadingSpinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(22, 179, 185, 0.2);
-    border-left: 4px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 16px;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(22, 179, 185, 0.2);
+  border-left: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .errorMessage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    color: #d32f2f;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #d32f2f;
+  text-align: center;
 }
 
 .errorIcon {
-    font-size: 32px;
-    margin-bottom: 12px;
+  font-size: 32px;
+  margin-bottom: 12px;
 }
 
 .retryButton {
-    margin-top: 16px;
-    background: transparent;
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  margin-top: 16px;
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
 }
 
 .retryButton:hover {
-    background: var(--primary-light);
-    color: var(--primary-dark);
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .emptyStateContainer {
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
 }
 
 .emptyState {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 300px;
 }
 
 .emptyStateIcon {
-    font-size: 48px;
-    margin-bottom: 16px;
+  font-size: 48px;
+  margin-bottom: 16px;
 }
 
 .emptyState h3 {
-    font-size: 18px;
-    color: var(--text-color);
-    margin-bottom: 8px;
+  font-size: 18px;
+  color: var(--text-color);
+  margin-bottom: 8px;
 }
 
 .emptyState p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
 }
 
 .startGameButton {
-    background: var(--primary-color);
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: 30px;
-    text-decoration: none;
-    transition: all 0.2s ease;
+  background: var(--primary-color);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  transition: var(--transition-fast);
 }
 
 .startGameButton:hover {
-    background: var(--hover-color);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-soft);
+  background: var(--hover-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Side Panel Styles */
 .sidePanel {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .quickActions {
-    background: var(--panel-color);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: var(--shadow-soft);
+  background: var(--panel-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
 }
 
 .quickActionsTitle {
-    font-size: 18px;
-    color: var(--text-color);
-    margin: 0 0 16px 0;
-    font-weight: 600;
+  font-size: 18px;
+  color: var(--text-color);
+  margin: 0 0 16px 0;
+  font-weight: 600;
 }
 
 .actionButtons {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
 .actionButton {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: var(--transition-fast);
+  border: 1px solid var(--border-color);
 }
 
 .actionButton:hover {
-    background-color: rgba(22, 179, 185, 0.05);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-soft);
+  background-color: rgba(22, 179, 185, 0.05);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
 }
 
 .actionIcon {
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(22, 179, 185, 0.1);
-    border-radius: 8px;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(22, 179, 185, 0.1);
+  border-radius: 8px;
 }
 
 .actionText {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .actionName {
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--text-color);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-color);
 }
 
 .actionDesc {
-    font-size: 13px;
-    color: var(--text-secondary);
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .tipsContainer {
-    background: var(--panel-color);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: var(--shadow-soft);
+  background: var(--panel-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
 }
 
 .tipBox {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
 }
 
 .tipIcon {
-    font-size: 24px;
-    margin-top: 3px;
+  font-size: 24px;
+  margin-top: 3px;
 }
 
 .tipContent h4 {
-    font-size: 16px;
-    color: var(--text-color);
-    margin: 0 0 8px 0;
+  font-size: 16px;
+  color: var(--text-color);
+  margin: 0 0 8px 0;
 }
 
 .tipContent p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.5;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
 }
 
 /* Estilos para las batallas completadas */
 .completedBattlesSection {
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
 }
 
 .sectionSubtitle {
-    font-size: 18px;
-    color: var(--text-color);
-    margin-bottom: 16px;
-    font-weight: 600;
+  font-size: 18px;
+  color: var(--text-color);
+  margin-bottom: 16px;
+  font-weight: 600;
 }
 
 .completedBattle {
-    background-color: rgba(245, 245, 245, 0.7);
-    border: 1px solid var(--border-color);
-    border-left: 4px solid #a0a0a0;
+  background-color: rgba(245, 245, 245, 0.7);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid #a0a0a0;
 }
 
 .disabledBattle {
-    cursor: not-allowed;
-    opacity: 0.75;
-    pointer-events: none; /* Deshabilita interacciones */
+  cursor: not-allowed;
+  opacity: 0.75;
+  pointer-events: none; /* Deshabilita interacciones */
 }
 
 .disabledBattle:hover {
-    transform: none !important;
-    box-shadow: var(--shadow-soft) !important;
-    background-color: var(--panel-color) !important;
+  transform: none !important;
+  box-shadow: var(--shadow-soft) !important;
+  background-color: var(--panel-color) !important;
 }
 
 .battleResult {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .winResult {
-    background-color: var(--success-color);
-    color: white;
+  background-color: var(--success-color);
+  color: white;
 }
 
 .loseResult {
-    background-color: var(--tertiary-color);
-    color: white;
+  background-color: var(--tertiary-color);
+  color: white;
 }
 
 .completedLabel {
-    font-size: 14px;
-    font-weight: 500;
-    color: #a0a0a0; /* Gris para indicar finalización */
-    display: flex;
-    align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #a0a0a0; /* Gris para indicar finalización */
+  display: flex;
+  align-items: center;
 }
 
 /* Media queries para responsividad */
 @media (max-width: 900px) {
-    .dashboardLayout {
-        grid-template-columns: 1fr;
-    }
+  .dashboardLayout {
+    grid-template-columns: 1fr;
+  }
 
-    .homeContent {
-        margin-top: 60px;
-        padding: 0 16px;
-    }
+  .homeContent {
+    margin-top: 60px;
+    padding: 0 16px;
+  }
 
-    .welcomeTitle {
-        font-size: 28px;
-    }
+  .welcomeTitle {
+    font-size: 28px;
+  }
 
-    .sidePanel {
-        order: -1;
-    }
+  .sidePanel {
+    order: -1;
+  }
 
-    .quickActions {
-        padding: 20px;
-    }
+  .quickActions {
+    padding: 20px;
+  }
 
-    .actionButtons {
-        grid-template-columns: 1fr 1fr;
-    }
+  .actionButtons {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 600px) {
-    .welcomeTitle {
-        font-size: 24px;
-    }
+  .welcomeTitle {
+    font-size: 24px;
+  }
 
-    .mainPanel, .quickActions, .tipsContainer {
-        padding: 16px;
-    }
+  .mainPanel,
+  .quickActions,
+  .tipsContainer {
+    padding: 16px;
+  }
 
-    .actionButtons {
-        grid-template-columns: 1fr;
-    }
+  .actionButtons {
+    grid-template-columns: 1fr;
+  }
 
-    .battleProgress {
-        padding: 12px;
-    }
+  .battleProgress {
+    padding: 12px;
+  }
 }

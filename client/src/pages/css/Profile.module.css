@@ -1,17 +1,6 @@
 /* Profile.module.css */
 
 /* Variables de colores - consistentes con el resto de la aplicación */
-:root {
-    --primary-color: #16b3b9;      /* Turquesa - color principal */
-    --secondary-color: #f5ba26;    /* Amarillo - acento */
-    --bg-color: #ffffff;           /* Fondo blanco */
-    --text-color: #333333;         /* Texto principal */
-    --text-light: #ffffff;         /* Texto claro */
-    --border-color: #e0e0e0;       /* Bordes suaves */
-    --hover-color: #14a1a6;        /* Turquesa oscuro para hover */
-    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
-    --error-color: #f30303;        /* Color para errores */
-}
 
 .container {
     background: linear-gradient(135deg, #16b3b9 0%, #14a1a6 100%);
@@ -38,7 +27,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition-normal);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     padding: 0;
     border: none;
@@ -79,7 +68,7 @@
     margin: 5px 0 10px;
     width: 95%;
     max-width: 850px;
-    transition: all 0.3s ease;
+    transition: var(--transition-normal);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -147,7 +136,7 @@
     margin: 5px auto 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     border: 3px solid var(--primary-color);
-    transition: all 0.3s ease;
+    transition: var(--transition-normal);
 }
 
 .profileImageContainer:hover {
@@ -271,7 +260,7 @@
     border-radius: 8px;
     font-size: 14px;
     background-color: #f9f9f9;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     height: 38px;
     width: 100%;
     box-sizing: border-box;
@@ -311,7 +300,7 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     white-space: nowrap;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
     min-width: 90px;

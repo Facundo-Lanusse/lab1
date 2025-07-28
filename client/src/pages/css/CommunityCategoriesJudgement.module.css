@@ -1,15 +1,5 @@
 /* CommunityCategoriesJudgement.module.css */
 
-:root {
-    --card-bg: #ffffff;
-    --input-bg: #f7f7f7;
-    --highlight-bg: #f7f7f7;
-    --primary-dark: #139aa0;
-    --success-dark: #449d44;
-    --danger-color: #d9534f;
-    --danger-dark: #c9302c;
-    --text-secondary: #777777;
-}
 
 .container {
     max-width: 1200px;

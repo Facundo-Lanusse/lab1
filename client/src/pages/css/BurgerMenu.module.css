@@ -1,203 +1,203 @@
 /* Menú de hamburguesa */
 .burgerMenu {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1003; /* Mayor z-index para asegurar que esté por encima */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    padding: 10px;
-    border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1003; /* Mayor z-index para asegurar que esté por encima */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: var(--transition-normal);
 }
 
 .burgerMenu:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Contenedor del menú desplegable */
 .menuContainer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 300px;
-    height: 100vh;
-    background: linear-gradient(135deg, #ffffff, #f8f9fa);
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
-    z-index: 1001;
-    overflow-y: auto;
-    border-right: 1px solid rgba(22, 179, 185, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 1002;
+  overflow-y: auto;
+  border-right: 1px solid rgba(22, 179, 185, 0.2);
 }
 
 /* Cabecera del menú con avatar e info del usuario */
 .menuHeader {
-    padding: 17px 20px 30px 100px;
-    display: flex;
-    align-items: center;
-    background: linear-gradient(45deg, #16b3b9, #14a0a5);
-    color: white;
-    position: relative;
-    min-height: 80px; /* Altura mínima para asegurar espacio suficiente */
+  padding: 17px 20px 30px 100px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(45deg, #16b3b9, #14a0a5);
+  color: white;
+  position: relative;
+  min-height: 80px; /* Altura mínima para asegurar espacio suficiente */
 }
 
 .userAvatar {
-    width: 50px;
-    height: 50px;
-    background-color: white;
-    color: #16b3b9;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    margin-right: 15px;
-    border: 2px solid rgba(255, 255, 255, 0.7);
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  color: #16b3b9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
 }
 
 .userInfo {
-    flex: 1;
+  flex: 1;
 }
 
 .userInfo h3 {
-    margin: 0 0 5px;
-    font-size: 18px;
-    font-weight: 600;
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .userInfo p {
-    margin: 0;
-    font-size: 14px;
-    opacity: 0.9;
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
 .menuDivider {
-    height: 1px;
-    background-color: rgba(0, 0, 0, 0.1);
-    margin: 10px 0;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
 }
 
 .menuItems {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 15px;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px;
+  flex: 1;
 }
 
 /* Botones del menú desplegable */
 .buttonForDesplegableMenu {
-    width: 100%;
-    padding: 14px 20px;
-    background-color: white;
-    border: none;
-    border-radius: 10px;
-    color: #444;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    display: flex;
-    align-items: center;
+  width: 100%;
+  padding: 14px 20px;
+  background-color: white;
+  border: none;
+  border-radius: 10px;
+  color: #444;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: left;
+  display: flex;
+  align-items: center;
 }
 
 .buttonForDesplegableMenu:hover {
-    background-color: #f0f8ff;
-    transform: translateX(5px);
-    color: #16b3b9;
+  background-color: #f0f8ff;
+  transform: translateX(5px);
+  color: #16b3b9;
 }
 
 .buttonForDesplegableMenu:hover .menuItemIcon svg {
-    stroke: #16b3b9;
+  stroke: #16b3b9;
 }
 
 .buttonForDesplegableMenu:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 .menuItemIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 15px;
-    width: 24px;
-    height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  width: 24px;
+  height: 24px;
 }
 
 .menuItemIcon svg {
-    width: 20px;
-    height: 20px;
-    stroke: #666;
-    transition: all 0.2s ease;
+  width: 20px;
+  height: 20px;
+  stroke: #666;
+  transition: var(--transition-fast);
 }
 
 .menuItemLabel {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 /* Botón de cerrar sesión con estilo especial */
 .logoutButton {
-    margin-top: auto;
-    background-color: #fff0f0;
-    border: 1px solid rgba(255, 0, 0, 0.1);
-    color: #ff5252;
+  margin-top: auto;
+  background-color: #fff0f0;
+  border: 1px solid rgba(255, 0, 0, 0.1);
+  color: #ff5252;
 }
 
 .logoutButton:hover {
-    background-color: #ffecec;
-    color: #ff3333;
+  background-color: #ffecec;
+  color: #ff3333;
 }
 
 .logoutButton .menuItemIcon svg {
-    stroke: #ff5252;
+  stroke: #ff5252;
 }
 
 .logoutButton:hover .menuItemIcon svg {
-    stroke: #ff3333;
+  stroke: #ff3333;
 }
 
 /* Overlay oscuro de fondo */
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    backdrop-filter: blur(3px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  backdrop-filter: blur(3px);
 }
 
 /* Media queries para responsividad */
 @media screen and (max-width: 576px) {
-    .menuContainer {
-        width: 85%;
-    }
+  .menuContainer {
+    width: 85%;
+  }
 
-    .menuHeader {
-        padding-left: 90px;
-    }
+  .menuHeader {
+    padding-left: 90px;
+  }
 
-    .buttonForDesplegableMenu {
-        padding: 12px 15px;
-        font-size: 15px;
-    }
+  .buttonForDesplegableMenu {
+    padding: 12px 15px;
+    font-size: 15px;
+  }
 }
 
 @media screen and (max-width: 480px) {
-    .menuContainer {
-        width: 90%;
-    }
+  .menuContainer {
+    width: 90%;
+  }
 
-    .menuHeader {
-        padding-left: 80px;
-    }
+  .menuHeader {
+    padding-left: 80px;
+  }
 }

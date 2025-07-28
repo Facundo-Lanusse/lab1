@@ -15,7 +15,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     box-shadow: var(--shadow);
     padding: 0; /* Eliminar padding para que la imagen se ajuste mejor */
 }
@@ -40,7 +40,7 @@
     background-color: var(--bg-color);
     border-radius: 20px;
     box-shadow: var(--shadow);
-    font-family: Inter, sans-serif;
+    font-family: var(--font-family);
     position: relative;
 }
 
@@ -73,7 +73,7 @@
     border: 2px solid var(--border-color);
     border-radius: 30px;
     font-size: 16px;
-    transition: all 0.3s ease;
+    transition: var(--transition-normal);
     color: var(--text-color);
 }
 
@@ -102,7 +102,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     box-shadow: var(--shadow);
 }
 
@@ -124,7 +124,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     box-shadow: var(--shadow);
 }
 
@@ -148,7 +148,7 @@
     background-color: var(--bg-color);
     border-radius: 16px;
     border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .friendItem:hover {
@@ -305,7 +305,7 @@
     margin-bottom: 10px;
     background-color: #f9f9f9;
     border-radius: 12px;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .requestItem:hover {
@@ -352,7 +352,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .acceptButton {

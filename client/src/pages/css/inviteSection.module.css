@@ -19,7 +19,7 @@
   border: 2px solid #e0e0e0;
   border-radius: 10px;
   font-size: 15px;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   background-color: white;
 }
 
@@ -39,7 +39,7 @@
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   box-shadow: 0 2px 8px rgba(22, 179, 185, 0.2);
 }
 
@@ -98,7 +98,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
 }
 
@@ -184,7 +184,7 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   box-shadow: 0 4px 15px rgba(22, 179, 185, 0.3);
   min-width: 150px;
 }
@@ -204,7 +204,7 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   min-width: 150px;
 }

@@ -1,8 +1,4 @@
 
-:root {
-    --delete-color: #FF5A5F; /* Color para elementos inactivos */
-    --bg-color: #ffffff;
-}
 
 
 
@@ -22,7 +18,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     box-shadow: var(--shadow);
     padding: 0;
     z-index: 10;
@@ -48,7 +44,7 @@
     background-color: var(--bg-color);
     border-radius: 20px;
     box-shadow: var(--shadow);
-    font-family: Inter, sans-serif;
+    font-family: var(--font-family);
     position: relative;
     margin-top: 60px;
 }
@@ -74,7 +70,7 @@
     border: 2px solid var(--border-color);
     border-radius: 30px;
     font-size: 16px;
-    transition: all 0.3s ease;
+    transition: var(--transition-normal);
     color: var(--text-color);
 }
 
@@ -101,7 +97,7 @@
     flex-direction: column;
     align-items: center;
     flex: 1;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     box-shadow: var(--shadow);
 }
 
@@ -137,7 +133,7 @@
     background-color: var(--bg-color);
     border-radius: 16px;
     border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .userItem:hover {
@@ -211,7 +207,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     box-shadow: var(--shadow);
 }
 
@@ -358,7 +354,7 @@
     color: var(--text-color);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .cancelButton:hover {
@@ -373,7 +369,7 @@
     color: white;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .confirmButton:hover {
