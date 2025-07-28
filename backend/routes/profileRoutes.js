@@ -103,7 +103,8 @@ const upload = multer({
 router.post('/editProfile/upload-image', upload.single('profileImage'), async (req, res) => {
     try {
         const { userId } = req.body;
-        const imagePath = req.file.path;
+        // Guardar solo la ruta relativa a public
+        const imagePath = 'uploads/' + req.file.filename;
 
         // Comprobar si el usuario ya tiene una imagen de perfil
         const checkQuery = 'SELECT * FROM profile_image WHERE user_id = $1';
@@ -125,7 +126,7 @@ router.post('/editProfile/upload-image', upload.single('profileImage'), async (r
         await db.query(query, params);
 
         // Devolver la URL relativa para el frontend
-        const clientPath = imagePath.replace('../client/public', '');
+        const clientPath = '/' + imagePath;
 
         res.status(200).json({
             message: 'Imagen de perfil actualizada correctamente',
@@ -151,8 +152,8 @@ router.get('/profile-image/:userId', async (req, res) => {
 
         if (result.rows.length > 0) {
             const imagePath = result.rows[0].image_path;
-
-            const clientPath = imagePath.replace('../client/public', '');
+            // Solo la ruta cambia: debe empezar con /uploads/ si es una imagen personalizada
+            const clientPath = imagePath.startsWith('uploads/') ? '/' + imagePath : imagePath;
             res.status(200).json({
                 imagePath: clientPath,
                 success: true
