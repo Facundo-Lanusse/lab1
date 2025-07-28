@@ -83,6 +83,7 @@ const ClassicMode = () => {
   const [selectedIndex, setSelectedIndex] = useState(null); // Para el feedback visual de respuestas
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // Para mostrar respuesta correcta/incorrecta
   const [counterAnimating, setCounterAnimating] = useState(false); // Para animar el contador
+  const [gameResultSaved, setGameResultSaved] = useState(false); // Para evitar guardar el resultado múltiples veces
   const timeoutRef = useRef(null);
 
   // Obtener userId desde localStorage
@@ -218,6 +219,12 @@ const ClassicMode = () => {
       if (data.success) {
         setBattle(data.battle);
         if (data.history) setGameHistory(data.history);
+
+        // Resetear el estado de resultado guardado si la batalla está activa
+        if (data.battle.status === "ongoing") {
+          setGameResultSaved(false);
+        }
+
         const isCurrentUserTurn = data.battle.currentTurn === userId;
         if (isCurrentUserTurn) {
           setMessage("Es tu turno");
@@ -257,9 +264,17 @@ const ClassicMode = () => {
             : data.battle.user_id1;
         fetchOpponentInfo(opponentId);
       }
-    } catch {
-      modalAfterWin();
-      setError("No se pudo cargar la batalla");
+    } catch (error) {
+      console.error("Error al cargar el estado de la batalla:", error);
+      // Si es un error 403, la batalla probablemente terminó
+      if (error.response?.status === 403) {
+        // Solo mostrar el modal si no se ha mostrado ya
+        if (!showResultModal) {
+          modalAfterWin();
+        }
+      } else {
+        setError("No se pudo cargar la batalla");
+      }
     } finally {
       setLoading(false);
     }
@@ -452,15 +467,43 @@ const ClassicMode = () => {
     }
   };
   const saveGameResult = async (isWinner) => {
+    // Evitar guardar el resultado múltiples veces
+    if (gameResultSaved) return;
+
     try {
-      await axios.post(
+      setGameResultSaved(true); // Marcar como guardado antes de hacer la petición
+
+      const response = await axios.post(
         `http://localhost:3000/api/classic/battle/${battleId}/result`,
         { userId, isWinner }
       );
+
+      console.log("Resultado guardado exitosamente:", response.data);
+
       if (isWinner) {
         navigate("/Home");
       }
-    } catch {}
+    } catch (error) {
+      console.error("Error al guardar resultado:", error);
+
+      // Si el error indica que ya fue guardado, no reintentamos
+      if (
+        error.response?.status === 200 ||
+        error.response?.data?.message?.includes("ya fue guardado")
+      ) {
+        console.log("El resultado ya había sido guardado anteriormente");
+        return; // No resetear gameResultSaved
+      }
+
+      // Para otros errores, permitir reintentos
+      setGameResultSaved(false);
+
+      // Si es un error 403 o 404, probablemente la batalla terminó
+      if (error.response?.status === 403 || error.response?.status === 404) {
+        console.log("La batalla ya terminó, mostrando modal");
+        modalAfterWin(isWinner);
+      }
+    }
   };
   const handleStartWheel = () => {
     if (isMyTurn && !question) {
@@ -812,7 +855,8 @@ const ClassicMode = () => {
     if (myCompletedCount >= 4) {
       if (
         gameHistory.length > 0 &&
-        !gameHistory.some((h) => h.action === "game_end")
+        !gameHistory.some((h) => h.action === "game_end") &&
+        !gameResultSaved
       ) {
         saveGameResult(true);
         setGameHistory((prev) => [
@@ -850,7 +894,8 @@ const ClassicMode = () => {
     if (opponentCompletedCount >= 4) {
       if (
         gameHistory.length > 0 &&
-        !gameHistory.some((h) => h.action === "game_end")
+        !gameHistory.some((h) => h.action === "game_end") &&
+        !gameResultSaved
       ) {
         saveGameResult(false);
         setGameHistory((prev) => [
@@ -1021,7 +1066,7 @@ const ClassicMode = () => {
 
   // Evitar doble llamado a saveGameResult si la batalla ya está completada
   useEffect(() => {
-    if (!battle) return;
+    if (!battle || gameResultSaved) return;
     // Solo guardar resultado si la batalla está en curso
     if (battle.status !== "ongoing") return;
     if (battle.user_id1 === userId || battle.user_id2 === userId) {
@@ -1037,15 +1082,16 @@ const ClassicMode = () => {
       const opponentCompletedCount = opponentCategories.filter(
         (c) => c.completed
       ).length;
-      // Solo llamar a saveGameResult si el modal ya se mostró (es decir, después de 3 segundos)
+      // Solo llamar a saveGameResult si alguien ha ganado y el modal no se ha mostrado
       if (
         (myCompletedCount === 4 || opponentCompletedCount === 4) &&
-        !showResultModal
+        !showResultModal &&
+        !gameResultSaved
       ) {
         saveGameResult(myCompletedCount === 4);
       }
     }
-  }, [battle, userId, showResultModal]);
+  }, [battle, userId, showResultModal, gameResultSaved]);
 
   if (!battleId) {
     return (
