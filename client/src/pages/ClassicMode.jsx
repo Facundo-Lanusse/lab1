@@ -6,6 +6,25 @@ import styles from "./css/ClassicMode.module.css";
 import gameStyles from "./css/GamePlay.module.css"; // Estilos para las preguntas
 import Wheel from "../components/Wheel";
 
+// Mapeo específico de colores por categoría
+const getCategoryColor = (categoryName) => {
+  const colorMap = {
+    historia: "#f39c12", // Naranja cálido que complementa el turquesa
+    geografía: "#3498db", // Azul que armoniza con el turquesa #16b3b9
+    geografia: "#3498db", // Azul (sin acento)
+    entretenimiento: "#e74c3c", // Rojo coral que contrasta bien
+    ciencia: "#27ae60", // Verde que complementa la paleta turquesa
+  };
+
+  const key = categoryName.toLowerCase().trim();
+  return colorMap[key] || "#16b3b9"; // Color turquesa por defecto
+};
+
+// Función para obtener colores ordenados según las categorías
+const getCategoryColors = (categories) => {
+  return categories.map((category) => getCategoryColor(category.name));
+};
+
 const COLORS = [
   "#FF6384",
   "#36A2EB",
@@ -601,7 +620,7 @@ const ClassicMode = () => {
 
         <Wheel
           segments={getCategoryNames()}
-          segColors={COLORS}
+          segColors={getCategoryColors(allCategories)}
           winningSegment={getRandomWinningSegment()}
           onFinished={handleFinishSpin}
           primaryColor="#30609b"

@@ -1,3 +1,4 @@
+import { WillChangeMotionValue } from "framer-motion";
 import React, { useState, useRef, useEffect } from "react";
 
 const Wheel = ({
@@ -14,12 +15,13 @@ const Wheel = ({
   const [isSpinning, setIsSpinning] = useState(false);
   const [startAngle, setStartAngle] = useState(0);
   const [currentSegment, setCurrentSegment] = useState(null);
+  const [showSparkles, setShowSparkles] = useState(false);
   const canvasRef = useRef(null);
   const timerRef = useRef(null);
-  const timerDelay = 33; // ~30fps
-  const spinTime = 4000; // 3 segundos de giro
+  const timerDelay = 16; // 60fps para animación más suave
+  const spinTime = 4000;
   const spinTimeTotal = 4000;
-  const radius = size / 2 - 10;
+  const radius = size / 2 - 12; // Más espacio para efectos
 
   // Función para obtener las rutas de los archivos SVG reales
   const getCategoryIcon = (categoryName) => {
@@ -96,12 +98,17 @@ const Wheel = ({
   const finishSpinning = (segment) => {
     setIsSpinning(false);
     setCurrentSegment(segment);
+    setShowSparkles(true);
+
+    // Ocultar sparkles después de 2 segundos
+    setTimeout(() => setShowSparkles(false), 2000);
+
     if (onFinished) {
       onFinished(segment);
     }
   };
 
-  // Animación del giro
+  // Animación del giro con mejor easing
   const rotateWheel = () => {
     const now = new Date().getTime();
     const elapsedTime = now - spinData.current.startTime;
@@ -113,27 +120,28 @@ const Wheel = ({
       return;
     }
 
-    // Función de desaceleración
-    const easeOut = (t, b, c, d) => {
-      const ts = (t /= d) * t;
-      const tc = ts * t;
-      return b + c * (tc + -3 * ts + 3 * t);
+    // Función de desaceleración mejorada (ease-out-cubic)
+    const easeOutCubic = (t) => {
+      return 1 - Math.pow(1 - t, 3);
     };
 
-    // Calcular el ángulo actual
-    const timeRemaining = spinData.current.spinTimeTotal - elapsedTime;
-    const angle = easeOut(
-      timeRemaining,
-      0,
-      spinData.current.angleDelta,
-      spinData.current.spinTimeTotal
-    );
+    // Calcular progreso de 0 a 1
+    const progress = elapsedTime / spinData.current.spinTimeTotal;
+    const easedProgress = easeOutCubic(progress);
+
+    // Calcular el ángulo actual con mejor suavidad
+    const currentAngle = spinData.current.angleDelta * (1 - easedProgress);
 
     const angleToStop = calculateSegmentAngle(
       segments.indexOf(winningSegment),
       segments.length
     );
-    const newAngle = 360 * 10 + angleToStop + angle;
+
+    // Ajustar para que la flecha apunte exactamente al centro del segmento ganador
+    // La flecha está en la parte superior (0°), compensamos el desfase
+    const anglePerSegment = 360 / segments.length;
+    const centerOffset = anglePerSegment / 2;
+    const newAngle = 360 * 12 + angleToStop + centerOffset + currentAngle;
 
     setStartAngle(newAngle);
 
@@ -148,12 +156,15 @@ const Wheel = ({
     }
   };
 
-  // Calcular el ángulo para un segmento específico
+  // Calcular el ángulo para un segmento específico (corregido para precisión)
   const calculateSegmentAngle = (index, total) => {
-    return (360 / total) * index;
+    // La flecha apunta hacia arriba (0 grados), calculamos desde ahí
+    const anglePerSegment = 360 / total;
+    // Queremos que el centro del segmento esté bajo la flecha
+    return anglePerSegment * index;
   };
 
-  // Iniciar el giro de la ruleta
+  // Iniciar el giro de la ruleta con efectos mejorados
   const spin = () => {
     if (isSpinning || segments.length === 0) return;
 
@@ -161,15 +172,15 @@ const Wheel = ({
     stopRotation();
     setIsSpinning(true);
     setCurrentSegment(null);
+    setShowSparkles(false);
 
-    // Generar un ángulo aleatorio entre 10 y 20 vueltas completas (3600-7200 grados)
-    // Esto hace que la ruleta gire un número aleatorio de veces antes de detenerse
-    const randomAngleDelta = Math.floor(Math.random() * 3600) + 3600;
+    // Generar un ángulo aleatorio con más variación
+    const randomAngleDelta = Math.floor(Math.random() * 2160) + 1800; // Entre 5-11 vueltas
 
     // Configurar la animación
     spinData.current = {
       startTime: new Date().getTime(),
-      angleDelta: randomAngleDelta, // Ángulo aleatorio que se moverá
+      angleDelta: randomAngleDelta,
       spinTime: 0,
       spinTimeTotal: spinTimeTotal,
     };
@@ -183,7 +194,7 @@ const Wheel = ({
     drawWheel();
   }, [startAngle, segments, segColors, size]);
 
-  // Dibujar la ruleta en el canvas
+  // Dibujar la ruleta en el canvas con efectos mejorados
   const drawWheel = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -194,24 +205,21 @@ const Wheel = ({
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Dibujar el borde exterior de la ruleta con gradiente
+    // Borde exterior dorado estilo Preguntados (menos brillante)
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius + 8, 0, Math.PI * 2);
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, primaryColor);
-    gradient.addColorStop(1, "#0d8a91");
-    ctx.fillStyle = gradient;
+    ctx.arc(centerX, centerY, radius + 6, 0, Math.PI * 2);
+    ctx.fillStyle = "#D4AF37";
     ctx.fill();
     ctx.closePath();
 
-    // Dibujar sombra interna
+    // Borde interno blanco
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius + 3, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.arc(centerX, centerY, radius + 2, 0, Math.PI * 2);
+    ctx.fillStyle = "#FFFFFF";
     ctx.fill();
     ctx.closePath();
 
-    // Dibujar los segmentos
+    // Dibujar los segmentos con mejores efectos
     const anglePerSegment = (2 * Math.PI) / segments.length;
     const angleOffset = (startAngle * Math.PI) / 180;
 
@@ -219,58 +227,38 @@ const Wheel = ({
       const startAngleRad = angleOffset + i * anglePerSegment;
       const endAngleRad = startAngleRad + anglePerSegment;
 
-      // Dibujar segmento con gradiente
+      // Segmento con color sólido estilo Preguntados
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.arc(centerX, centerY, radius, startAngleRad, endAngleRad);
       ctx.closePath();
 
-      // Crear gradiente radial para cada segmento
-      const segGradient = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        0,
-        centerX,
-        centerY,
-        radius
-      );
+      // Color sólido vibrante
       const baseColor = segColors[i % segColors.length];
-      segGradient.addColorStop(0, baseColor);
-      segGradient.addColorStop(1, baseColor + "CC"); // Añadir transparencia
-
-      ctx.fillStyle = segGradient;
+      ctx.fillStyle = baseColor;
       ctx.fill();
 
-      // Borde más elegante
+      // Borde blanco delgado entre segmentos
       ctx.strokeStyle = "#FFFFFF";
       ctx.lineWidth = 2;
       ctx.stroke();
     });
 
-    // Dibujar círculo central con gradiente
+    // Círculo central blanco estilo Preguntados
+    const centerRadius = radius * 0.25;
+
+    // Círculo central principal
     ctx.beginPath();
-    ctx.arc(centerX, centerY, radius * 0.22, 0, Math.PI * 2);
-    const centerGradient = ctx.createRadialGradient(
-      centerX,
-      centerY,
-      0,
-      centerX,
-      centerY,
-      radius * 0.22
-    );
-    centerGradient.addColorStop(0, primaryColor);
-    centerGradient.addColorStop(1, "#0d8a91");
-    ctx.fillStyle = centerGradient;
+    ctx.arc(centerX, centerY, centerRadius, 0, Math.PI * 2);
+    ctx.fillStyle = "#FFFFFF";
     ctx.fill();
-    ctx.strokeStyle = "#FFFFFF";
+
+    // Borde dorado del círculo central (menos brillante)
+    ctx.strokeStyle = "#D4AF37";
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Agregar brillo al círculo central
-    ctx.beginPath();
-    ctx.arc(centerX - 5, centerY - 5, radius * 0.1, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255,255,255,0.3)";
-    ctx.fill();
+    // Remover los iconos dibujados en el canvas - usaremos los SVG existentes
   };
 
   return (
@@ -280,9 +268,27 @@ const Wheel = ({
         width: size,
         height: size,
         margin: "0 auto",
-        filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.15))",
+        filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.2))",
+        animation: isSpinning
+          ? "wheelPulse 0.5s ease-in-out infinite alternate"
+          : "none",
       }}
     >
+      {/* Definir animaciones CSS */}
+      <style>
+        {`
+          @keyframes wheelPulse {
+            from { filter: drop-shadow(0 12px 24px rgba(0,0,0,0.2)); }
+            to { filter: drop-shadow(0 16px 32px rgba(22,179,185,0.3)); }
+          }
+          
+          @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+          }
+        `}
+      </style>
+
       {/* Canvas para dibujar la ruleta */}
       <canvas
         ref={canvasRef}
@@ -296,6 +302,32 @@ const Wheel = ({
         }}
       />
 
+      {/* Efectos de partículas/sparkles cuando termina */}
+      {showSparkles && (
+        <>
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                width: "8px",
+                height: "8px",
+                backgroundColor: "#FFD700",
+                borderRadius: "50%",
+                transform: `translate(-50%, -50%) rotate(${
+                  i * 45
+                }deg) translateY(-${radius + 20}px)`,
+                animation: "sparkle 1.5s ease-in-out infinite",
+                animationDelay: `${i * 0.1}s`,
+                zIndex: 5,
+              }}
+            />
+          ))}
+        </>
+      )}
+
       {/* Iconos SVG posicionados sobre la ruleta */}
       {getIconPositions().map((iconData, index) => (
         <img
@@ -304,49 +336,46 @@ const Wheel = ({
           alt={iconData.segment}
           style={{
             position: "absolute",
-            left: iconData.x - 16, // Centrar el icono (32px / 2)
-            top: iconData.y - 16,
-            width: "32px",
-            height: "32px",
-            filter:
-              "drop-shadow(2px 2px 3px rgba(0,0,0,0.4)) brightness(0) invert(1)", // Hacer el SVG blanco con sombra
+            left: iconData.x - 18, // Centrar el icono (36px / 2)
+            top: iconData.y - 18,
+            width: "36px", // Iconos un poco más grandes
+            height: "36px",
+            filter: isSpinning
+              ? "drop-shadow(2px 2px 4px rgba(0,0,0,0.3)) brightness(0) invert(1) blur(0.5px)"
+              : "drop-shadow(3px 3px 6px rgba(0,0,0,0.4)) brightness(0) invert(1)",
             pointerEvents: "none",
             transition: isSpinning ? "none" : "all 0.3s ease",
-            transform: `rotate(${iconData.rotation}deg)`, // Rotar el icono para que mire hacia el centro
-            transformOrigin: "center center", // Punto de rotación en el centro del icono
+            transform: `rotate(${iconData.rotation}deg)`,
+            transformOrigin: "center center",
             zIndex: 1,
+            // Removida la animación flotante - los iconos se mantienen fijos
           }}
         />
       ))}
 
-      {/* Flecha simple de un solo color - posicionada en el borde superior */}
+      {/* Flecha blanca estilo Preguntados */}
       <div
         style={{
           position: "absolute",
-          top: "5px", // En el borde superior de la ruleta
+          top: "8px",
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 4,
         }}
       >
-        {/* Flecha simple apuntando hacia abajo */}
         <div
           style={{
-            position: "absolute",
-            top: "0px",
-            left: "50%",
-            transform: "translateX(-50%)",
             width: 0,
             height: 0,
-            borderLeft: "16px solid transparent",
-            borderRight: "16px solid transparent",
-            borderTop: "45px solid #ffffff", // Flecha blanca para contrastar con la ruleta
-            zIndex: 2,
+            borderLeft: "15px solid transparent",
+            borderRight: "15px solid transparent",
+            borderTop: "40px solid #FFFFFF",
+            filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
           }}
         />
       </div>
 
-      {/* Botón para girar con diseño mejorado */}
+      {/* Botón central estilo Preguntados */}
       <button
         onClick={spin}
         disabled={isSpinning}
@@ -355,27 +384,43 @@ const Wheel = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          background: isSpinning
-            ? "linear-gradient(135deg, #b0b0b0, #888888)"
-            : `linear-gradient(135deg, ${primaryColor}, #0d8a91)`,
-          color: contrastColor,
-          border: "none",
+          background: "#FFFFFF",
+          color: "#333333",
+          border: "3px solid #D4AF37",
           borderRadius: "50%",
-          width: radius * 0.38,
-          height: radius * 0.38,
+          width: radius * 0.4,
+          height: radius * 0.4,
           cursor: isSpinning ? "default" : "pointer",
           fontWeight: "bold",
-          fontSize: "12px",
-          fontFamily,
-          boxShadow: isSpinning
-            ? "inset 0 2px 4px rgba(0,0,0,0.3)"
-            : `0 4px 12px rgba(22,179,185,0.4), inset 0 1px 0 rgba(255,255,255,0.2)`,
-          zIndex: 2,
-          transition: "all 0.3s ease",
-          textShadow: "0 1px 2px rgba(0,0,0,0.5)",
+          fontSize: "16px",
+          fontFamily: "Arial, sans-serif",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+          zIndex: 3,
+          transition: "all 0.2s ease",
+          textShadow: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transform: isSpinning
+            ? "translate(-50%, -50%) scale(0.95)"
+            : "translate(-50%, -50%) scale(1)",
+        }}
+        onMouseEnter={(e) => {
+          if (!isSpinning) {
+            e.target.style.transform = "translate(-50%, -50%) scale(1.05)";
+            e.target.style.background = "#FFF9E6";
+            e.target.style.borderColor = "#E6C347";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isSpinning) {
+            e.target.style.transform = "translate(-50%, -50%) scale(1)";
+            e.target.style.background = "#FFFFFF";
+            e.target.style.borderColor = "#D4AF37";
+          }
         }}
       >
-        {isSpinning ? "Girando..." : buttonText}
+        {isSpinning ? "GIRANDO" : "GIRAR"}
       </button>
     </div>
   );
