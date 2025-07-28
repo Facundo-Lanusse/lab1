@@ -90,4 +90,24 @@ router.post('/bullet-online/:battleId/join', (req, res) => {
     res.status(400).json({ success: false, message: 'No se pudo unir a la sala' });
 });
 
+// Obtener las bullet battles de un usuario
+router.get('/bullet-online/user/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const result = await db.query(
+            `SELECT bob.*, 
+                CASE WHEN bob.user_id1 = $1 THEN u2.username ELSE u1.username END as opponent_name
+             FROM bullet_online_battle bob
+             JOIN users u1 ON bob.user_id1 = u1.user_id
+             JOIN users u2 ON bob.user_id2 = u2.user_id
+             WHERE bob.user_id1 = $1 OR bob.user_id2 = $1 
+             ORDER BY bob.created_at DESC`,
+            [userId]
+        );
+        res.json({ success: true, battles: result.rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error al obtener las partidas bullet online' });
+    }
+});
+
 module.exports = router;
