@@ -24,6 +24,7 @@ import CommunityCategoriesJudgement from "./pages/CommunityCategoriesJudgement";
 import ReviewCategory from "./pages/ReviewCategory";
 import BulletPlay from "./pages/BulletPlay";
 import InviteHandler from "./components/InviteHandler";
+import BulletOnlinePlay from "./pages/BulletOnlinePlay";
 
 
 const AppContent = () => {
@@ -65,6 +66,7 @@ const AppContent = () => {
           <Route path="/Categories-Judgement" element={<CommunityCategoriesJudgement />} />
           <Route path="/Review-Category/:category_id" element={<ReviewCategory />} />
           <Route path="/invite/:inviteCode" element={<InviteHandler />} />
+          <Route path="/BulletOnline/:battleId" element={<BulletOnlinePlay />} />
         </Routes>
       </>
   );
