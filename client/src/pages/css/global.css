@@ -4,8 +4,8 @@
 :root {
   /* Colores principales */
   --primary-color: #16b3b9; /* Turquesa - color principal */
-  --primary-light: #8ae0e6; /* Turquesa claro */
-  --primary-dark: #0f797f; /* Turquesa oscuro */
+  --primary-light: #afe9ed; /* Turquesa claro */
+  --primary-dark: #076166; /* Turquesa oscuro */
   --secondary-color: #f5ba26; /* Amarillo - acento */
   --secondary-light: #ffd866; /* Amarillo claro */
   --tertiary-color: #ff6b6b; /* Color complementario */

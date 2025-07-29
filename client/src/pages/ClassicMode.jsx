@@ -796,7 +796,7 @@ const ClassicMode = () => {
         <h3>
           {canSelectCategory
             ? "Gira la ruleta para marcar una categoría"
-            : `Gira la ruleta para obtener una pregunta (${availableCategories.length} categorías disponibles)`}
+            : `Gira la ruleta para obtener una pregunta`}
         </h3>
 
         {/* Indicador de categorías completadas */}
@@ -831,7 +831,6 @@ const ClassicMode = () => {
           buttonText="Girar"
           size={350}
         />
-
       </div>
     );
   };
