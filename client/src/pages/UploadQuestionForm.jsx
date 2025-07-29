@@ -200,7 +200,7 @@ function UploadQuestionForm() {
       )}
 
       <button className={styles.signUpButton} onClick={handleForm}>
-        Upload
+        Subir
       </button>
     </div>
   );
