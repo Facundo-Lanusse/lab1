@@ -535,9 +535,6 @@ router.post(
 router.get("/classic/battles", async (req, res) => {
   try {
     const userId = req.query.userId;
-    const includeDetails = req.query.includeDetails === 'true'; // Parámetro opcional para incluir detalles
-
-    console.log(`[DEBUG] Obteniendo batallas para usuario: ${userId}, includeDetails: ${includeDetails}`);
 
     if (!userId) {
       return res.status(400).json({
@@ -551,214 +548,33 @@ router.get("/classic/battles", async (req, res) => {
             SELECT b.battle_id, b.user_id1, b.user_id2, b.status, b.whos_next, b.date, 
                    h.winner_user_id as winner_id,
                    CASE WHEN b.user_id1 = $1 THEN u2.username ELSE u1.username END as opponent_name,
-                   CASE WHEN b.user_id1 = $1 THEN pi2.image_path ELSE pi1.image_path END as opponent_picture,
-                   COALESCE((SELECT COUNT(*) FROM battle_categories 
-                    WHERE battle_id = b.battle_id AND user_id = $1 AND completed = true), 0) as mycompletedcategories,
-                   COALESCE((SELECT COUNT(*) FROM battle_categories 
-                    WHERE battle_id = b.battle_id AND user_id != $1 AND completed = true), 0) as opponentcompletedcategories
+                   (SELECT COUNT(*) FROM battle_categories 
+                    WHERE battle_id = b.battle_id AND user_id = $1 AND completed = true) as myCompletedCategories,
+                   (SELECT COUNT(*) FROM battle_categories 
+                    WHERE battle_id = b.battle_id AND user_id != $1 AND completed = true) as opponentCompletedCategories
             FROM battle b
             JOIN users u1 ON b.user_id1 = u1.user_id
             JOIN users u2 ON b.user_id2 = u2.user_id
-            LEFT JOIN profile_image pi1 ON u1.user_id = pi1.user_id
-            LEFT JOIN profile_image pi2 ON u2.user_id = pi2.user_id
             LEFT JOIN history h ON b.battle_id = h.battle_id
             WHERE (b.user_id1 = $1 OR b.user_id2 = $1)
             ORDER BY b.status = 'ongoing' DESC, b.date DESC
         `;
 
     const result = await db.query(battlesQuery, [userId]);
-    
-    console.log(`[DEBUG] Query ejecutado exitosamente. Batallas encontradas: ${result.rows.length}`);
-    if (result.rows.length > 0) {
-      console.log(`[DEBUG] Primera batalla:`, {
-        battle_id: result.rows[0].battle_id,
-        status: result.rows[0].status,
-        opponent_name: result.rows[0].opponent_name,
-        opponent_picture: result.rows[0].opponent_picture
-      });
-    }
 
     // Formatear los datos para el frontend
-    const battles = [];
-    
-    console.log(`[DEBUG] Iniciando procesamiento de ${result.rows.length} batallas`);
-    
-    for (const battle of result.rows) {
-      console.log(`[DEBUG] Procesando batalla ${battle.battle_id}:`, {
-        status: battle.status,
-        myCategories: battle.mycompletedcategories,
-        opponentCategories: battle.opponentcompletedcategories
-      });
-
-      const battleData = {
-        battle_id: battle.battle_id,
-        opponent_name: battle.opponent_name,
-        opponent_picture: battle.opponent_picture,
-        currentTurn: battle.whos_next,
-        date: battle.date,
-        myCompletedCategories: Number(battle.mycompletedcategories || 0),
-        opponentCompletedCategories: Number(battle.opponentcompletedcategories || 0),
-        status: battle.status,
-        winner_id: battle.winner_id,
-        isWinner: battle.winner_id === Number(userId),
-        isCompleted: battle.status === "completed",
-      };
-
-      // Si se solicitan detalles y la batalla está completada, agregar estadísticas
-      if (includeDetails && battle.status === 'completed') {
-        console.log(`[DEBUG] Obteniendo detalles para batalla completada ${battle.battle_id}`);
-        try {
-          // Primero obtener estadísticas generales por usuario
-          const generalStatsQuery = `
-            SELECT 
-              ba.user_id,
-              COUNT(*) as total_answers,
-              COUNT(CASE WHEN ba.is_correct = true THEN 1 END) as correct_answers,
-              ROUND(
-                (COUNT(CASE WHEN ba.is_correct = true THEN 1 END)::float / COUNT(*)::float) * 100, 
-                1
-              ) as accuracy_percentage
-            FROM battle_answer ba
-            WHERE ba.battle_id = $1
-            GROUP BY ba.user_id
-          `;
-          
-          const generalStatsResult = await db.query(generalStatsQuery, [battle.battle_id]);
-          console.log(`[DEBUG] Estadísticas generales obtenidas: ${generalStatsResult.rows.length} usuarios`);
-          
-          // Luego obtener estadísticas por categoría
-          const categoryStatsQuery = `
-            SELECT 
-              ba.user_id,
-              c.name as category_name,
-              COUNT(CASE WHEN ba.is_correct = true THEN 1 END) as correct_in_category,
-              COUNT(*) as total_in_category,
-              ROUND(
-                (COUNT(CASE WHEN ba.is_correct = true THEN 1 END)::float / COUNT(*)::float) * 100, 
-                1
-              ) as category_accuracy
-            FROM battle_answer ba
-            JOIN question q ON ba.question_id = q.question_id
-            JOIN category c ON q.category_id = c.category_id
-            WHERE ba.battle_id = $1
-            GROUP BY ba.user_id, c.name
-            ORDER BY ba.user_id, c.name
-          `;
-          
-          const categoryStatsResult = await db.query(categoryStatsQuery, [battle.battle_id]);
-          console.log(`[DEBUG] Estadísticas por categoría obtenidas: ${categoryStatsResult.rows.length} registros`);
-          
-          // Procesar estadísticas generales
-          const myStats = { totalAnswers: 0, correctAnswers: 0, accuracyPercentage: 0, categoryStats: [], categoriesCompleted: 0 };
-          const opponentStats = { totalAnswers: 0, correctAnswers: 0, accuracyPercentage: 0, categoryStats: [], categoriesCompleted: 0 };
-          
-          // Procesar estadísticas generales
-          generalStatsResult.rows.forEach(stat => {
-            const isMyStats = stat.user_id === Number(userId);
-            const targetStats = isMyStats ? myStats : opponentStats;
-            
-            targetStats.totalAnswers = parseInt(stat.total_answers);
-            targetStats.correctAnswers = parseInt(stat.correct_answers);
-            targetStats.accuracyPercentage = parseFloat(stat.accuracy_percentage) || 0;
-          });
-          
-          // Procesar estadísticas por categoría
-          categoryStatsResult.rows.forEach(stat => {
-            const isMyStats = stat.user_id === Number(userId);
-            const targetStats = isMyStats ? myStats : opponentStats;
-            
-            targetStats.categoryStats.push({
-              categoryName: stat.category_name,
-              correctAnswers: parseInt(stat.correct_in_category),
-              totalAnswers: parseInt(stat.total_in_category),
-              accuracy: parseFloat(stat.category_accuracy) || 0
-            });
-          });
-          
-          // Obtener categorías completadas de battle_categories
-          let categoriesResult = { rows: [] };
-          try {
-            const categoriesCompletedQuery = `
-              SELECT user_id, COUNT(*) as completed_count
-              FROM battle_categories 
-              WHERE battle_id = $1 AND completed = true
-              GROUP BY user_id
-            `;
-            categoriesResult = await db.query(categoriesCompletedQuery, [battle.battle_id]);
-          } catch (categoriesError) {
-            console.error(`[ERROR] Error al obtener categorías completadas:`, categoriesError);
-          }
-          
-          categoriesResult.rows.forEach(catResult => {
-            const isMyStats = catResult.user_id === Number(userId);
-            const targetStats = isMyStats ? myStats : opponentStats;
-            targetStats.categoriesCompleted = parseInt(catResult.completed_count);
-          });
-
-          // Calcular duración de la batalla
-          const battleDuration = new Date() - new Date(battle.date);
-          const durationMinutes = Math.floor(battleDuration / (1000 * 60));
-          
-          // Obtener información de los usuarios
-          let user1Info, user2Info;
-          try {
-            user1Info = await db.query(`
-              SELECT u.username, pi.image_path as profile_picture 
-              FROM users u 
-              LEFT JOIN profile_image pi ON u.user_id = pi.user_id 
-              WHERE u.user_id = $1
-            `, [battle.user_id1]);
-            
-            user2Info = await db.query(`
-              SELECT u.username, pi.image_path as profile_picture 
-              FROM users u 
-              LEFT JOIN profile_image pi ON u.user_id = pi.user_id 
-              WHERE u.user_id = $1
-            `, [battle.user_id2]);
-          } catch (userQueryError) {
-            console.error(`[ERROR] Error al obtener información de usuarios:`, userQueryError);
-            user1Info = { rows: [{ username: 'Usuario', profile_picture: null }] };
-            user2Info = { rows: [{ username: 'Usuario', profile_picture: null }] };
-          }
-          
-          // Estructurar los datos para el componente BattleResultsScreen
-          const formattedBattleResults = {
-            winner: battle.winner_id,
-            durationMinutes,
-            user1: {
-              userId: battle.user_id1,
-              username: user1Info.rows[0]?.username || 'Usuario',
-              profile_picture: user1Info.rows[0]?.profile_picture || null,
-              totalCategories: 4, // Número fijo de categorías en el juego
-              categoriesCompleted: battle.user_id1 === Number(userId) ? myStats.categoriesCompleted : opponentStats.categoriesCompleted,
-              totalAnswers: battle.user_id1 === Number(userId) ? myStats.totalAnswers : opponentStats.totalAnswers,
-              correctAnswers: battle.user_id1 === Number(userId) ? myStats.correctAnswers : opponentStats.correctAnswers,
-              accuracyPercentage: battle.user_id1 === Number(userId) ? myStats.accuracyPercentage : opponentStats.accuracyPercentage,
-              categoryStats: battle.user_id1 === Number(userId) ? myStats.categoryStats : opponentStats.categoryStats
-            },
-            user2: {
-              userId: battle.user_id2,
-              username: user2Info.rows[0]?.username || 'Usuario',
-              profile_picture: user2Info.rows[0]?.profile_picture || null,
-              totalCategories: 4, // Número fijo de categorías en el juego
-              categoriesCompleted: battle.user_id2 === Number(userId) ? myStats.categoriesCompleted : opponentStats.categoriesCompleted,
-              totalAnswers: battle.user_id2 === Number(userId) ? myStats.totalAnswers : opponentStats.totalAnswers,
-              correctAnswers: battle.user_id2 === Number(userId) ? myStats.correctAnswers : opponentStats.correctAnswers,
-              accuracyPercentage: battle.user_id2 === Number(userId) ? myStats.accuracyPercentage : opponentStats.accuracyPercentage,
-              categoryStats: battle.user_id2 === Number(userId) ? myStats.categoryStats : opponentStats.categoryStats
-            }
-          };
-          
-          battleData.battleResults = formattedBattleResults;
-          
-        } catch (detailError) {
-          console.error(`Error al obtener detalles para batalla ${battle.battle_id}:`, detailError);
-          // No fallar la petición, solo omitir los detalles
-        }
-      }
-      
-      battles.push(battleData);
-    }
+    const battles = result.rows.map((battle) => ({
+      battle_id: battle.battle_id,
+      opponent_name: battle.opponent_name,
+      currentTurn: battle.whos_next,
+      date: battle.date,
+      myCompletedCategories: Number(battle.mycompletedcategories),
+      opponentCompletedCategories: Number(battle.opponentcompletedcategories),
+      status: battle.status,
+      winner_id: battle.winner_id,
+      isWinner: battle.winner_id === Number(userId),
+      isCompleted: battle.status === "completed",
+    }));
 
     res.json({
       success: true,
