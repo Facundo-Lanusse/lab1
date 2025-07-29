@@ -207,12 +207,16 @@ const Home = () => {
                             </span>
                             <span
                               className={`${styles.turnIndicator} ${
-                                battle.currentTurn === user.user_id
+                                (battle.type === "bullet"
+                                  ? battle.current_turn === user.user_id
+                                  : battle.whos_next === user.user_id)
                                   ? styles.yourTurn
                                   : styles.opponentTurn
                               }`}
                             >
-                              {battle.currentTurn === user.user_id
+                              {(battle.type === "bullet"
+                                ? battle.current_turn === user.user_id
+                                : battle.whos_next === user.user_id)
                                 ? "¡Tu turno!"
                                 : "Turno del oponente"}
                             </span>

@@ -9,7 +9,7 @@ INSERT INTO bullet_questions (bullet_text) VALUES
                                                ('¿De qué color es el cielo?'),
                                                ('¿Cuánto es 2 + 2?'),
                                                ('¿Qué animal hace "miau"?'),
-                                               ('¿Cuánto es 5 - 3?'),
+                                       d        ('¿Cuánto es 5 - 3?'),
                                                ('¿Qué fruta es amarilla y alargada?'),
                                                ('¿Cómo se dice "hola" en inglés?'),
                                                ('¿Qué día viene después del lunes?'),
